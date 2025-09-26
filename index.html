@@ -1,47 +1,262 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="hi">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>My Stock Watchlist</title>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
-<link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Glass Watchlist — Apple-style</title>
+  <style>
+    :root{
+      --bg1:#0f1220; --bg2:#151a2e; --bg3:#0a0c18;
+      --glass:rgba(255,255,255,0.12);
+      --stroke:rgba(255,255,255,0.28);
+      --shadow:0 10px 35px rgba(0,0,0,0.35);
+      --radius:18px;
+      --accent:#3df07c;         /* default = gainers */
+      --accent-soft:rgba(61,240,124,0.25);
+      --loser:#ff5c7a;
+      --loser-soft:rgba(255,92,122,0.23);
+      --text:#eef1f6; --muted:#a9b1c7;
+    }
+
+    /* Background */
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--text); background:
+        radial-gradient(1200px 800px at -10% -20%, #3b2b86 0%, transparent 55%),
+        radial-gradient(900px 600px at 110% 10%, #1f6aa8 0%, transparent 55%),
+        radial-gradient(700px 500px at 50% 120%, #0fa 0%, transparent 40%),
+        linear-gradient(145deg, var(--bg1), var(--bg2) 55%, var(--bg3));
+      min-height:100svh;
+      overflow-x:hidden;
+    }
+
+    .wrap{ max-width:1200px; margin-inline:auto; padding:24px; }
+
+    /* Header controls */
+    .toolbar{
+      display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:16px;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      background:linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.06));
+      border:1px solid var(--stroke); box-shadow: var(--shadow); border-radius: 16px; padding:12px 14px;
+    }
+    .chip{
+      padding:10px 14px; border-radius:999px; border:1px solid var(--stroke);
+      background: rgba(255,255,255,0.10); color:var(--text); cursor:pointer;
+      transition: transform .25s ease, background .25s ease, border-color .25s ease;
+      user-select:none;
+    }
+    .chip:hover{ transform: translateY(-1px); }
+    .chip.is-active{ background: var(--accent-soft); border-color: var(--accent); }
+
+    .chip.loser.is-active{ background: var(--loser-soft); border-color: var(--loser); }
+
+    .spacer{ flex:1; }
+
+    .master{
+      display:flex; align-items:center; gap:10px; min-width:260px;
+    }
+    .master label{ font-size:.9rem; color:var(--muted); }
+
+    /* Pretty slider */
+    input[type="range"]{
+      -webkit-appearance: none; appearance: none; width:200px; height:12px; background: transparent; cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-runnable-track{
+      height:12px; border-radius:999px; background:
+        linear-gradient(90deg, var(--accent) var(--fill,50%), rgba(255,255,255,0.15) 0);
+      border:1px solid var(--stroke);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    input[type="range"]::-moz-range-track{
+      height:12px; border-radius:999px; background:
+        linear-gradient(90deg, var(--accent) var(--fill,50%), rgba(255,255,255,0.15) 0);
+      border:1px solid var(--stroke);
+    }
+    input[type="range"]::-webkit-slider-thumb{
+      -webkit-appearance:none; width:22px; height:22px; border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #fff 0%, #cde 35%, #8fb 100%);
+      border:1px solid rgba(255,255,255,0.6); margin-top:-5.5px; box-shadow: 0 2px 8px rgba(0,0,0,0.45);
+    }
+    input[type="range"]::-moz-range-thumb{
+      width:22px; height:22px; border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #fff 0%, #cde 35%, #8fb 100%);
+      border:1px solid rgba(255,255,255,0.6); box-shadow: 0 2px 8px rgba(0,0,0,0.45);
+    }
+
+    /* Grid */
+    .grid{
+      display:grid; gap:14px;
+      grid-template-columns: repeat( auto-fill, minmax(220px, 1fr) );
+    }
+
+    /* Card */
+    .card{
+      position:relative; overflow:hidden; border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.08));
+      border:1px solid var(--stroke); box-shadow: var(--shadow);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      transition: transform .25s ease, border-color .25s ease, background .25s ease;
+    }
+    .card:hover{ transform: translateY(-3px); }
+
+    .card::before{
+      content:""; position:absolute; inset:-30%; background:
+        conic-gradient(from -90deg, var(--accent) calc(var(--p,0)*1%), transparent 0);
+      opacity:0.18; filter: blur(16px);
+      transition: opacity .35s ease, filter .35s ease;
+    }
+    body.mode-losers .card::before{ background:
+      conic-gradient(from -90deg, var(--loser) calc(var(--p,0)*1%), transparent 0); }
+
+    .card-inner{ position:relative; display:flex; flex-direction:column; gap:10px; padding:14px; }
+    .row{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .sym{ font-weight:600; letter-spacing:.2px; }
+    .chg{ font-size:.9rem; padding:6px 10px; border-radius:999px; border:1px solid var(--stroke); background: rgba(255,255,255,0.10); }
+    .mini{
+      display:flex; align-items:center; gap:10px; justify-content:space-between; margin-top:6px;
+    }
+
+    /* Mini circular meter */
+    .meter{
+      --size: 46px; width:var(--size); height:var(--size); border-radius:50%;
+      background: conic-gradient(var(--accent) calc(var(--p,0)*1%), rgba(255,255,255,0.10) 0);
+      display:grid; place-items:center; border:1px solid var(--stroke);
+      box-shadow: inset 0 0 16px rgba(0,0,0,0.25);
+      transition: background .35s ease;
+    }
+    body.mode-losers .meter{
+      background: conic-gradient(var(--loser) calc(var(--p,0)*1%), rgba(255,255,255,0.10) 0);
+    }
+    .meter span{ font-size:.75rem; color:var(--muted); }
+
+    .mini input[type="range"]{ width:120px; }
+
+    /* Mode badges */
+    .badge{
+      position:absolute; top:10px; right:10px; padding:6px 10px; border-radius:999px;
+      font-size:.75rem; border:1px solid var(--stroke); background: rgba(255,255,255,0.10);
+    }
+  </style>
 </head>
 <body>
-<h1>Real-Time Stock Watchlist</h1>
+  <div class="wrap">
+    <div class="toolbar">
+      <button class="chip gainer is-active" id="btnGainers">Gainers</button>
+      <button class="chip loser" id="btnLosers">Losers</button>
+      <div class="spacer"></div>
+      <div class="master">
+        <label>Slide All</label>
+        <input id="masterRange" type="range" min="0" max="100" value="45">
+      </div>
+    </div>
 
-<div class="controls">
-  <button id="top-gainers">Top Gainers Today</button>
-  <button id="top-losers">Top Losers Today</button>
-  <select id="period-filter">
-    <option value="">Select Period</option>
-    <option value="7">Top 7-day</option>
-    <option value="30">Top 30-day</option>
-    <option value="90">Top 90-day</option>
-  </select>
-  <button id="reset-filters">Reset Filters</button>
-</div>
+    <div id="grid" class="grid"></div>
+  </div>
 
-<table id="watchlist" class="display" style="width:100%">
-  <thead>
-    <tr>
-      <th>Ticker</th>
-      <th>Name</th>
-      <th>Price</th>
-      <th>% Change</th>
-      <th>7-day %</th>
-      <th>30-day %</th>
-      <th>90-day %</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+  <script>
+    const sample = [
+      {sym:"AAPL", name:"Apple Inc."},
+      {sym:"MSFT", name:"Microsoft"},
+      {sym:"NVDA", name:"NVIDIA"},
+      {sym:"AMZN", name:"Amazon"},
+      {sym:"META", name:"Meta"},
+      {sym:"GOOGL", name:"Alphabet"},
+      {sym:"TSLA", name:"Tesla"},
+      {sym:"AMD", name:"AMD"},
+      {sym:"NFLX", name:"Netflix"},
+      {sym:"ADBE", name:"Adobe"},
+      {sym:"CRM", name:"Salesforce"},
+      {sym:"AVGO", name:"Broadcom"},
+      {sym:"ORCL", name:"Oracle"},
+      {sym:"INTC", name:"Intel"},
+      {sym:"SAP", name:"SAP"},
+      {sym:"SHOP", name:"Shopify"},
+      {sym:"ASML", name:"ASML"},
+      {sym:"UBER", name:"Uber"},
+      {sym:"SQ", name:"Block"},
+      {sym:"PYPL", name:"PayPal"}
+    ].slice(0,20);
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="script.js"></script>
+    const grid = document.getElementById('grid');
+
+    function pct(v){ return Math.max(0, Math.min(100, v|0)); }
+
+    function cardHTML(item, i, p=45, up=true){
+      const change = (up?'+':'-') + ((10+((i*7)%70))/10).toFixed(1) + '%';
+      return `
+      <div class="card" style="--p:${pct(p)};">
+        <div class="badge">${up?'GAINER':'LOSER'}</div>
+        <div class="card-inner">
+          <div class="row">
+            <div class="sym">${item.sym}</div>
+            <div class="chg">${change}</div>
+          </div>
+          <div class="mini">
+            <div class="meter" style="--p:${pct(p)};">
+              <span>${pct(p)}%</span>
+            </div>
+            <input class="miniRange" type="range" min="0" max="100" value="${pct(p)}" />
+          </div>
+        </div>
+      </div>`;
+    }
+
+    function render(mode='gainers', master=45){
+      document.body.classList.toggle('mode-losers', mode==='losers');
+      grid.innerHTML = '';
+      sample.forEach((item,i)=>{
+        const up = mode==='gainers';
+        const base = up ? 40 : 40;
+        const jitter = (i*13)%40;
+        const p = Math.min(100, Math.max(0, base + jitter));
+        grid.insertAdjacentHTML('beforeend', cardHTML(item,i, master> -1 ? master : p, up));
+      });
+
+      // Wire mini sliders
+      document.querySelectorAll('.miniRange').forEach((r)=>{
+        const card = r.closest('.card');
+        const meter = card.querySelector('.meter');
+        const label = meter.querySelector('span');
+        const update = ()=>{
+          const val = +r.value;
+          card.style.setProperty('--p', val);
+          meter.style.setProperty('--p', val);
+          label.textContent = val+'%';
+        };
+        r.addEventListener('input', update, {passive:true});
+        r.addEventListener('change', update);
+      });
+    }
+
+    // Initial
+    render('gainers', 45);
+
+    // Master slider
+    const master = document.getElementById('masterRange');
+    const syncMasterFill = ()=>{
+      const v = master.value;
+      master.style.setProperty('--fill', v+'%');
+      document.querySelectorAll('.card, .meter').forEach(el=>el.style.setProperty('--p', v));
+      document.querySelectorAll('.meter span').forEach(s=> s.textContent = v+'%');
+      document.querySelectorAll('.miniRange').forEach(r=> r.value = v);
+    };
+    master.addEventListener('input', syncMasterFill, {passive:true});
+
+    // Mode buttons
+    const btnG = document.getElementById('btnGainers');
+    const btnL = document.getElementById('btnLosers');
+    btnG.addEventListener('click', ()=>{
+      btnG.classList.add('is-active'); btnL.classList.remove('is-active');
+      render('gainers', +master.value);
+      syncMasterFill();
+    });
+    btnL.addEventListener('click', ()=>{
+      btnL.classList.add('is-active'); btnG.classList.remove('is-active');
+      render('losers', +master.value);
+      syncMasterFill();
+    });
+  </script>
 </body>
 </html>
