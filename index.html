@@ -1,95 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Glassy Stock Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Glassy Navy Dashboard</title>
   <style>
+    /* reset & base */
+    * { margin:0; padding:0; box-sizing:border-box }
     body {
-      margin:0; padding:20px; background:#e0e5ec; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background:#0a0f24;
+      font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;
+      color:#e0e0e0;
+      padding:16px;
     }
-    .dashboard {
-      max-width: 380px; margin: auto;
+    .dashboard { max-width:380px; margin:auto }
+    h1 { font-size:20px; margin-bottom:12px; text-align:center }
+    /* segment control */
+    .controls {
+      display:flex; background:rgba(10,15,36,0.4);
+      border-radius:12px; backdrop-filter:blur(12px);
+      overflow:hidden; margin-bottom:16px;
     }
-    .header {
-      display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;
+    .btn {
+      flex:1; text-align:center; padding:8px 0;
+      font-weight:600; font-size:14px; cursor:pointer;
+      transition:background 0.2s,color 0.2s;
     }
-    .header h1 {
-      font-size:20px; color:#344055;
+    .btn.active {
+      background:#1f3264; color:#fff;
     }
-    .segment-controls {
-      display:flex; background:rgba(255,255,255,0.4); border-radius:12px;
-      backdrop-filter:blur(10px); overflow:hidden;
-    }
-    .segment-btn {
-      flex:1; padding:8px; text-align:center; font-weight:600; font-size:14px;
-      color:#344055; cursor:pointer; transition:background 0.2s;
-    }
-    .segment-btn.active {
-      background:rgba(59,130,246,0.8); color:white;
-    }
-    .card-stack {
-      position:relative; height: 500px; overflow:hidden;
-    }
-    .card-list {
+    /* card stack */
+    .stack { position:relative; height:600px; overflow:hidden }
+    .list {
       position:absolute; top:0; left:0; right:0;
-      display:flex; flex-direction:column; gap:12px;
-      transition:transform 0.5s cubic-bezier(.25,.8,.25,1);
+      transition:transform 0.5s cubic-bezier(.2,.8,.2,1);
     }
     .card {
-      display:flex; justify-content:space-between; padding:16px;
-      background:rgba(255,255,255,0.5); border-radius:16px;
-      backdrop-filter:blur(16px); box-shadow:0 8px 24px rgba(0,0,0,0.1);
+      display:flex; justify-content:space-between;
+      padding:16px; margin-bottom:12px;
+      background:rgba(31,50,100,0.3);
+      border-radius:16px; backdrop-filter:blur(16px);
+      border:1px solid rgba(255,255,255,0.1);
     }
-    .info {
-      display:flex; flex-direction:column;
+    .info { display:flex; flex-direction:column }
+    .ticker { font-size:16px; font-weight:600; color:#cdd6f4 }
+    .name { font-size:12px; color:#a6adc8 }
+    .metrics { text-align:right; display:flex; flex-direction:column }
+    .price { font-size:16px; font-weight:600; color:#f5f5f5 }
+    .chg {
+      margin-top:4px; font-size:12px; font-weight:600;
+      display:flex; align-items:center; gap:4px;
     }
-    .ticker { font-size:16px; font-weight:600; color:#1f2937; }
-    .name   { font-size:12px; color:#64748b; }
-    .metrics { text-align:right; display:flex; flex-direction:column; }
-    .price  { font-size:16px; font-weight:600; color:#1f2937; }
-    .change {
-      margin-top:4px; font-size:12px; font-weight:600; display:flex; align-items:center;
-    }
-    .pos { color:#10b981; }
-    .neg { color:#ef4444; }
-    .pos::before { content:"↑"; margin-right:4px; }
-    .neg::before { content:"↓"; margin-right:4px; }
+    .pos { color:#4ade80 }
+    .neg { color:#f87171 }
+    .pos::before { content:"↑" }
+    .neg::before { content:"↓" }
   </style>
 </head>
 <body>
   <div class="dashboard">
-    <div class="header">
-      <h1>Top Movers</h1>
-      <div class="segment-controls">
-        <div class="segment-btn active" id="btnG">Gainers</div>
-        <div class="segment-btn" id="btnL">Losers</div>
-      </div>
+    <h1>Top Movers</h1>
+    <div class="controls">
+      <div class="btn active" id="btnG">Gainers</div>
+      <div class="btn" id="btnL">Losers</div>
     </div>
-    <div class="card-stack">
-      <div class="card-list" id="cardList">
-        <!-- Cards Injected Here -->
-      </div>
+    <div class="stack">
+      <div class="list" id="list"></div>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
-    const data = Array.from({length:20},(_,i)=>({
-      ticker:`STK${i+1}`, name:`Company ${i+1}`,
-      price:(1000+Math.random()*500).toFixed(2),
-      change:(Math.random()*10*(Math.random()<0.5?-1:1)).toFixed(2)
-    }));
-    let page=0, view='g';
-    const perPage=5;
-    const cardList=document.getElementById('cardList');
-    const btnG=document.getElementById('btnG'), btnL=document.getElementById('btnL');
+    const CSV_URL = 
+      'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
+    const perPage = 5, totalToShow = 20;
+    let data = [], view='g', page=0;
+
+    // parse CSV & initialize
+    Papa.parse(CSV_URL, {
+      download:true, header:true, dynamicTyping:true,
+      complete: r => {
+        data = r.data
+          .filter(d=>d.Ticker && d.change)
+          .map(d=>({
+            ticker:d.Ticker,
+            name:d['Name']||d['stock name']||'',
+            price:parseFloat(d.LTP||d.price).toFixed(2),
+            change:parseFloat(d.change)
+          }))
+          .slice(0,totalToShow);
+        render();
+        setInterval(nextPage,3000);
+      }
+    });
+
+    const listEl = document.getElementById('list');
+    document.getElementById('btnG').onclick=()=>toggle('g');
+    document.getElementById('btnL').onclick=()=>toggle('l');
+
+    function toggle(v){
+      view=v; page=0;
+      document.getElementById('btnG').classList.toggle('active',v==='g');
+      document.getElementById('btnL').classList.toggle('active',v==='l');
+      render();
+    }
 
     function render(){
-      // sort & slice
-      const sorted=data.slice().sort((a,b)=>view==='g'? b.change-a.change : a.change-b.change);
-      const sliceData=sorted.slice(page*perPage, page*perPage+perPage);
-      cardList.style.transform=`translateY(-${page*(120+12)}px)`;
-      cardList.innerHTML=sliceData.map(d=>`
+      const sorted = data.slice()
+        .sort((a,b)=> view==='g' 
+          ? b.change - a.change 
+          : a.change - b.change
+        );
+      const slice = sorted.slice(page*perPage, page*perPage+perPage);
+      listEl.style.transform = `translateY(${-(page*(80+12))}px)`;
+      listEl.innerHTML = slice.map(d=>`
         <div class="card">
           <div class="info">
             <div class="ticker">${d.ticker}</div>
@@ -97,33 +121,18 @@
           </div>
           <div class="metrics">
             <div class="price">₹${d.price}</div>
-            <div class="change ${d.change>0?'pos':'neg'}">
-              ${Math.abs(d.change)}
+            <div class="chg ${d.change>=0?'pos':'neg'}">
+              ${Math.abs(d.change).toFixed(2)}
             </div>
           </div>
         </div>
       `).join('');
     }
 
-    btnG.onclick=()=>{
-      view='g'; page=0;
-      btnG.classList.add('active'); btnL.classList.remove('active');
+    function nextPage(){
+      page = (page+1) % Math.ceil(totalToShow/perPage);
       render();
-    };
-    btnL.onclick=()=>{
-      view='l'; page=0;
-      btnL.classList.add('active'); btnG.classList.remove('active');
-      render();
-    };
-
-    // Swipe/Auto-advance every 3s
-    setInterval(()=>{
-      page=(page+1)%Math.ceil(20/perPage);
-      render();
-    },3000);
-
-    // Initial mount
-    render();
+    }
   </script>
 </body>
 </html>
