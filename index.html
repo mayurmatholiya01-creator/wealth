@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>My Stock Watchlist</title>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<h1>Real-Time Stock Watchlist</h1>
+
+<div class="controls">
+  <button id="top-gainers">Top Gainers Today</button>
+  <button id="top-losers">Top Losers Today</button>
+  <select id="period-filter">
+    <option value="">Select Period</option>
+    <option value="7">Top 7-day</option>
+    <option value="30">Top 30-day</option>
+    <option value="90">Top 90-day</option>
+  </select>
+  <button id="reset-filters">Reset Filters</button>
+</div>
+
+<table id="watchlist" class="display" style="width:100%">
+  <thead>
+    <tr>
+      <th>Ticker</th>
+      <th>Name</th>
+      <th>Price</th>
+      <th>% Change</th>
+      <th>7-day %</th>
+      <th>30-day %</th>
+      <th>90-day %</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
