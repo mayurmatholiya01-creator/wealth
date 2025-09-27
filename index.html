@@ -2,149 +2,166 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#1a1b2e">
+    <meta name="apple-mobile-web-app-title" content="Stock Dashboard">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="msapplication-navbutton-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>Stock Dashboard</title>
     <style>
+        :root {
+            color-scheme: dark;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: rgba(241, 245, 249, 0.7);
+            --accent-color: #8b5cf6;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         html, body {
             height: 100%;
+            height: 100vh;
+            height: 100dvh;
             overflow-x: hidden;
             -webkit-text-size-adjust: 100%;
             -ms-text-size-adjust: 100%;
+            background: var(--bg-primary) !important;
+            color: var(--text-primary) !important;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(180deg, #1a1b2e 0%, #16213e 50%, #0f1419 100%);
-            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary) !important;
+            background-image: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%) !important;
+            color: var(--text-primary) !important;
             position: relative;
             min-height: 100vh;
+            min-height: 100dvh;
             min-height: -webkit-fill-available;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            overscroll-behavior: none;
+        }
+
+        /* Force dark theme */
+        html {
+            background: var(--bg-primary) !important;
         }
 
         /* iOS safe area */
         body {
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
+            padding-top: max(env(safe-area-inset-top), 8px);
+            padding-bottom: max(env(safe-area-inset-bottom), 8px);
             padding-left: env(safe-area-inset-left);
             padding-right: env(safe-area-inset-right);
         }
 
-        /* Subtle background effects */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 25% 25%, rgba(139, 92, 246, 0.08) 0%, transparent 35%),
-                radial-gradient(circle at 75% 75%, rgba(59, 130, 246, 0.06) 0%, transparent 35%);
-            z-index: -1;
-        }
-
+        /* Container */
         .container {
             width: 100%;
             max-width: 100vw;
             margin: 0 auto;
-            padding: 8px;
+            padding: 8px 12px;
             position: relative;
+            background: transparent;
         }
 
-        /* Main Section - Mobile First */
+        /* Main Section */
         .stocks-section {
-            background: rgba(30, 32, 54, 0.3);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(30, 41, 59, 0.85) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
             overflow: hidden;
             box-shadow: 
-                0 10px 40px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.04);
-            margin: 0 4px;
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(148, 163, 184, 0.1);
+            margin: 0;
         }
 
-        /* Section Header - Mobile Optimized */
+        /* Section Header */
         .section-header {
-            padding: 18px 20px 14px;
+            padding: 20px 24px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(255, 255, 255, 0.02);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(15, 23, 42, 0.8) !important;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.08);
         }
 
         .section-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
-            color: #ffffff;
+            color: var(--text-primary) !important;
             letter-spacing: -0.3px;
         }
 
-        /* Toggle Pills - Mobile Touch Optimized */
+        /* Toggle Pills */
         .toggle-pills {
             display: flex;
             gap: 8px;
         }
 
         .pill-btn {
-            padding: 10px 16px;
+            padding: 10px 18px;
             border: none;
-            border-radius: 25px;
-            font-size: 13px;
+            border-radius: 24px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(255, 255, 255, 0.06);
-            color: rgba(255, 255, 255, 0.6);
+            background: rgba(148, 163, 184, 0.1) !important;
+            color: var(--text-secondary) !important;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            min-width: 70px;
+            border: 1px solid rgba(148, 163, 184, 0.05);
+            min-width: 80px;
             text-align: center;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
+            touch-action: manipulation;
         }
 
         .pill-btn.active {
-            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
-            color: white;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%) !important;
+            color: white !important;
             box-shadow: 
-                0 6px 20px rgba(139, 92, 246, 0.4),
+                0 8px 25px rgba(139, 92, 246, 0.4),
                 inset 0 1px 0 rgba(255, 255, 255, 0.2);
             transform: translateY(-1px);
             border: 1px solid rgba(139, 92, 246, 0.3);
         }
 
         .pill-btn:active {
-            transform: translateY(0px) scale(0.98);
+            transform: scale(0.96);
         }
 
-        /* Stocks Container - Mobile Scroll */
+        /* Stocks Container */
         .stocks-container {
-            height: calc(100vh - 140px);
-            max-height: 600px;
+            height: calc(100vh - 200px);
+            height: calc(100dvh - 200px);
+            max-height: 650px;
             min-height: 400px;
             overflow-y: auto;
             overflow-x: hidden;
             -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: contain;
             scrollbar-width: none;
             -ms-overflow-style: none;
             position: relative;
+            background: transparent !important;
         }
 
         .stocks-container::-webkit-scrollbar {
@@ -154,22 +171,21 @@
         .stocks-list {
             display: flex;
             flex-direction: column;
-            padding-bottom: 10px;
+            padding-bottom: 16px;
+            background: transparent;
         }
 
-        /* Stock Card - Mobile Touch Optimized */
+        /* Stock Card */
         .stock-card {
-            padding: 18px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.025);
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.04);
             position: relative;
             transition: all 0.2s ease;
             cursor: pointer;
-            background: rgba(255, 255, 255, 0.015);
+            background: transparent !important;
             overflow: hidden;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-            min-height: 70px;
+            min-height: 80px;
+            touch-action: manipulation;
         }
 
         .stock-card::before {
@@ -185,39 +201,38 @@
             pointer-events: none;
         }
 
-        /* Mobile-friendly gradient variations */
+        /* Card gradients */
         .stock-card.positive {
             --card-gradient: linear-gradient(135deg, 
-                rgba(34, 197, 94, 0.12) 0%, 
-                rgba(16, 185, 129, 0.06) 50%, 
-                rgba(5, 150, 105, 0.03) 100%);
+                rgba(34, 197, 94, 0.15) 0%, 
+                rgba(16, 185, 129, 0.08) 50%, 
+                rgba(5, 150, 105, 0.04) 100%);
         }
 
         .stock-card.negative {
             --card-gradient: linear-gradient(135deg, 
-                rgba(239, 68, 68, 0.12) 0%, 
-                rgba(220, 38, 38, 0.06) 50%, 
-                rgba(185, 28, 28, 0.03) 100%);
+                rgba(239, 68, 68, 0.15) 0%, 
+                rgba(220, 38, 38, 0.08) 50%, 
+                rgba(185, 28, 28, 0.04) 100%);
         }
 
         .stock-card.high-positive {
             --card-gradient: linear-gradient(135deg, 
-                rgba(34, 197, 94, 0.18) 0%, 
-                rgba(16, 185, 129, 0.10) 50%, 
-                rgba(5, 150, 105, 0.06) 100%);
+                rgba(34, 197, 94, 0.2) 0%, 
+                rgba(16, 185, 129, 0.12) 50%, 
+                rgba(5, 150, 105, 0.08) 100%);
         }
 
         .stock-card.high-negative {
             --card-gradient: linear-gradient(135deg, 
-                rgba(239, 68, 68, 0.18) 0%, 
-                rgba(220, 38, 38, 0.10) 50%, 
-                rgba(185, 28, 28, 0.06) 100%);
+                rgba(239, 68, 68, 0.2) 0%, 
+                rgba(220, 38, 38, 0.12) 50%, 
+                rgba(185, 28, 28, 0.08) 100%);
         }
 
-        /* Mobile touch feedback */
         .stock-card:active {
             transform: scale(0.98);
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(148, 163, 184, 0.05) !important;
         }
 
         .stock-card:active::before {
@@ -242,19 +257,19 @@
         }
 
         .stock-ticker {
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 3px;
+            color: var(--text-primary) !important;
+            margin-bottom: 4px;
             letter-spacing: 0.2px;
         }
 
         .stock-name {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            color: var(--text-secondary) !important;
             font-weight: 400;
             line-height: 1.3;
-            max-width: 200px;
+            max-width: 220px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -265,14 +280,14 @@
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 3px;
-            min-width: 90px;
+            gap: 4px;
+            min-width: 100px;
         }
 
         .stock-price {
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 700;
-            color: #ffffff;
+            color: var(--text-primary) !important;
             font-variant-numeric: tabular-nums;
         }
 
@@ -280,58 +295,59 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 15px;
+            padding: 6px 12px;
+            border-radius: 16px;
             font-variant-numeric: tabular-nums;
         }
 
         .change-positive {
-            color: #22c55e;
-            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e !important;
+            background: rgba(34, 197, 94, 0.15) !important;
         }
 
         .change-negative {
-            color: #f87171;
-            background: rgba(248, 113, 113, 0.15);
+            color: #f87171 !important;
+            background: rgba(248, 113, 113, 0.15) !important;
         }
 
         .change-neutral {
-            color: #9ca3af;
-            background: rgba(156, 163, 175, 0.15);
+            color: #94a3b8 !important;
+            background: rgba(148, 163, 184, 0.15) !important;
         }
 
         .arrow-up::before {
             content: "▲";
-            font-size: 9px;
+            font-size: 10px;
         }
 
         .arrow-down::before {
             content: "▼";
-            font-size: 9px;
+            font-size: 10px;
         }
 
         .arrow-neutral::before {
             content: "●";
-            font-size: 7px;
+            font-size: 8px;
         }
 
-        /* Loading Animation - Mobile Optimized */
+        /* Loading */
         .loading {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 300px;
-            gap: 16px;
+            gap: 20px;
+            background: transparent !important;
         }
 
         .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top: 3px solid #8b5cf6;
+            width: 44px;
+            height: 44px;
+            border: 4px solid rgba(148, 163, 184, 0.1);
+            border-top: 4px solid var(--accent-color);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -342,49 +358,50 @@
         }
 
         .loading-text {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 14px;
+            color: var(--text-secondary) !important;
+            font-size: 15px;
             font-weight: 500;
         }
 
-        /* Error State - Mobile */
+        /* Error State */
         .error {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 250px;
-            gap: 12px;
+            gap: 16px;
             text-align: center;
-            padding: 20px;
+            padding: 24px;
+            background: transparent !important;
         }
 
         .error-icon {
-            font-size: 32px;
+            font-size: 40px;
             margin-bottom: 8px;
         }
 
         .error-text {
-            color: #f87171;
-            font-size: 15px;
+            color: #f87171 !important;
+            font-size: 16px;
             font-weight: 500;
         }
 
-        /* Update Indicator - Mobile */
+        /* Update Indicator */
         .update-indicator {
             position: absolute;
-            top: 18px;
-            right: 20px;
-            background: rgba(34, 197, 94, 0.9);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 11px;
+            top: 20px;
+            right: 24px;
+            background: rgba(34, 197, 94, 0.9) !important;
+            color: white !important;
+            padding: 8px 14px;
+            border-radius: 16px;
+            font-size: 12px;
             font-weight: 600;
             opacity: 0;
             transform: translateY(-10px);
             transition: all 0.3s ease;
-            z-index: 15;
+            z-index: 20;
         }
 
         .update-indicator.show {
@@ -392,24 +409,24 @@
             transform: translateY(0);
         }
 
-        /* Last Updated - Mobile */
+        /* Last Updated */
         .last-updated {
             text-align: center;
-            padding: 12px;
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.4);
-            background: rgba(255, 255, 255, 0.015);
-            border-top: 1px solid rgba(255, 255, 255, 0.025);
+            padding: 16px;
+            font-size: 12px;
+            color: var(--text-secondary) !important;
+            background: rgba(15, 23, 42, 0.5) !important;
+            border-top: 1px solid rgba(148, 163, 184, 0.04);
         }
 
-        /* Scroll indicators - Mobile */
+        /* Scroll indicators */
         .scroll-gradient-top {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 25px;
-            background: linear-gradient(to bottom, rgba(30, 32, 54, 0.7), transparent);
+            height: 30px;
+            background: linear-gradient(to bottom, rgba(30, 41, 59, 0.9), transparent);
             z-index: 10;
             pointer-events: none;
         }
@@ -419,15 +436,15 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 25px;
-            background: linear-gradient(to top, rgba(30, 32, 54, 0.7), transparent);
+            height: 30px;
+            background: linear-gradient(to top, rgba(30, 41, 59, 0.9), transparent);
             z-index: 10;
             pointer-events: none;
         }
 
-        /* Fade-in animation */
+        /* Animation */
         .fade-in {
-            animation: fadeInUp 0.4s ease-out;
+            animation: fadeInUp 0.5s ease-out;
         }
 
         @keyframes fadeInUp {
@@ -441,142 +458,67 @@
             }
         }
 
-        /* Portrait orientation optimized */
-        @media screen and (orientation: portrait) {
+        /* Small devices */
+        @media (max-width: 375px) {
             .container {
-                padding: 6px;
-            }
-            
-            .stocks-container {
-                height: calc(100vh - 130px);
-            }
-        }
-
-        /* Landscape orientation */
-        @media screen and (orientation: landscape) and (max-height: 500px) {
-            .stocks-container {
-                height: calc(100vh - 110px);
-                max-height: none;
+                padding: 6px 8px;
             }
             
             .section-header {
-                padding: 14px 20px 10px;
+                padding: 18px 20px 14px;
             }
             
             .section-title {
-                font-size: 16px;
-            }
-        }
-
-        /* Small mobile devices */
-        @media (max-width: 360px) {
-            .container {
-                padding: 4px;
-            }
-            
-            .stocks-section {
-                margin: 0 2px;
-                border-radius: 16px;
-            }
-            
-            .section-header {
-                padding: 16px 16px 12px;
-            }
-            
-            .section-title {
-                font-size: 16px;
+                font-size: 18px;
             }
             
             .pill-btn {
-                padding: 8px 12px;
-                font-size: 12px;
-                min-width: 60px;
+                padding: 8px 14px;
+                font-size: 13px;
+                min-width: 70px;
             }
             
             .stock-card {
-                padding: 16px 16px;
+                padding: 18px 20px;
             }
             
             .stock-ticker {
-                font-size: 15px;
+                font-size: 16px;
             }
             
             .stock-name {
-                font-size: 11px;
-                max-width: 150px;
+                font-size: 12px;
+                max-width: 180px;
             }
             
             .stock-price {
-                font-size: 15px;
+                font-size: 16px;
             }
             
             .stock-change {
-                font-size: 11px;
-                padding: 3px 8px;
+                font-size: 12px;
+                padding: 4px 10px;
             }
         }
 
-        /* Large mobile devices */
-        @media (min-width: 400px) {
-            .container {
-                padding: 10px;
+        /* Prevent white flash */
+        @media (prefers-color-scheme: light) {
+            :root {
+                color-scheme: dark;
             }
             
-            .stocks-section {
-                margin: 0 6px;
-            }
-            
-            .stock-name {
-                max-width: 220px;
-            }
-        }
-
-        /* Tablet landscape */
-        @media (min-width: 768px) {
-            .container {
-                max-width: 400px;
-                padding: 16px;
-            }
-            
-            .stocks-section {
-                margin: 0;
-            }
-        }
-
-        /* High DPI displays */
-        @media (-webkit-min-device-pixel-ratio: 2) {
             body {
-                -webkit-font-smoothing: antialiased;
+                background: var(--bg-primary) !important;
+                color: var(--text-primary) !important;
             }
         }
 
-        /* Dark mode preference */
-        @media (prefers-color-scheme: dark) {
-            body {
-                background: linear-gradient(180deg, #0a0b1a 0%, #12192e 50%, #0a0d14 100%);
+        /* Force dark in all conditions */
+        @media screen {
+            html, body {
+                background: #0f172a !important;
+                color: #f1f5f9 !important;
             }
-        }
-
-        /* Reduce motion for accessibility */
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-
-        /* Focus styles for accessibility */
-        .pill-btn:focus {
-            outline: 2px solid #8b5cf6;
-            outline-offset: 2px;
-        }
-
-        .stock-card:focus {
-            outline: 2px solid rgba(139, 92, 246, 0.6);
-            outline-offset: -2px;
         }
     </style>
 </head>
@@ -607,6 +549,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <script>
+        // Prevent white flash on load
+        document.documentElement.style.background = '#0f172a';
+        document.body.style.background = '#0f172a';
+
         class MobileStockDashboard {
             constructor() {
                 this.csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
@@ -616,13 +562,11 @@
                 this.currentType = 'gainers';
                 this.isLoading = false;
                 this.lastUpdateTime = null;
-                this.touchStartTime = 0;
-                this.lastTouchEndTime = 0;
 
                 this.initializeElements();
                 this.attachEventListeners();
-                this.loadData();
                 this.setupMobileOptimizations();
+                this.loadData();
             }
 
             initializeElements() {
@@ -635,7 +579,7 @@
             }
 
             setupMobileOptimizations() {
-                // Prevent double-tap zoom
+                // Prevent zoom on double tap
                 let lastTouchEnd = 0;
                 document.addEventListener('touchend', (e) => {
                     const now = Date.now();
@@ -645,19 +589,17 @@
                     lastTouchEnd = now;
                 }, { passive: false });
 
-                // Handle viewport changes
-                const handleViewportChange = () => {
+                // Handle viewport
+                const setVH = () => {
                     const vh = window.innerHeight * 0.01;
                     document.documentElement.style.setProperty('--vh', `${vh}px`);
                 };
                 
-                window.addEventListener('resize', handleViewportChange);
-                window.addEventListener('orientationchange', () => {
-                    setTimeout(handleViewportChange, 100);
-                });
-                handleViewportChange();
+                setVH();
+                window.addEventListener('resize', setVH);
+                window.addEventListener('orientationchange', () => setTimeout(setVH, 100));
 
-                // Improve scroll performance
+                // Better scrolling
                 let ticking = false;
                 this.stocksContainer.addEventListener('scroll', () => {
                     if (!ticking) {
@@ -667,17 +609,22 @@
                         });
                         ticking = true;
                     }
-                });
+                }, { passive: true });
             }
 
             attachEventListeners() {
-                // Touch-optimized pill buttons
                 this.pillButtons.forEach(btn => {
-                    // Touch events
-                    btn.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: true });
-                    btn.addEventListener('touchend', this.handleTouchEnd.bind(this, btn), { passive: false });
-                    
-                    // Click fallback
+                    btn.addEventListener('touchstart', (e) => {
+                        e.currentTarget.style.transform = 'scale(0.95)';
+                    }, { passive: true });
+
+                    btn.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        e.currentTarget.style.transform = 'scale(1)';
+                        const type = btn.dataset.type;
+                        this.switchType(type);
+                    }, { passive: false });
+
                     btn.addEventListener('click', (e) => {
                         e.preventDefault();
                         const type = btn.dataset.type;
@@ -685,50 +632,20 @@
                     });
                 });
 
-                // Handle app state changes
+                // Auto refresh
                 document.addEventListener('visibilitychange', () => {
                     if (!document.hidden) {
                         const timeSinceUpdate = this.lastUpdateTime ? 
                             Date.now() - this.lastUpdateTime.getTime() : Infinity;
-                        if (timeSinceUpdate > 60000) {
+                        if (timeSinceUpdate > 90000) { // 1.5 minutes
                             this.loadData(true);
                         }
                     }
                 });
-
-                // Handle network changes
-                if ('connection' in navigator) {
-                    navigator.connection.addEventListener('change', () => {
-                        if (navigator.connection.effectiveType !== 'slow-2g') {
-                            this.loadData();
-                        }
-                    });
-                }
-            }
-
-            handleTouchStart(e) {
-                this.touchStartTime = Date.now();
-            }
-
-            handleTouchEnd(btn, e) {
-                const touchDuration = Date.now() - this.touchStartTime;
-                const timeSinceLastTouch = Date.now() - this.lastTouchEndTime;
-                
-                // Prevent accidental double-taps
-                if (touchDuration < 500 && timeSinceLastTouch > 100) {
-                    e.preventDefault();
-                    const type = btn.dataset.type;
-                    this.switchType(type);
-                }
-                
-                this.lastTouchEndTime = Date.now();
             }
 
             handleScroll() {
                 const { scrollTop, scrollHeight, clientHeight } = this.stocksContainer;
-                const scrollPercent = scrollTop / (scrollHeight - clientHeight);
-                
-                // Show/hide scroll indicators
                 const topGradient = this.stocksContainer.querySelector('.scroll-gradient-top');
                 const bottomGradient = this.stocksContainer.querySelector('.scroll-gradient-bottom');
                 
@@ -736,17 +653,17 @@
                     topGradient.style.opacity = scrollTop > 20 ? '1' : '0';
                 }
                 if (bottomGradient) {
-                    bottomGradient.style.opacity = scrollPercent < 0.95 ? '1' : '0';
+                    bottomGradient.style.opacity = scrollTop < scrollHeight - clientHeight - 20 ? '1' : '0';
                 }
             }
 
             getCachedData() {
                 try {
-                    const cached = localStorage.getItem('mobileStockData');
-                    const cacheTime = localStorage.getItem('mobileStockDataTime');
+                    const cached = localStorage.getItem('stockData');
+                    const cacheTime = localStorage.getItem('stockDataTime');
                     if (cached && cacheTime) {
                         const age = Date.now() - parseInt(cacheTime);
-                        if (age < 3 * 60 * 1000) { // 3 minutes for mobile
+                        if (age < 180000) { // 3 minutes
                             return JSON.parse(cached);
                         }
                     }
@@ -758,8 +675,8 @@
 
             setCachedData(data) {
                 try {
-                    localStorage.setItem('mobileStockData', JSON.stringify(data));
-                    localStorage.setItem('mobileStockDataTime', Date.now().toString());
+                    localStorage.setItem('stockData', JSON.stringify(data));
+                    localStorage.setItem('stockDataTime', Date.now().toString());
                 } catch (e) {
                     console.log('Cache save error:', e);
                 }
@@ -768,7 +685,6 @@
             async loadData(showIndicator = false) {
                 if (this.isLoading) return;
 
-                // Try cache first for instant mobile loading
                 const cached = this.getCachedData();
                 if (cached && this.stocks.length === 0) {
                     this.stocks = cached;
@@ -780,9 +696,8 @@
                 this.isLoading = true;
 
                 try {
-                    // Add timeout for mobile networks
                     const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 10000);
+                    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
                     const response = await fetch(this.csvUrl, {
                         signal: controller.signal,
@@ -791,9 +706,7 @@
                     
                     clearTimeout(timeoutId);
                     
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
+                    if (!response.ok) throw new Error('Network error');
                     
                     const csvText = await response.text();
                     
@@ -803,26 +716,18 @@
                         complete: (results) => {
                             try {
                                 const rows = results.data;
-                                if (rows.length < 3) {
-                                    throw new Error('Insufficient data');
-                                }
+                                if (rows.length < 3) throw new Error('No data');
 
                                 const dataRows = rows.slice(2);
                                 const newData = dataRows.map(row => {
-                                    if (!row[0] || row[0].toString().trim() === '') return null;
+                                    if (!row[0] || !row[0].toString().trim()) return null;
                                     
-                                    const ticker = row[0] ? row[0].toString().trim() : '';
-                                    const name = row[2] ? row[2].toString().trim() : '';
-                                    const ltp = row[9] ? parseFloat(row[9].toString().trim()) : 0;
-                                    const change = row[10] ? parseFloat(row[10].toString().trim()) : 0;
-                                    const changePct = row[11] ? row[11].toString().trim() : '0%';
-
                                     return {
-                                        ticker,
-                                        name,
-                                        ltp,
-                                        change,
-                                        changePct
+                                        ticker: row[0].toString().trim(),
+                                        name: (row[2] || '').toString().trim(),
+                                        ltp: parseFloat(row[9]) || 0,
+                                        change: parseFloat(row[10]) || 0,
+                                        changePct: (row[11] || '0%').toString().trim()
                                     };
                                 }).filter(stock => stock && stock.ticker && stock.ltp > 0);
 
@@ -838,25 +743,18 @@
                                 this.isLoading = false;
 
                             } catch (error) {
-                                console.error('Data processing error:', error);
+                                console.error('Processing error:', error);
                                 if (this.stocks.length === 0) {
-                                    this.showError('Error processing data');
+                                    this.showError('Error loading data');
                                 }
                                 this.isLoading = false;
                             }
-                        },
-                        error: (error) => {
-                            console.error('CSV parse error:', error);
-                            if (this.stocks.length === 0) {
-                                this.showError('Failed to parse data');
-                            }
-                            this.isLoading = false;
                         }
                     });
                 } catch (error) {
                     console.error('Network error:', error);
                     if (this.stocks.length === 0) {
-                        this.showError(error.name === 'AbortError' ? 'Request timeout' : 'Network error');
+                        this.showError('Network error');
                     }
                     this.isLoading = false;
                 }
@@ -865,19 +763,11 @@
             processStocks() {
                 this.gainers = this.stocks
                     .filter(stock => stock.change > 0)
-                    .sort((a, b) => {
-                        const aPercent = parseFloat(a.changePct.replace('%', ''));
-                        const bPercent = parseFloat(b.changePct.replace('%', ''));
-                        return bPercent - aPercent;
-                    });
+                    .sort((a, b) => parseFloat(b.changePct.replace('%', '')) - parseFloat(a.changePct.replace('%', '')));
 
                 this.losers = this.stocks
                     .filter(stock => stock.change < 0)
-                    .sort((a, b) => {
-                        const aPercent = parseFloat(a.changePct.replace('%', ''));
-                        const bPercent = parseFloat(b.changePct.replace('%', ''));
-                        return aPercent - bPercent;
-                    });
+                    .sort((a, b) => parseFloat(a.changePct.replace('%', '')) - parseFloat(b.changePct.replace('%', '')));
             }
 
             switchType(type) {
@@ -885,14 +775,11 @@
 
                 this.currentType = type;
 
-                // Update pill buttons with animation
                 this.pillButtons.forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.type === type);
                 });
 
-                // Update section title
                 this.sectionTitle.textContent = type === 'gainers' ? 'Top Gainers' : 'Top Losers';
-
                 this.render();
             }
 
@@ -901,7 +788,7 @@
                 
                 const currentStocks = this.currentType === 'gainers' ? this.gainers : this.losers;
                 
-                if (currentStocks.length === 0) {
+                if (!currentStocks.length) {
                     this.showError(`No ${this.currentType} found`);
                     return;
                 }
@@ -911,27 +798,20 @@
                 
                 currentStocks.forEach((stock, index) => {
                     const stockCard = this.createStockCard(stock);
-                    // Stagger animations for mobile
                     setTimeout(() => {
                         stockCard.style.opacity = '1';
                         stockCard.style.transform = 'translateY(0)';
-                    }, index * 50);
+                    }, index * 30);
                     stocksList.appendChild(stockCard);
                 });
                 
-                // Clear container and add new list
                 const existingList = this.stocksContainer.querySelector('.stocks-list');
-                if (existingList) {
-                    existingList.remove();
-                }
+                if (existingList) existingList.remove();
                 
-                // Add scroll gradients back
                 const topGradient = this.stocksContainer.querySelector('.scroll-gradient-top');
                 const bottomGradient = this.stocksContainer.querySelector('.scroll-gradient-bottom');
                 
                 this.stocksContainer.insertBefore(stocksList, bottomGradient);
-                
-                // Reset scroll position smoothly
                 this.stocksContainer.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
@@ -985,39 +865,18 @@
                     </div>
                 `;
 
-                // Add mobile touch feedback
-                card.addEventListener('touchstart', (e) => {
-                    card.style.transform = 'scale(0.98)';
-                }, { passive: true });
-
-                card.addEventListener('touchend', (e) => {
-                    card.style.transform = 'scale(1)';
-                }, { passive: true });
-
                 return card;
             }
 
             showError(message) {
                 const existingList = this.stocksContainer.querySelector('.stocks-list');
-                if (existingList) {
-                    existingList.remove();
-                }
+                if (existingList) existingList.remove();
 
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'error';
                 errorDiv.innerHTML = `
                     <div class="error-icon">⚠️</div>
                     <div class="error-text">${message}</div>
-                    <button onclick="window.location.reload()" style="
-                        margin-top: 16px;
-                        padding: 8px 16px;
-                        background: rgba(139, 92, 246, 0.2);
-                        border: 1px solid rgba(139, 92, 246, 0.4);
-                        border-radius: 20px;
-                        color: #8b5cf6;
-                        font-size: 12px;
-                        cursor: pointer;
-                    ">Retry</button>
                 `;
 
                 const bottomGradient = this.stocksContainer.querySelector('.scroll-gradient-bottom');
@@ -1026,13 +885,8 @@
 
             showUpdateIndicator() {
                 this.updateIndicator.classList.add('show');
-                // Haptic feedback if available
-                if ('vibrate' in navigator) {
-                    navigator.vibrate(50);
-                }
-                setTimeout(() => {
-                    this.updateIndicator.classList.remove('show');
-                }, 3000);
+                if ('vibrate' in navigator) navigator.vibrate(30);
+                setTimeout(() => this.updateIndicator.classList.remove('show'), 3000);
             }
 
             updateLastUpdatedTime() {
@@ -1046,30 +900,21 @@
             }
         }
 
-        // Initialize dashboard when DOM is loaded
+        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            window.mobileStockDashboard = new MobileStockDashboard();
+            window.stockDashboard = new MobileStockDashboard();
         });
 
-        // Mobile-optimized auto-refresh
+        // Auto refresh
         setInterval(() => {
-            if (window.mobileStockDashboard && !document.hidden) {
-                const timeSinceUpdate = window.mobileStockDashboard.lastUpdateTime ? 
-                    Date.now() - window.mobileStockDashboard.lastUpdateTime.getTime() : Infinity;
-                if (timeSinceUpdate > 150000) { // 2.5 minutes for mobile
-                    window.mobileStockDashboard.loadData(true);
+            if (window.stockDashboard && !document.hidden) {
+                const timeSinceUpdate = window.stockDashboard.lastUpdateTime ? 
+                    Date.now() - window.stockDashboard.lastUpdateTime.getTime() : Infinity;
+                if (timeSinceUpdate > 180000) { // 3 minutes
+                    window.stockDashboard.loadData(true);
                 }
             }
-        }, 45000); // Check every 45 seconds
-
-        // Service Worker registration for offline capability
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(() => {
-                    // Service worker registration failed, continue without it
-                });
-            });
-        }
+        }, 60000);
     </script>
 </body>
 </html>
