@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0a0a0a">
-    <title>Stock Dashboard</title>
+    <title>Advanced Stock Dashboard</title>
     <style>
         :root {
             color-scheme: dark;
@@ -25,6 +25,10 @@
                 rgba(79, 70, 229, 0.15) 75%, 
                 transparent 100%);
             --section-purple: rgba(139, 92, 246, 0.15);
+            --alert-red: #ef4444;
+            --alert-green: #22c55e;
+            --alert-yellow: #f59e0b;
+            --volume-blue: #3b82f6;
         }
 
         * {
@@ -106,7 +110,7 @@
             }
         }
 
-        /* Enhanced Main Section with Section Purple Background */
+        /* Enhanced Main Section */
         .stocks-section {
             background: linear-gradient(135deg, 
                 rgba(26, 26, 26, 0.85) 0%, 
@@ -127,7 +131,7 @@
             margin-bottom: 16px;
         }
 
-        /* Section background overlay with 15% purple */
+        /* Section background overlay */
         .stocks-section::after {
             content: '';
             position: absolute;
@@ -229,24 +233,6 @@
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
-        .pill-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                rgba(255, 255, 255, 0.1) 50%, 
-                transparent 100%);
-            transition: left 0.5s ease;
-        }
-
-        .pill-btn:hover::before {
-            left: 100%;
-        }
-
         .pill-btn.active {
             background: var(--accent-gradient) !important;
             color: white !important;
@@ -262,7 +248,7 @@
             transform: scale(0.94);
         }
 
-        /* Dropdown for Time Period */
+        /* Dropdown styles */
         .dropdown {
             position: relative;
             display: inline-block;
@@ -281,7 +267,6 @@
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.06);
-            min-width: 60px;
             text-align: center;
             touch-action: manipulation;
             position: relative;
@@ -323,7 +308,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 4px;
-            min-width: 80px;
+            min-width: 100px;
             z-index: 1000;
             opacity: 0;
             transform: translateY(-10px) scale(0.95);
@@ -353,20 +338,17 @@
             border: none;
             background: transparent;
             width: 100%;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
         }
 
         .dropdown-item:hover,
         .dropdown-item.active {
             background: rgba(139, 92, 246, 0.15);
             color: var(--text-primary);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
-        /* Stocks Container - SCROLLABLE for ALL Stocks */
+        /* Compact Stocks Container */
         .stocks-container {
-            height: 360px;
+            height: 300px;
             overflow-y: auto;
             overflow-x: hidden;
             -webkit-overflow-scrolling: touch;
@@ -387,10 +369,10 @@
             padding-bottom: 8px;
         }
 
-        /* Enhanced Stock Card - Premium Glass Effect */
+        /* Compact Stock Card for Maximum Data */
         .stock-card {
-            padding: 12px 18px;
-            margin: 2px 0;
+            padding: 10px 16px;
+            margin: 1px 0;
             position: relative;
             cursor: pointer;
             background: linear-gradient(135deg, 
@@ -400,95 +382,19 @@
             backdrop-filter: blur(15px) saturate(120%);
             -webkit-backdrop-filter: blur(15px) saturate(120%);
             border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
+            border-radius: 14px;
             box-shadow: 
-                0 4px 12px rgba(0, 0, 0, 0.4),
-                0 2px 6px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.04),
-                inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                0 3px 8px rgba(0, 0, 0, 0.4),
+                0 1px 4px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             touch-action: manipulation;
             overflow: hidden;
-            animation: cardSlideIn 0.5s ease-out;
             z-index: 2;
         }
 
-        @keyframes cardSlideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        /* Card hover glow effect */
-        .stock-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, 
-                rgba(139, 92, 246, 0.1) 0%, 
-                transparent 50%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-
-        .stock-card:hover::after {
-            opacity: 1;
-        }
-
-        /* Touch animations */
         .stock-card:active {
-            transform: scale(0.98) translateY(1px);
-            background: linear-gradient(135deg, 
-                rgba(40, 40, 40, 0.95) 0%, 
-                rgba(35, 35, 35, 0.9) 50%, 
-                rgba(30, 30, 30, 0.95) 100%) !important;
-            box-shadow: 
-                0 2px 8px rgba(0, 0, 0, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.06);
-        }
-
-        /* Performance-based subtle overlays */
-        .stock-card.positive::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, 
-                rgba(34, 197, 94, 0.08) 0%, 
-                transparent 60%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-
-        .stock-card.negative::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, 
-                rgba(239, 68, 68, 0.08) 0%, 
-                transparent 60%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-
-        .stock-card:active::before {
-            opacity: 1;
+            transform: scale(0.98);
         }
 
         .stock-content {
@@ -505,25 +411,19 @@
         }
 
         .stock-ticker {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             color: var(--text-primary) !important;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
             letter-spacing: 0.1px;
-            animation: tickerGlow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes tickerGlow {
-            0% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.1); }
-            100% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.2); }
         }
 
         .stock-name {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-secondary) !important;
             font-weight: 400;
             line-height: 1.2;
-            max-width: 200px;
+            max-width: 180px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -539,7 +439,7 @@
         }
 
         .stock-price {
-            font-size: 15px;
+            font-size: 13px;
             font-weight: 700;
             color: var(--text-primary) !important;
             font-variant-numeric: tabular-nums;
@@ -549,21 +449,126 @@
             display: flex;
             align-items: center;
             gap: 3px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 12px;
+            padding: 2px 6px;
+            border-radius: 10px;
             font-variant-numeric: tabular-nums;
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
-            animation: changeGlow 1.5s ease-in-out infinite alternate;
         }
 
-        @keyframes changeGlow {
-            0% { box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); }
-            100% { box-shadow: 0 0 15px rgba(0, 0, 0, 0.4); }
+        /* Special indicators for different sections */
+        .rsi-indicator {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 600;
+            z-index: 4;
         }
 
+        .rsi-overbought {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--alert-red);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .rsi-oversold {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--alert-green);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .rsi-neutral {
+            background: rgba(148, 163, 184, 0.2);
+            color: #94a3b8;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .alert-indicator {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 600;
+            z-index: 4;
+        }
+
+        .alert-high {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--alert-red);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .alert-low {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--alert-green);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .volume-indicator {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 600;
+            z-index: 4;
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--volume-blue);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .sector-tag {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 600;
+            z-index: 4;
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--alert-yellow);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .quality-score {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 600;
+            z-index: 4;
+        }
+
+        .quality-high {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--alert-green);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .quality-medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--alert-yellow);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .quality-low {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--alert-red);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Standard change classes */
         .change-positive {
             color: #22c55e !important;
             background: rgba(34, 197, 94, 0.15) !important;
@@ -584,43 +589,36 @@
 
         .arrow-up::before {
             content: "▲";
-            font-size: 8px;
-            animation: arrowBounce 1s ease-in-out infinite alternate;
+            font-size: 7px;
         }
 
         .arrow-down::before {
             content: "▼";
-            font-size: 8px;
-            animation: arrowBounce 1s ease-in-out infinite alternate;
+            font-size: 7px;
         }
 
         .arrow-neutral::before {
             content: "●";
-            font-size: 6px;
+            font-size: 5px;
         }
 
-        @keyframes arrowBounce {
-            0% { transform: translateY(0px); }
-            100% { transform: translateY(-1px); }
-        }
-
-        /* Enhanced Loading Animation */
+        /* Loading and error states */
         .loading {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 250px;
+            height: 200px;
             gap: 16px;
         }
 
         .loading-spinner {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border: 3px solid rgba(255, 255, 255, 0.1);
             border-top: 3px solid #8b5cf6;
             border-radius: 50%;
-            animation: spin 1s linear infinite, spinGlow 2s ease-in-out infinite alternate;
+            animation: spin 1s linear infinite;
         }
 
         @keyframes spin {
@@ -628,95 +626,67 @@
             100% { transform: rotate(360deg); }
         }
 
-        @keyframes spinGlow {
-            0% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
-            100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.6); }
-        }
-
         .loading-text {
             color: var(--text-secondary) !important;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 500;
-            animation: textPulse 1.5s ease-in-out infinite alternate;
         }
 
-        @keyframes textPulse {
-            0% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
-
-        /* Error State */
         .error {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 200px;
+            height: 150px;
             gap: 12px;
             text-align: center;
             padding: 20px;
         }
 
         .error-icon {
-            font-size: 32px;
-            animation: errorPulse 1s ease-in-out infinite alternate;
-        }
-
-        @keyframes errorPulse {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.1); }
+            font-size: 28px;
         }
 
         .error-text {
             color: #f87171 !important;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 500;
         }
 
         /* Update Indicator */
         .update-indicator {
             position: absolute;
-            top: 12px;
-            right: 18px;
+            top: 10px;
+            right: 16px;
             background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
             color: white !important;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 9px;
             font-weight: 600;
             opacity: 0;
             transform: translateY(-8px) scale(0.8);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 20;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
         }
 
         .update-indicator.show {
             opacity: 1;
             transform: translateY(0) scale(1);
-            animation: updatePulse 2s ease-in-out;
         }
 
-        @keyframes updatePulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
-            50% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
-        }
-
-        /* Enhanced Scroll gradients */
+        /* Scroll gradients */
         .scroll-gradient-top {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 25px;
+            height: 20px;
             background: linear-gradient(to bottom, 
                 rgba(26, 26, 26, 0.95) 0%, 
-                rgba(26, 26, 26, 0.7) 70%, 
                 transparent 100%);
             z-index: 10;
             pointer-events: none;
-            transition: opacity 0.3s ease;
         }
 
         .scroll-gradient-bottom {
@@ -724,99 +694,72 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 25px;
+            height: 20px;
             background: linear-gradient(to top, 
                 rgba(26, 26, 26, 0.95) 0%, 
-                rgba(26, 26, 26, 0.7) 70%, 
                 transparent 100%);
             z-index: 10;
             pointer-events: none;
-            transition: opacity 0.3s ease;
         }
 
         /* Fade-in animation */
         .fade-in {
-            animation: fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: fadeInUp 0.5s ease-out;
         }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px) scale(0.95);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
-                transform: translateY(0) scale(1);
+                transform: translateY(0);
             }
         }
 
-        /* Small devices optimization */
+        /* Mobile optimizations */
         @media (max-width: 375px) {
             .container {
                 padding: 6px 8px;
             }
             
             .section-header {
-                padding: 10px 16px 8px;
+                padding: 10px 14px 8px;
             }
             
             .section-title {
-                font-size: 15px;
+                font-size: 14px;
             }
             
             .pill-btn, .dropdown-btn {
                 padding: 5px 10px;
                 font-size: 11px;
-                min-width: 55px;
+                min-width: 50px;
             }
             
             .stock-card {
-                padding: 10px 16px;
+                padding: 8px 14px;
             }
             
             .stock-ticker {
-                font-size: 14px;
+                font-size: 13px;
             }
             
             .stock-name {
-                font-size: 10px;
-                max-width: 160px;
+                font-size: 9px;
+                max-width: 150px;
             }
             
             .stock-price {
-                font-size: 14px;
-            }
-            
-            .stock-change {
-                font-size: 10px;
-                padding: 2px 6px;
-            }
-        }
-
-        /* High performance rendering */
-        .stock-card, .pill-btn, .stocks-section {
-            will-change: transform;
-            transform: translateZ(0);
-        }
-
-        /* Prevent white flash */
-        html {
-            background: var(--bg-primary) !important;
-        }
-
-        /* Reduce motion for accessibility */
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
+                font-size: 12px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- First Section: Top Gainers/Losers -->
+        <!-- Section 1: Daily Gainers/Losers -->
         <div class="stocks-section fade-in">
             <div class="section-header">
                 <h2 class="section-title" id="section-title-1">Top Gainers</h2>
@@ -838,7 +781,7 @@
             <div class="update-indicator" id="update-indicator-1">Updated</div>
         </div>
 
-        <!-- Second Section: Weekly Gainers/Losers -->
+        <!-- Section 2: Period Performance -->
         <div class="stocks-section fade-in">
             <div class="section-header">
                 <h2 class="section-title" id="section-title-2">Top Weekly Gainers</h2>
@@ -870,6 +813,140 @@
 
             <div class="update-indicator" id="update-indicator-2">Updated</div>
         </div>
+
+        <!-- Section 3: 52-Week Alert -->
+        <div class="stocks-section fade-in">
+            <div class="section-header">
+                <h2 class="section-title" id="section-title-3">52-Week Alerts</h2>
+                <div class="toggle-pills">
+                    <button class="pill-btn active" data-type="near-high" data-section="3">Near High</button>
+                    <button class="pill-btn" data-type="near-low" data-section="3">Near Low</button>
+                </div>
+            </div>
+
+            <div class="stocks-container" id="stocks-container-3">
+                <div class="scroll-gradient-top"></div>
+                <div class="loading" id="loading-3">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Loading 52W alerts...</div>
+                </div>
+                <div class="scroll-gradient-bottom"></div>
+            </div>
+
+            <div class="update-indicator" id="update-indicator-3">Updated</div>
+        </div>
+
+        <!-- Section 4: RSI Technical -->
+        <div class="stocks-section fade-in">
+            <div class="section-header">
+                <h2 class="section-title" id="section-title-4">RSI Technical Analysis</h2>
+                <div class="toggle-pills">
+                    <button class="pill-btn active" data-type="overbought" data-section="4">Overbought</button>
+                    <button class="pill-btn" data-type="oversold" data-section="4">Oversold</button>
+                    <div class="dropdown">
+                        <button class="dropdown-btn active" id="rsi-period-btn">
+                            <span id="rsi-period-text">Daily</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </button>
+                        <div class="dropdown-menu" id="rsi-period-dropdown">
+                            <button class="dropdown-item active" data-rsi-period="daily">Daily</button>
+                            <button class="dropdown-item" data-rsi-period="weekly">Weekly</button>
+                            <button class="dropdown-item" data-rsi-period="monthly">Monthly</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stocks-container" id="stocks-container-4">
+                <div class="scroll-gradient-top"></div>
+                <div class="loading" id="loading-4">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Loading RSI data...</div>
+                </div>
+                <div class="scroll-gradient-bottom"></div>
+            </div>
+
+            <div class="update-indicator" id="update-indicator-4">Updated</div>
+        </div>
+
+        <!-- Section 5: Volume Leaders -->
+        <div class="stocks-section fade-in">
+            <div class="section-header">
+                <h2 class="section-title" id="section-title-5">Volume Leaders</h2>
+                <div class="toggle-pills">
+                    <button class="pill-btn active" data-type="high-volume" data-section="5">High Volume</button>
+                    <button class="pill-btn" data-type="unusual-volume" data-section="5">Unusual Vol</button>
+                </div>
+            </div>
+
+            <div class="stocks-container" id="stocks-container-5">
+                <div class="scroll-gradient-top"></div>
+                <div class="loading" id="loading-5">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Loading volume data...</div>
+                </div>
+                <div class="scroll-gradient-bottom"></div>
+            </div>
+
+            <div class="update-indicator" id="update-indicator-5">Updated</div>
+        </div>
+
+        <!-- Section 6: Sector Performance -->
+        <div class="stocks-section fade-in">
+            <div class="section-header">
+                <h2 class="section-title" id="section-title-6">Sector Performance</h2>
+                <div class="toggle-pills">
+                    <div class="dropdown">
+                        <button class="dropdown-btn active" id="sector-btn">
+                            <span id="sector-text">All Sectors</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </button>
+                        <div class="dropdown-menu" id="sector-dropdown">
+                            <button class="dropdown-item active" data-sector="all">All Sectors</button>
+                            <button class="dropdown-item" data-sector="banking">Banking</button>
+                            <button class="dropdown-item" data-sector="it">IT</button>
+                            <button class="dropdown-item" data-sector="pharma">Pharma</button>
+                            <button class="dropdown-item" data-sector="auto">Auto</button>
+                            <button class="dropdown-item" data-sector="energy">Energy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stocks-container" id="stocks-container-6">
+                <div class="scroll-gradient-top"></div>
+                <div class="loading" id="loading-6">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Loading sector data...</div>
+                </div>
+                <div class="scroll-gradient-bottom"></div>
+            </div>
+
+            <div class="update-indicator" id="update-indicator-6">Updated</div>
+        </div>
+
+        <!-- Section 7: Quality Stocks -->
+        <div class="stocks-section fade-in">
+            <div class="section-header">
+                <h2 class="section-title" id="section-title-7">Investment Picks</h2>
+                <div class="toggle-pills">
+                    <button class="pill-btn active" data-type="quality" data-section="7">Quality</button>
+                    <button class="pill-btn" data-type="value" data-section="7">Value</button>
+                    <button class="pill-btn" data-type="growth" data-section="7">Growth</button>
+                </div>
+            </div>
+
+            <div class="stocks-container" id="stocks-container-7">
+                <div class="scroll-gradient-top"></div>
+                <div class="loading" id="loading-7">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Loading investment picks...</div>
+                </div>
+                <div class="scroll-gradient-bottom"></div>
+            </div>
+
+            <div class="update-indicator" id="update-indicator-7">Updated</div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -878,26 +955,24 @@
         document.documentElement.style.background = '#0a0a0a';
         document.body.style.background = '#0a0a0a';
 
-        class CorrectedStockDashboard {
+        class AdvancedStockDashboard {
             constructor() {
                 this.csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
                 
-                // Section 1: Daily data
-                this.dailyStocks = [];
-                this.gainers = [];
-                this.losers = [];
-                
-                // Section 2: Period data (from same sheet)
+                // All stock data
                 this.allStocksData = [];
-                this.weeklyGainers = [];
-                this.weeklyLosers = [];
-                this.monthlyGainers = [];
-                this.monthlyLosers = [];
-                this.threeMonthlyGainers = [];
-                this.threeMonthlyLosers = [];
                 
-                this.section1State = { type: 'gainers' };
-                this.section2State = { type: 'gainers', period: 'weekly' };
+                // Section states
+                this.sectionStates = {
+                    1: { type: 'gainers' },
+                    2: { type: 'gainers', period: 'weekly' },
+                    3: { type: 'near-high' },
+                    4: { type: 'overbought', period: 'daily' },
+                    5: { type: 'high-volume' },
+                    6: { sector: 'all' },
+                    7: { type: 'quality' }
+                };
+                
                 this.isLoading = false;
                 this.lastUpdateTime = null;
 
@@ -908,26 +983,39 @@
             }
 
             initializeElements() {
-                // Section 1 elements
-                this.section1Pills = document.querySelectorAll('[data-section="1"]');
-                this.section1Container = document.getElementById('stocks-container-1');
-                this.section1Loading = document.getElementById('loading-1');
-                this.section1UpdateIndicator = document.getElementById('update-indicator-1');
-                this.section1Title = document.getElementById('section-title-1');
-
-                // Section 2 elements
-                this.section2Pills = document.querySelectorAll('[data-section="2"]');
-                this.section2Container = document.getElementById('stocks-container-2');
-                this.section2Loading = document.getElementById('loading-2');
-                this.section2UpdateIndicator = document.getElementById('update-indicator-2');
-                this.section2Title = document.getElementById('section-title-2');
+                // Get all section elements dynamically
+                this.sections = {};
+                for (let i = 1; i <= 7; i++) {
+                    this.sections[i] = {
+                        pills: document.querySelectorAll(`[data-section="${i}"]`),
+                        container: document.getElementById(`stocks-container-${i}`),
+                        loading: document.getElementById(`loading-${i}`),
+                        indicator: document.getElementById(`update-indicator-${i}`),
+                        title: document.getElementById(`section-title-${i}`)
+                    };
+                }
 
                 // Dropdown elements
-                this.dropdownBtn = document.getElementById('period-btn');
-                this.dropdown = document.querySelector('.dropdown');
-                this.dropdownMenu = document.getElementById('period-dropdown');
-                this.dropdownItems = document.querySelectorAll('.dropdown-item');
-                this.periodText = document.getElementById('period-text');
+                this.periodDropdown = {
+                    btn: document.getElementById('period-btn'),
+                    menu: document.getElementById('period-dropdown'),
+                    text: document.getElementById('period-text'),
+                    items: document.querySelectorAll('#period-dropdown .dropdown-item')
+                };
+
+                this.rsiDropdown = {
+                    btn: document.getElementById('rsi-period-btn'),
+                    menu: document.getElementById('rsi-period-dropdown'),
+                    text: document.getElementById('rsi-period-text'),
+                    items: document.querySelectorAll('#rsi-period-dropdown .dropdown-item')
+                };
+
+                this.sectorDropdown = {
+                    btn: document.getElementById('sector-btn'),
+                    menu: document.getElementById('sector-dropdown'),
+                    text: document.getElementById('sector-text'),
+                    items: document.querySelectorAll('#sector-dropdown .dropdown-item')
+                };
             }
 
             setupOptimizations() {
@@ -941,23 +1029,21 @@
                     lastTouchEnd = now;
                 }, { passive: false });
 
-                // Viewport height calculation
+                // Viewport height
                 const setVH = () => {
                     const vh = window.innerHeight * 0.01;
                     document.documentElement.style.setProperty('--vh', `${vh}px`);
                 };
-                
                 setVH();
                 window.addEventListener('resize', setVH);
-                window.addEventListener('orientationchange', () => setTimeout(setVH, 100));
 
-                // Optimized scrolling for both sections
-                [this.section1Container, this.section2Container].forEach((container, index) => {
+                // Scroll handling for all sections
+                Object.values(this.sections).forEach(section => {
                     let ticking = false;
-                    container.addEventListener('scroll', () => {
+                    section.container.addEventListener('scroll', () => {
                         if (!ticking) {
                             requestAnimationFrame(() => {
-                                this.handleScroll(container);
+                                this.handleScroll(section.container);
                                 ticking = false;
                             });
                             ticking = true;
@@ -965,49 +1051,67 @@
                     }, { passive: true });
                 });
 
-                // Close dropdown when clicking outside
+                // Close dropdowns when clicking outside
                 document.addEventListener('click', (e) => {
-                    if (!this.dropdown.contains(e.target)) {
-                        this.dropdown.classList.remove('open');
-                    }
+                    document.querySelectorAll('.dropdown').forEach(dropdown => {
+                        if (!dropdown.contains(e.target)) {
+                            dropdown.classList.remove('open');
+                        }
+                    });
                 });
             }
 
             attachEventListeners() {
-                // Section 1 pills
-                this.section1Pills.forEach(btn => {
-                    this.attachPillEventListeners(btn, 1);
-                });
+                // Attach pill event listeners
+                for (let i = 1; i <= 7; i++) {
+                    this.sections[i].pills.forEach(btn => {
+                        this.attachPillEventListeners(btn, i);
+                    });
+                }
 
-                // Section 2 pills
-                this.section2Pills.forEach(btn => {
-                    this.attachPillEventListeners(btn, 2);
-                });
-
-                // Dropdown functionality
-                this.dropdownBtn.addEventListener('click', (e) => {
+                // Period dropdown (Section 2)
+                this.periodDropdown.btn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    this.dropdown.classList.toggle('open');
+                    this.periodDropdown.btn.parentElement.classList.toggle('open');
                 });
 
-                this.dropdownItems.forEach(item => {
+                this.periodDropdown.items.forEach(item => {
                     item.addEventListener('click', (e) => {
                         e.stopPropagation();
                         const period = item.dataset.period;
                         this.changePeriod(period);
-                        this.dropdown.classList.remove('open');
+                        this.periodDropdown.btn.parentElement.classList.remove('open');
                     });
                 });
 
-                // Auto refresh
-                document.addEventListener('visibilitychange', () => {
-                    if (!document.hidden) {
-                        const timeSinceUpdate = this.lastUpdateTime ? 
-                            Date.now() - this.lastUpdateTime.getTime() : Infinity;
-                        if (timeSinceUpdate > 120000) {
-                            this.loadData(true);
-                        }
-                    }
+                // RSI dropdown (Section 4)
+                this.rsiDropdown.btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.rsiDropdown.btn.parentElement.classList.toggle('open');
+                });
+
+                this.rsiDropdown.items.forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const period = item.dataset.rsiPeriod;
+                        this.changeRSIPeriod(period);
+                        this.rsiDropdown.btn.parentElement.classList.remove('open');
+                    });
+                });
+
+                // Sector dropdown (Section 6)
+                this.sectorDropdown.btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.sectorDropdown.btn.parentElement.classList.toggle('open');
+                });
+
+                this.sectorDropdown.items.forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const sector = item.dataset.sector;
+                        this.changeSector(sector);
+                        this.sectorDropdown.btn.parentElement.classList.remove('open');
+                    });
                 });
             }
 
@@ -1043,64 +1147,25 @@
                 const bottomGradient = container.querySelector('.scroll-gradient-bottom');
                 
                 if (topGradient) {
-                    topGradient.style.opacity = scrollTop > 15 ? '1' : '0';
+                    topGradient.style.opacity = scrollTop > 10 ? '1' : '0';
                 }
                 if (bottomGradient) {
-                    bottomGradient.style.opacity = scrollTop < scrollHeight - clientHeight - 15 ? '1' : '0';
+                    bottomGradient.style.opacity = scrollTop < scrollHeight - clientHeight - 10 ? '1' : '0';
                 }
             }
 
-            getCachedData() {
-                try {
-                    const cached = localStorage.getItem('correctedStockData');
-                    const cacheTime = localStorage.getItem('correctedStockDataTime');
-                    if (cached && cacheTime) {
-                        const age = Date.now() - parseInt(cacheTime);
-                        if (age < 180000) { // 3 minutes
-                            return JSON.parse(cached);
-                        }
-                    }
-                } catch (e) {
-                    console.log('Cache error:', e);
-                }
-                return null;
-            }
-
-            setCachedData(data) {
-                try {
-                    localStorage.setItem('correctedStockData', JSON.stringify(data));
-                    localStorage.setItem('correctedStockDataTime', Date.now().toString());
-                } catch (e) {
-                    console.log('Cache save error:', e);
-                }
-            }
-
-            // Function to calculate change amount from LTP and change percentage
             calculateChangeAmount(ltp, changePct) {
                 if (!changePct || changePct === '0%') return 0;
                 
                 const pctValue = parseFloat(changePct.replace('%', ''));
                 if (isNaN(pctValue)) return 0;
                 
-                // Formula: change = (ltp * changePct) / (100 + changePct) for positive
-                // Formula: change = (ltp * changePct) / (100 + changePct) for negative
                 const changeAmount = (ltp * pctValue) / (100 + pctValue);
                 return changeAmount;
             }
 
             async loadData(showIndicator = false) {
                 if (this.isLoading) return;
-
-                // Load cached data first
-                const cached = this.getCachedData();
-                if (cached && this.dailyStocks.length === 0) {
-                    this.dailyStocks = cached;
-                    this.allStocksData = cached;
-                    this.processAllData();
-                    this.renderSection1();
-                    this.renderSection2();
-                    this.lastUpdateTime = new Date();
-                }
 
                 this.isLoading = true;
 
@@ -1132,38 +1197,61 @@
                                     if (!row[0] || !row[0].toString().trim()) return null;
                                     
                                     const ltp = row[9] ? parseFloat(row[9].toString().trim()) : 0;
-                                    const dailyChangePct = row[11] ? row[11].toString().trim() : '0%';
-                                    const weeklyChangePct = row[20] ? row[20].toString().trim() : '0%';
-                                    const monthlyChangePct = row[21] ? row[21].toString().trim() : '0%';
-                                    const threeMonthlyChangePct = row[22] ? row[22].toString().trim() : '0%';
-
+                                    
                                     return {
                                         ticker: row[0] ? row[0].toString().trim() : '',
                                         name: row[2] ? row[2].toString().trim() : '',
                                         ltp: ltp,
-                                        // Calculate actual change amounts from percentages and LTP
-                                        dailyChange: this.calculateChangeAmount(ltp, dailyChangePct),
-                                        dailyChangePct: dailyChangePct,
-                                        weeklyChange: this.calculateChangeAmount(ltp, weeklyChangePct),
-                                        weeklyChangePct: weeklyChangePct,
-                                        monthlyChange: this.calculateChangeAmount(ltp, monthlyChangePct),
-                                        monthlyChangePct: monthlyChangePct,
-                                        threeMonthlyChange: this.calculateChangeAmount(ltp, threeMonthlyChangePct),
-                                        threeMonthlyChangePct: threeMonthlyChangePct
+                                        // Daily data
+                                        dailyChangePct: row[11] ? row[11].toString().trim() : '0%',
+                                        // Period data
+                                        weeklyChangePct: row[20] ? row[20].toString().trim() : '0%',
+                                        monthlyChangePct: row[21] ? row[21].toString().trim() : '0%',
+                                        threeMonthlyChangePct: row[22] ? row[22].toString().trim() : '0%',
+                                        // 52-week data
+                                        high52W: row[7] ? parseFloat(row[7].toString().trim()) : 0,
+                                        low52W: row[8] ? parseFloat(row[8].toString().trim()) : 0,
+                                        // RSI data
+                                        dailyRSI: row[39] ? parseFloat(row[39].toString().trim()) : 50,
+                                        weeklyRSI: row[40] ? parseFloat(row[40].toString().trim()) : 50,
+                                        monthlyRSI: row[41] ? parseFloat(row[41].toString().trim()) : 50,
+                                        // Volume data
+                                        volume: row[12] ? parseFloat(row[12].toString().trim()) : 0,
+                                        avgVolume30D: row[49] ? parseFloat(row[49].toString().trim()) : 0,
+                                        turnover: row[56] ? parseFloat(row[56].toString().trim()) : 0,
+                                        // Fundamental data
+                                        pe: row[17] ? parseFloat(row[17].toString().trim()) : 0,
+                                        eps: row[18] ? parseFloat(row[18].toString().trim()) : 0,
+                                        marketCap: row[16] ? parseFloat(row[16].toString().trim()) : 0,
+                                        earningsYield: row[53] ? parseFloat(row[53].toString().trim()) : 0,
+                                        // Sector data
+                                        sector: row[42] ? row[42].toString().trim() : 'Others',
+                                        industry: row[43] ? row[43].toString().trim() : '',
+                                        // Technical indicators
+                                        bullishScore: row[52] ? parseFloat(row[52].toString().trim()) : 0
                                     };
                                 }).filter(stock => stock && stock.ticker && stock.ltp > 0);
 
-                                if (JSON.stringify(newData) !== JSON.stringify(this.dailyStocks)) {
-                                    this.dailyStocks = newData;
-                                    this.allStocksData = newData;
-                                    this.setCachedData(this.dailyStocks);
-                                    this.processAllData();
-                                    this.renderSection1();
-                                    this.renderSection2();
-                                    if (showIndicator) {
-                                        this.showUpdateIndicator(1);
-                                        this.showUpdateIndicator(2);
+                                // Calculate change amounts
+                                newData.forEach(stock => {
+                                    stock.dailyChange = this.calculateChangeAmount(stock.ltp, stock.dailyChangePct);
+                                    stock.weeklyChange = this.calculateChangeAmount(stock.ltp, stock.weeklyChangePct);
+                                    stock.monthlyChange = this.calculateChangeAmount(stock.ltp, stock.monthlyChangePct);
+                                    stock.threeMonthlyChange = this.calculateChangeAmount(stock.ltp, stock.threeMonthlyChangePct);
+                                    
+                                    // Calculate 52-week distances
+                                    if (stock.high52W > 0) {
+                                        stock.distanceFromHigh = ((stock.high52W - stock.ltp) / stock.high52W) * 100;
                                     }
+                                    if (stock.low52W > 0) {
+                                        stock.distanceFromLow = ((stock.ltp - stock.low52W) / stock.low52W) * 100;
+                                    }
+                                });
+
+                                if (JSON.stringify(newData) !== JSON.stringify(this.allStocksData)) {
+                                    this.allStocksData = newData;
+                                    this.renderAllSections();
+                                    if (showIndicator) this.showAllUpdateIndicators();
                                 }
 
                                 this.lastUpdateTime = new Date();
@@ -1171,194 +1259,264 @@
 
                             } catch (error) {
                                 console.error('Processing error:', error);
-                                if (this.dailyStocks.length === 0) {
-                                    this.showError('Error loading data', 1);
-                                    this.showError('Error loading data', 2);
-                                }
+                                this.showAllErrors('Error loading data');
                                 this.isLoading = false;
                             }
                         }
                     });
                 } catch (error) {
                     console.error('Network error:', error);
-                    if (this.dailyStocks.length === 0) {
-                        this.showError('Network error', 1);
-                        this.showError('Network error', 2);
-                    }
+                    this.showAllErrors('Network error');
                     this.isLoading = false;
                 }
             }
 
-            processAllData() {
-                // Section 1: Daily gainers/losers
-                this.gainers = this.dailyStocks
-                    .filter(stock => stock.dailyChange > 0)
-                    .sort((a, b) => parseFloat(b.dailyChangePct.replace('%', '')) - parseFloat(a.dailyChangePct.replace('%', '')));
-
-                this.losers = this.dailyStocks
-                    .filter(stock => stock.dailyChange < 0)
-                    .sort((a, b) => parseFloat(a.dailyChangePct.replace('%', '')) - parseFloat(b.dailyChangePct.replace('%', '')));
-
-                // Section 2: Weekly gainers/losers
-                this.weeklyGainers = this.allStocksData
-                    .filter(stock => stock.weeklyChange > 0)
-                    .sort((a, b) => parseFloat(b.weeklyChangePct.replace('%', '')) - parseFloat(a.weeklyChangePct.replace('%', '')))
-                    .map(stock => ({
-                        ...stock,
-                        change: stock.weeklyChange,
-                        changePct: stock.weeklyChangePct
-                    }));
-
-                this.weeklyLosers = this.allStocksData
-                    .filter(stock => stock.weeklyChange < 0)
-                    .sort((a, b) => parseFloat(a.weeklyChangePct.replace('%', '')) - parseFloat(b.weeklyChangePct.replace('%', '')))
-                    .map(stock => ({
-                        ...stock,
-                        change: stock.weeklyChange,
-                        changePct: stock.weeklyChangePct
-                    }));
-
-                // Section 2: Monthly gainers/losers
-                this.monthlyGainers = this.allStocksData
-                    .filter(stock => stock.monthlyChange > 0)
-                    .sort((a, b) => parseFloat(b.monthlyChangePct.replace('%', '')) - parseFloat(a.monthlyChangePct.replace('%', '')))
-                    .map(stock => ({
-                        ...stock,
-                        change: stock.monthlyChange,
-                        changePct: stock.monthlyChangePct
-                    }));
-
-                this.monthlyLosers = this.allStocksData
-                    .filter(stock => stock.monthlyChange < 0)
-                    .sort((a, b) => parseFloat(a.monthlyChangePct.replace('%', '')) - parseFloat(b.monthlyChangePct.replace('%', '')))
-                    .map(stock => ({
-                        ...stock,
-                        change: stock.monthlyChange,
-                        changePct: stock.monthlyChangePct
-                    }));
-
-                // Section 2: 3-Monthly gainers/losers
-                this.threeMonthlyGainers = this.allStocksData
-                    .filter(stock => stock.threeMonthlyChange > 0)
-                    .sort((a, b) => parseFloat(b.threeMonthlyChangePct.replace('%', '')) - parseFloat(a.threeMonthlyChangePct.replace('%', '')))
-                    .map(stock => ({
-                        ...stock,
-                        change: stock.threeMonthlyChange,
-                        changePct: stock.threeMonthlyChangePct
-                    }));
-
-                this.threeMonthlyLosers = this.allStocksData
-                    .filter(stock => stock.threeMonthlyChange < 0)
-                    .sort((a, b) => parseFloat(a.threeMonthlyChangePct.replace('%', '')) - parseFloat(b.threeMonthlyChangePct.replace('%', '')))
-                    .map(stock => ({
-                        ...stock,
-                        change: stock.threeMonthlyChange,
-                        changePct: stock.threeMonthlyChangePct
-                    }));
-            }
-
-            switchType(type, section) {
-                if (section === 1) {
-                    if (this.section1State.type === type) return;
-                    this.section1State.type = type;
-
-                    this.section1Pills.forEach(btn => {
-                        btn.classList.toggle('active', btn.dataset.type === type);
-                    });
-
-                    this.section1Title.textContent = type === 'gainers' ? 'Top Gainers' : 'Top Losers';
-                    this.renderSection1();
-                } else if (section === 2) {
-                    if (this.section2State.type === type) return;
-                    this.section2State.type = type;
-
-                    this.section2Pills.forEach(btn => {
-                        btn.classList.toggle('active', btn.dataset.type === type);
-                    });
-
-                    this.updateSection2Title();
-                    this.renderSection2();
-                }
-            }
-
-            changePeriod(period) {
-                if (this.section2State.period === period) return;
-                
-                this.section2State.period = period;
-                
-                this.dropdownItems.forEach(item => {
-                    item.classList.toggle('active', item.dataset.period === period);
-                });
-
-                let periodText;
-                switch(period) {
-                    case 'weekly': periodText = 'Weekly'; break;
-                    case 'monthly': periodText = 'Monthly'; break;
-                    case '3monthly': periodText = '3 Monthly'; break;
-                    default: periodText = 'Weekly';
-                }
-
-                this.periodText.textContent = periodText;
-                this.updateSection2Title();
-                this.renderSection2();
-            }
-
-            updateSection2Title() {
-                let periodText;
-                switch(this.section2State.period) {
-                    case 'weekly': periodText = 'Weekly'; break;
-                    case 'monthly': periodText = 'Monthly'; break;
-                    case '3monthly': periodText = '3 Monthly'; break;
-                    default: periodText = 'Weekly';
-                }
-                const typeText = this.section2State.type === 'gainers' ? 'Gainers' : 'Losers';
-                this.section2Title.textContent = `Top ${periodText} ${typeText}`;
+            renderAllSections() {
+                this.renderSection1(); // Daily Gainers/Losers
+                this.renderSection2(); // Period Performance
+                this.renderSection3(); // 52-Week Alerts
+                this.renderSection4(); // RSI Technical
+                this.renderSection5(); // Volume Leaders
+                this.renderSection6(); // Sector Performance
+                this.renderSection7(); // Investment Picks
             }
 
             renderSection1() {
-                this.section1Loading.style.display = 'none';
-                
-                const currentStocks = this.section1State.type === 'gainers' ? this.gainers : this.losers;
-                
-                if (!currentStocks.length) {
-                    this.showError(`No ${this.section1State.type} found`, 1);
-                    return;
-                }
+                const gainers = this.allStocksData
+                    .filter(stock => stock.dailyChange > 0)
+                    .sort((a, b) => parseFloat(b.dailyChangePct.replace('%', '')) - parseFloat(a.dailyChangePct.replace('%', '')))
+                    .slice(0, 20);
 
-                // For section 1, use daily change data
-                const stocksForDisplay = currentStocks.map(stock => ({
+                const losers = this.allStocksData
+                    .filter(stock => stock.dailyChange < 0)
+                    .sort((a, b) => parseFloat(a.dailyChangePct.replace('%', '')) - parseFloat(b.dailyChangePct.replace('%', '')))
+                    .slice(0, 20);
+
+                const currentData = this.sectionStates[1].type === 'gainers' ? gainers : losers;
+                const displayData = currentData.map(stock => ({
                     ...stock,
                     change: stock.dailyChange,
                     changePct: stock.dailyChangePct
                 }));
 
-                this.renderStocksList(stocksForDisplay, this.section1Container, 1);
+                this.renderStocksList(displayData, this.sections[1].container, 1);
+                this.sections[1].loading.style.display = 'none';
             }
 
             renderSection2() {
-                this.section2Loading.style.display = 'none';
-                
-                let currentData;
-                switch (this.section2State.period) {
+                let sourceData, period;
+                switch (this.sectionStates[2].period) {
                     case 'weekly':
-                        currentData = this.section2State.type === 'gainers' ? this.weeklyGainers : this.weeklyLosers;
+                        sourceData = this.allStocksData.map(stock => ({
+                            ...stock,
+                            change: stock.weeklyChange,
+                            changePct: stock.weeklyChangePct
+                        }));
+                        period = 'Weekly';
                         break;
                     case 'monthly':
-                        currentData = this.section2State.type === 'gainers' ? this.monthlyGainers : this.monthlyLosers;
+                        sourceData = this.allStocksData.map(stock => ({
+                            ...stock,
+                            change: stock.monthlyChange,
+                            changePct: stock.monthlyChangePct
+                        }));
+                        period = 'Monthly';
                         break;
                     case '3monthly':
-                        currentData = this.section2State.type === 'gainers' ? this.threeMonthlyGainers : this.threeMonthlyLosers;
+                        sourceData = this.allStocksData.map(stock => ({
+                            ...stock,
+                            change: stock.threeMonthlyChange,
+                            changePct: stock.threeMonthlyChangePct
+                        }));
+                        period = '3 Monthly';
                         break;
                     default:
-                        currentData = this.section2State.type === 'gainers' ? this.weeklyGainers : this.weeklyLosers;
+                        sourceData = this.allStocksData.map(stock => ({
+                            ...stock,
+                            change: stock.weeklyChange,
+                            changePct: stock.weeklyChangePct
+                        }));
+                        period = 'Weekly';
                 }
 
-                if (!currentData.length) {
-                    this.showError(`No ${this.section2State.period} ${this.section2State.type} found`, 2);
-                    return;
+                const gainers = sourceData
+                    .filter(stock => stock.change > 0)
+                    .sort((a, b) => b.change - a.change)
+                    .slice(0, 20);
+
+                const losers = sourceData
+                    .filter(stock => stock.change < 0)
+                    .sort((a, b) => a.change - b.change)
+                    .slice(0, 20);
+
+                const currentData = this.sectionStates[2].type === 'gainers' ? gainers : losers;
+                const typeText = this.sectionStates[2].type === 'gainers' ? 'Gainers' : 'Losers';
+                this.sections[2].title.textContent = `Top ${period} ${typeText}`;
+
+                this.renderStocksList(currentData, this.sections[2].container, 2);
+                this.sections[2].loading.style.display = 'none';
+            }
+
+            renderSection3() {
+                const nearHigh = this.allStocksData
+                    .filter(stock => stock.high52W > 0 && stock.distanceFromHigh <= 5)
+                    .sort((a, b) => a.distanceFromHigh - b.distanceFromHigh)
+                    .slice(0, 20);
+
+                const nearLow = this.allStocksData
+                    .filter(stock => stock.low52W > 0 && stock.distanceFromLow <= 10)
+                    .sort((a, b) => a.distanceFromLow - b.distanceFromLow)
+                    .slice(0, 20);
+
+                const currentData = this.sectionStates[3].type === 'near-high' ? nearHigh : nearLow;
+                this.renderStocksList(currentData, this.sections[3].container, 3);
+                this.sections[3].loading.style.display = 'none';
+            }
+
+            renderSection4() {
+                let rsiField;
+                switch (this.sectionStates[4].period) {
+                    case 'daily': rsiField = 'dailyRSI'; break;
+                    case 'weekly': rsiField = 'weeklyRSI'; break;
+                    case 'monthly': rsiField = 'monthlyRSI'; break;
+                    default: rsiField = 'dailyRSI';
                 }
 
-                this.renderStocksList(currentData, this.section2Container, 2);
+                const overbought = this.allStocksData
+                    .filter(stock => stock[rsiField] >= 70)
+                    .sort((a, b) => b[rsiField] - a[rsiField])
+                    .slice(0, 20);
+
+                const oversold = this.allStocksData
+                    .filter(stock => stock[rsiField] <= 30)
+                    .sort((a, b) => a[rsiField] - b[rsiField])
+                    .slice(0, 20);
+
+                const currentData = this.sectionStates[4].type === 'overbought' ? overbought : oversold;
+                this.renderStocksList(currentData, this.sections[4].container, 4);
+                this.sections[4].loading.style.display = 'none';
+            }
+
+            renderSection5() {
+                const highVolume = this.allStocksData
+                    .filter(stock => stock.volume > 0)
+                    .sort((a, b) => b.volume - a.volume)
+                    .slice(0, 20);
+
+                const unusualVolume = this.allStocksData
+                    .filter(stock => stock.volume > 0 && stock.avgVolume30D > 0)
+                    .map(stock => ({
+                        ...stock,
+                        volumeRatio: stock.volume / stock.avgVolume30D
+                    }))
+                    .filter(stock => stock.volumeRatio > 2)
+                    .sort((a, b) => b.volumeRatio - a.volumeRatio)
+                    .slice(0, 20);
+
+                const currentData = this.sectionStates[5].type === 'high-volume' ? highVolume : unusualVolume;
+                this.renderStocksList(currentData, this.sections[5].container, 5);
+                this.sections[5].loading.style.display = 'none';
+            }
+
+            renderSection6() {
+                let filteredData = this.allStocksData;
+                
+                if (this.sectionStates[6].sector !== 'all') {
+                    const sectorMap = {
+                        'banking': ['Banking', 'Financial Services'],
+                        'it': ['Information Technology', 'Software'],
+                        'pharma': ['Pharmaceuticals', 'Healthcare'],
+                        'auto': ['Automobile', 'Auto'],
+                        'energy': ['Energy', 'Oil & Gas', 'Power']
+                    };
+                    
+                    const searchTerms = sectorMap[this.sectionStates[6].sector] || [this.sectionStates[6].sector];
+                    filteredData = this.allStocksData.filter(stock => 
+                        searchTerms.some(term => 
+                            stock.sector.toLowerCase().includes(term.toLowerCase()) ||
+                            stock.industry.toLowerCase().includes(term.toLowerCase())
+                        )
+                    );
+                }
+
+                const sectorData = filteredData
+                    .sort((a, b) => parseFloat(b.dailyChangePct.replace('%', '')) - parseFloat(a.dailyChangePct.replace('%', '')))
+                    .slice(0, 20)
+                    .map(stock => ({
+                        ...stock,
+                        change: stock.dailyChange,
+                        changePct: stock.dailyChangePct
+                    }));
+
+                this.renderStocksList(sectorData, this.sections[6].container, 6);
+                this.sections[6].loading.style.display = 'none';
+            }
+
+            renderSection7() {
+                let currentData;
+                
+                switch (this.sectionStates[7].type) {
+                    case 'quality':
+                        currentData = this.allStocksData
+                            .filter(stock => stock.pe > 0 && stock.eps > 0 && stock.bullishScore >= 3)
+                            .sort((a, b) => {
+                                const scoreA = (stock => {
+                                    let score = stock.bullishScore * 20;
+                                    if (stock.pe > 0 && stock.pe < 20) score += 20;
+                                    if (stock.eps > 0) score += stock.eps * 2;
+                                    if (stock.earningsYield > 5) score += 20;
+                                    return score;
+                                })(a);
+                                const scoreB = (stock => {
+                                    let score = stock.bullishScore * 20;
+                                    if (stock.pe > 0 && stock.pe < 20) score += 20;
+                                    if (stock.eps > 0) score += stock.eps * 2;
+                                    if (stock.earningsYield > 5) score += 20;
+                                    return score;
+                                })(b);
+                                return scoreB - scoreA;
+                            })
+                            .slice(0, 15);
+                        break;
+                    
+                    case 'value':
+                        currentData = this.allStocksData
+                            .filter(stock => stock.pe > 0 && stock.pe < 15 && stock.eps > 0)
+                            .sort((a, b) => {
+                                const valueScoreA = (1 / a.pe) * 100 + a.earningsYield;
+                                const valueScoreB = (1 / b.pe) * 100 + b.earningsYield;
+                                return valueScoreB - valueScoreA;
+                            })
+                            .slice(0, 15);
+                        break;
+                    
+                    case 'growth':
+                        currentData = this.allStocksData
+                            .filter(stock => stock.bullishScore >= 4)
+                            .sort((a, b) => {
+                                const growthScoreA = parseFloat(a.weeklyChangePct.replace('%', '')) + 
+                                                   parseFloat(a.monthlyChangePct.replace('%', '')) + 
+                                                   a.bullishScore * 5;
+                                const growthScoreB = parseFloat(b.weeklyChangePct.replace('%', '')) + 
+                                                   parseFloat(b.monthlyChangePct.replace('%', '')) + 
+                                                   b.bullishScore * 5;
+                                return growthScoreB - growthScoreA;
+                            })
+                            .slice(0, 15);
+                        break;
+                    
+                    default:
+                        currentData = [];
+                }
+
+                const displayData = currentData.map(stock => ({
+                    ...stock,
+                    change: stock.dailyChange,
+                    changePct: stock.dailyChangePct
+                }));
+
+                this.renderStocksList(displayData, this.sections[7].container, 7);
+                this.sections[7].loading.style.display = 'none';
             }
 
             renderStocksList(stocks, container, section) {
@@ -1370,7 +1528,7 @@
                     setTimeout(() => {
                         stockCard.style.opacity = '1';
                         stockCard.style.transform = 'translateY(0) translateX(0)';
-                    }, index * 50);
+                    }, index * 30);
                     stocksList.appendChild(stockCard);
                 });
                 
@@ -1405,15 +1563,53 @@
                 
                 card.className = cardClass;
                 card.style.opacity = '0';
-                card.style.transform = 'translateY(10px) translateX(-10px)';
-                card.style.transition = 'opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                card.style.transform = 'translateY(8px) translateX(-8px)';
+                card.style.transition = 'opacity 0.4s ease, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
                 
-                let percentDisplay = stock.changePct;
-                if (percentDisplay && percentDisplay.includes('%')) {
+                let percentDisplay = stock.changePct || '0%';
+                if (percentDisplay.includes('%')) {
                     percentDisplay = percentDisplay.replace('-', '');
                 }
 
+                // Create indicator based on section
+                let indicator = '';
+                switch (section) {
+                    case 3: // 52-Week Alerts
+                        if (stock.distanceFromHigh <= 5) {
+                            indicator = `<div class="alert-indicator alert-high">${stock.distanceFromHigh.toFixed(1)}% from High</div>`;
+                        } else if (stock.distanceFromLow <= 10) {
+                            indicator = `<div class="alert-indicator alert-low">${stock.distanceFromLow.toFixed(1)}% from Low</div>`;
+                        }
+                        break;
+                    case 4: // RSI Technical
+                        const rsiField = this.sectionStates[4].period === 'weekly' ? 'weeklyRSI' : 
+                                       this.sectionStates[4].period === 'monthly' ? 'monthlyRSI' : 'dailyRSI';
+                        const rsiValue = stock[rsiField];
+                        const rsiClass = rsiValue >= 70 ? 'rsi-overbought' : rsiValue <= 30 ? 'rsi-oversold' : 'rsi-neutral';
+                        indicator = `<div class="rsi-indicator ${rsiClass}">RSI ${rsiValue.toFixed(0)}</div>`;
+                        break;
+                    case 5: // Volume Leaders
+                        if (stock.volumeRatio) {
+                            indicator = `<div class="volume-indicator">${stock.volumeRatio.toFixed(1)}x Vol</div>`;
+                        } else {
+                            const volInCrores = (stock.volume / 10000000).toFixed(1);
+                            indicator = `<div class="volume-indicator">${volInCrores}Cr Vol</div>`;
+                        }
+                        break;
+                    case 6: // Sector Performance
+                        indicator = `<div class="sector-tag">${stock.sector}</div>`;
+                        break;
+                    case 7: // Investment Picks
+                        const qualityScore = stock.bullishScore;
+                        const qualityClass = qualityScore >= 4 ? 'quality-high' : qualityScore >= 3 ? 'quality-medium' : 'quality-low';
+                        const typeText = this.sectionStates[7].type === 'quality' ? 'Q' : 
+                                        this.sectionStates[7].type === 'value' ? 'V' : 'G';
+                        indicator = `<div class="quality-score ${qualityClass}">${typeText}${qualityScore}</div>`;
+                        break;
+                }
+
                 card.innerHTML = `
+                    ${indicator}
                     <div class="stock-content">
                         <div class="stock-info">
                             <div class="stock-ticker">${stock.ticker}</div>
@@ -1426,20 +1622,20 @@
                             })}</div>
                             <div class="stock-change ${changeClass}">
                                 <span class="${arrowClass}"></span>
-                                ${Math.abs(stock.change).toFixed(2)} (${percentDisplay})
+                                ${Math.abs(stock.change || 0).toFixed(2)} (${percentDisplay})
                             </div>
                         </div>
                     </div>
                 `;
 
-                // Enhanced touch feedback
+                // Touch feedback
                 let touchStartTime = 0;
                 let touchMoved = false;
 
                 card.addEventListener('touchstart', (e) => {
                     touchStartTime = Date.now();
                     touchMoved = false;
-                    card.style.transform = 'scale(0.98) translateY(1px)';
+                    card.style.transform = 'scale(0.98)';
                 }, { passive: true });
 
                 card.addEventListener('touchmove', (e) => {
@@ -1447,7 +1643,7 @@
                 }, { passive: true });
 
                 card.addEventListener('touchend', (e) => {
-                    card.style.transform = 'scale(1) translateY(0px)';
+                    card.style.transform = 'scale(1)';
                     const touchDuration = Date.now() - touchStartTime;
                     if (!touchMoved && touchDuration < 300) {
                         this.handleStockTap(stock);
@@ -1457,15 +1653,109 @@
                 return card;
             }
 
+            switchType(type, section) {
+                if (this.sectionStates[section].type === type) return;
+                
+                this.sectionStates[section].type = type;
+
+                this.sections[section].pills.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.type === type);
+                });
+
+                // Update section titles
+                switch (section) {
+                    case 1:
+                        this.sections[1].title.textContent = type === 'gainers' ? 'Top Gainers' : 'Top Losers';
+                        this.renderSection1();
+                        break;
+                    case 2:
+                        this.renderSection2();
+                        break;
+                    case 3:
+                        this.sections[3].title.textContent = type === 'near-high' ? '52-Week High Alerts' : '52-Week Low Alerts';
+                        this.renderSection3();
+                        break;
+                    case 4:
+                        this.sections[4].title.textContent = type === 'overbought' ? 'RSI Overbought' : 'RSI Oversold';
+                        this.renderSection4();
+                        break;
+                    case 5:
+                        this.sections[5].title.textContent = type === 'high-volume' ? 'High Volume' : 'Unusual Volume';
+                        this.renderSection5();
+                        break;
+                    case 7:
+                        const typeNames = { quality: 'Quality', value: 'Value', growth: 'Growth' };
+                        this.sections[7].title.textContent = `${typeNames[type]} Stocks`;
+                        this.renderSection7();
+                        break;
+                }
+            }
+
+            changePeriod(period) {
+                if (this.sectionStates[2].period === period) return;
+                
+                this.sectionStates[2].period = period;
+                
+                this.periodDropdown.items.forEach(item => {
+                    item.classList.toggle('active', item.dataset.period === period);
+                });
+
+                const periodText = period.charAt(0).toUpperCase() + period.slice(1);
+                this.periodDropdown.text.textContent = periodText === '3monthly' ? '3 Monthly' : periodText;
+                
+                this.renderSection2();
+            }
+
+            changeRSIPeriod(period) {
+                if (this.sectionStates[4].period === period) return;
+                
+                this.sectionStates[4].period = period;
+                
+                this.rsiDropdown.items.forEach(item => {
+                    item.classList.toggle('active', item.dataset.rsiPeriod === period);
+                });
+
+                this.rsiDropdown.text.textContent = period.charAt(0).toUpperCase() + period.slice(1);
+                this.renderSection4();
+            }
+
+            changeSector(sector) {
+                if (this.sectionStates[6].sector === sector) return;
+                
+                this.sectionStates[6].sector = sector;
+                
+                this.sectorDropdown.items.forEach(item => {
+                    item.classList.toggle('active', item.dataset.sector === sector);
+                });
+
+                const sectorNames = {
+                    all: 'All Sectors',
+                    banking: 'Banking',
+                    it: 'IT',
+                    pharma: 'Pharma',
+                    auto: 'Auto',
+                    energy: 'Energy'
+                };
+
+                this.sectorDropdown.text.textContent = sectorNames[sector] || 'All Sectors';
+                this.renderSection6();
+            }
+
             handleStockTap(stock) {
                 if ('vibrate' in navigator) {
-                    navigator.vibrate(10);
+                    navigator.vibrate(8);
                 }
                 console.log('Stock tapped:', stock.ticker);
             }
 
+            showAllErrors(message) {
+                for (let i = 1; i <= 7; i++) {
+                    this.showError(message, i);
+                }
+            }
+
             showError(message, section) {
-                const container = section === 1 ? this.section1Container : this.section2Container;
+                const container = this.sections[section].container;
                 const existingList = container.querySelector('.stocks-list');
                 if (existingList) existingList.remove();
 
@@ -1480,18 +1770,19 @@
                 container.insertBefore(errorDiv, bottomGradient);
             }
 
-            showUpdateIndicator(section) {
-                const indicator = section === 1 ? this.section1UpdateIndicator : this.section2UpdateIndicator;
-                indicator.classList.add('show');
-                if ('vibrate' in navigator) navigator.vibrate(15);
-                setTimeout(() => indicator.classList.remove('show'), 3000);
+            showAllUpdateIndicators() {
+                for (let i = 1; i <= 7; i++) {
+                    this.sections[i].indicator.classList.add('show');
+                    setTimeout(() => this.sections[i].indicator.classList.remove('show'), 2000);
+                }
+                if ('vibrate' in navigator) navigator.vibrate(12);
             }
         }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
-                window.stockDashboard = new CorrectedStockDashboard();
+                window.stockDashboard = new AdvancedStockDashboard();
             }, 100);
         });
 
@@ -1500,7 +1791,7 @@
             if (window.stockDashboard && !document.hidden) {
                 const timeSinceUpdate = window.stockDashboard.lastUpdateTime ? 
                     Date.now() - window.stockDashboard.lastUpdateTime.getTime() : Infinity;
-                if (timeSinceUpdate > 180000) { // 3 minutes
+                if (timeSinceUpdate > 300000) { // 5 minutes for advanced dashboard
                     window.stockDashboard.loadData(true);
                 }
             }
@@ -1508,3 +1799,4 @@
     </script>
 </body>
 </html>
+Asset 1 of 1
