@@ -1,899 +1,865 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pro Stock Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #667eea 100%);
-      min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Stock Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    /* Animated Background Elements */
-    .background-shapes {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #16213e 50%, #0f3460 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
 
-    .shape {
-      position: absolute;
-      border-radius: 50%;
-      opacity: 0.1;
-      animation: float 20s ease-in-out infinite;
-    }
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            z-index: -1;
+        }
 
-    .shape-1 {
-      width: 300px;
-      height: 300px;
-      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 70%);
-      top: -150px;
-      right: -150px;
-      animation-delay: 0s;
-    }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(2deg); }
+            66% { transform: translateY(10px) rotate(-1deg); }
+        }
 
-    .shape-2 {
-      width: 200px;
-      height: 200px;
-      background: radial-gradient(circle, rgba(59,130,246,0.4) 0%, rgba(59,130,246,0.1) 70%);
-      bottom: -100px;
-      left: -100px;
-      animation-delay: 7s;
-    }
+        .container {
+            max-width: 420px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
 
-    .shape-3 {
-      width: 150px;
-      height: 150px;
-      background: radial-gradient(circle, rgba(147,51,234,0.3) 0%, rgba(147,51,234,0.1) 70%);
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      animation-delay: 14s;
-    }
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      33% { transform: translateY(-30px) rotate(120deg); }
-      66% { transform: translateY(20px) rotate(240deg); }
-    }
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            text-shadow: 0 0 30px rgba(168, 139, 250, 0.3);
+        }
 
-    /* Main Container */
-    .dashboard-container {
-      position: relative;
-      z-index: 1;
-      max-width: 420px;
-      margin: 0 auto;
-      padding: 20px;
-      min-height: 100vh;
-    }
+        .subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 400;
+        }
 
-    /* Glass Card */
-    .glass-card {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(20px);
-      border-radius: 24px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      position: relative;
-    }
+        /* Toggle Buttons */
+        .toggle-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 6px;
+            display: flex;
+            gap: 6px;
+            margin-bottom: 30px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
 
-    .glass-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-    }
+        .toggle-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            color: rgba(255, 255, 255, 0.6);
+            background: transparent;
+        }
 
-    /* Header */
-    .header {
-      padding: 24px 24px 20px;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            box-shadow: 
+                0 8px 25px rgba(59, 130, 246, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
 
-    .title {
-      color: white;
-      font-size: 20px;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 20px;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    }
+        .toggle-btn:not(.active):hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.8);
+        }
 
-    /* Toggle Buttons */
-    .toggle-container {
-      display: flex;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 4px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-    }
+        /* Stock Section */
+        .stocks-section {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
 
-    .toggle-btn {
-      flex: 1;
-      background: transparent;
-      border: none;
-      padding: 12px 16px;
-      border-radius: 12px;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-    }
+        .section-header {
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+        }
 
-    .toggle-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-    .toggle-btn:hover::before {
-      opacity: 1;
-    }
+        .section-icon {
+            font-size: 20px;
+        }
 
-    .toggle-btn.active {
-      background: linear-gradient(135deg, rgba(59,130,246,0.8), rgba(147,51,234,0.6));
-      color: white;
-      box-shadow: 0 8px 25px rgba(59,130,246,0.4);
-      transform: translateY(-1px);
-    }
+        /* Stocks Container */
+        .stocks-container {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+        }
 
-    .toggle-btn.active::before {
-      opacity: 0;
-    }
+        .stocks-wrapper {
+            display: flex;
+            height: 100%;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: grab;
+        }
 
-    /* Stocks Container */
-    .stocks-container {
-      height: 500px;
-      overflow-y: auto;
-      overflow-x: hidden;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
+        .stocks-wrapper:active {
+            cursor: grabbing;
+        }
 
-    .stocks-container::-webkit-scrollbar {
-      display: none;
-    }
+        .stocks-page {
+            min-width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
 
-    .stocks-list {
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+        /* Stock Card */
+        .stock-card {
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+        }
 
-    /* Stock Cards */
-    .stock-card {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(15px);
-      border-radius: 18px;
-      padding: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      position: relative;
-      overflow: hidden;
-      cursor: pointer;
-    }
+        .stock-card:last-child {
+            border-bottom: none;
+        }
 
-    .stock-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
+        .stock-card:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+            transform: translateX(4px);
+            box-shadow: inset 4px 0 0 rgba(59, 130, 246, 0.6);
+        }
 
-    .stock-card:hover {
-      transform: translateY(-4px) scale(1.02);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      border-color: rgba(255, 255, 255, 0.3);
-    }
+        .stock-card.positive:hover {
+            box-shadow: inset 4px 0 0 rgba(34, 197, 94, 0.6);
+        }
 
-    .stock-card:hover::before {
-      opacity: 1;
-    }
+        .stock-card.negative:hover {
+            box-shadow: inset 4px 0 0 rgba(239, 68, 68, 0.6);
+        }
 
-    .stock-content {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-      z-index: 1;
-    }
+        .stock-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    .stock-info {
-      flex: 1;
-    }
+        .stock-info {
+            flex: 1;
+        }
 
-    .stock-ticker {
-      color: white;
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 4px;
-      letter-spacing: -0.02em;
-    }
+        .stock-ticker {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
 
-    .stock-name {
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 12px;
-      font-weight: 400;
-      line-height: 1.4;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
+        .stock-name {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 400;
+            line-height: 1.4;
+        }
 
-    .stock-metrics {
-      text-align: right;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 4px;
-    }
+        .stock-metrics {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
 
-    .stock-price {
-      color: white;
-      font-size: 16px;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-    }
+        .stock-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            font-variant-numeric: tabular-nums;
+        }
 
-    .stock-change {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 6px 10px;
-      border-radius: 12px;
-      font-variant-numeric: tabular-nums;
-      backdrop-filter: blur(10px);
-    }
+        .stock-change {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-variant-numeric: tabular-nums;
+        }
 
-    .change-positive {
-      background: rgba(34, 197, 94, 0.2);
-      color: #22c55e;
-      border: 1px solid rgba(34, 197, 94, 0.3);
-    }
+        .change-positive {
+            color: #22c55e;
+            background: rgba(34, 197, 94, 0.15);
+        }
 
-    .change-negative {
-      background: rgba(239, 68, 68, 0.2);
-      color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
+        .change-negative {
+            color: #f87171;
+            background: rgba(248, 113, 113, 0.15);
+        }
 
-    .change-icon {
-      font-size: 10px;
-    }
+        .change-neutral {
+            color: #9ca3af;
+            background: rgba(156, 163, 175, 0.15);
+        }
 
-    /* Loading Skeleton */
-    .loading-skeleton {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding: 16px;
-    }
+        .arrow-up::before {
+            content: "▲";
+            font-size: 10px;
+        }
 
-    .skeleton-card {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(15px);
-      border-radius: 18px;
-      padding: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      animation: pulse 2s ease-in-out infinite;
-    }
+        .arrow-down::before {
+            content: "▼";
+            font-size: 10px;
+        }
 
-    .skeleton-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        .arrow-neutral::before {
+            content: "●";
+            font-size: 8px;
+        }
 
-    .skeleton-bar {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
-      animation: shimmer 2s ease-in-out infinite;
-    }
+        /* Navigation Dots */
+        .nav-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.02);
+        }
 
-    .skeleton-ticker {
-      width: 80px;
-      height: 16px;
-      margin-bottom: 8px;
-    }
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-    .skeleton-name {
-      width: 140px;
-      height: 12px;
-    }
+        .nav-dot.active {
+            background: #3b82f6;
+            transform: scale(1.2);
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.6);
+        }
 
-    .skeleton-price {
-      width: 70px;
-      height: 16px;
-      margin-bottom: 8px;
-    }
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            gap: 16px;
+        }
 
-    .skeleton-change {
-      width: 90px;
-      height: 12px;
-    }
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
-    }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-    @keyframes shimmer {
-      0% { background-position: -200px 0; }
-      100% { background-position: calc(200px + 100%) 0; }
-    }
+        .loading-text {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
 
-    /* Update Indicator */
-    .update-indicator {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(34, 197, 94, 0.9);
-      color: white;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 600;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(34, 197, 94, 0.3);
-      opacity: 0;
-      transform: translateY(-10px);
-      transition: all 0.3s ease;
-      z-index: 10;
-    }
+        /* Update Indicator */
+        .update-indicator {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            background: rgba(34, 197, 94, 0.9);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
 
-    .update-indicator.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
+        .update-indicator.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-    /* Footer */
-    .footer {
-      padding: 16px 24px;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      text-align: center;
-    }
+        /* Last Updated */
+        .last-updated {
+            text-align: center;
+            padding: 12px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.02);
+        }
 
-    .last-updated {
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 11px;
-      font-weight: 500;
-    }
+        /* Mobile Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 16px 12px;
+            }
 
-    /* Error State */
-    .error-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: rgba(255, 255, 255, 0.7);
-    }
+            .title {
+                font-size: 24px;
+            }
 
-    .error-icon {
-      font-size: 48px;
-      margin-bottom: 16px;
-      opacity: 0.5;
-    }
+            .toggle-btn {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
 
-    .error-message {
-      font-size: 14px;
-      font-weight: 500;
-    }
+            .stock-card {
+                padding: 18px 20px;
+            }
 
-    /* Responsive Design */
-    @media (max-width: 480px) {
-      .dashboard-container {
-        padding: 12px;
-      }
+            .stock-ticker {
+                font-size: 15px;
+            }
 
-      .glass-card {
-        border-radius: 20px;
-      }
+            .stock-name {
+                font-size: 11px;
+            }
 
-      .header {
-        padding: 20px 20px 16px;
-      }
+            .stock-price {
+                font-size: 15px;
+            }
 
-      .title {
-        font-size: 18px;
-        margin-bottom: 16px;
-      }
+            .stock-change {
+                font-size: 11px;
+                padding: 3px 6px;
+            }
+        }
 
-      .toggle-btn {
-        padding: 10px 14px;
-        font-size: 13px;
-      }
+        /* Smooth entrance animation */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
 
-      .stocks-container {
-        height: 460px;
-      }
-
-      .stocks-list {
-        padding: 12px;
-        gap: 10px;
-      }
-
-      .stock-card {
-        padding: 16px;
-        border-radius: 16px;
-      }
-
-      .stock-ticker {
-        font-size: 15px;
-      }
-
-      .stock-name {
-        font-size: 11px;
-      }
-
-      .stock-price {
-        font-size: 15px;
-      }
-
-      .stock-change {
-        font-size: 11px;
-        padding: 5px 8px;
-      }
-    }
-  </style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Animated Background -->
-  <div class="background-shapes">
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
-    <div class="shape shape-3"></div>
-  </div>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">StockPro</h1>
+            <p class="subtitle">Live Market Dashboard</p>
+        </div>
 
-  <!-- Main Dashboard -->
-  <div class="dashboard-container">
-    <div class="glass-card">
-      <!-- Header -->
-      <div class="header">
-        <h1 class="title">Stock Dashboard</h1>
         <div class="toggle-container">
-          <button class="toggle-btn active" id="gainers-btn">
-            📈 Top Gainers
-          </button>
-          <button class="toggle-btn" id="losers-btn">
-            📉 Top Losers
-          </button>
+            <button class="toggle-btn active" data-type="gainers">📈 Gainers</button>
+            <button class="toggle-btn" data-type="losers">📉 Losers</button>
         </div>
-      </div>
 
-      <!-- Stocks Container -->
-      <div class="stocks-container" id="stocks-container">
-        <div class="stocks-list" id="stocks-list">
-          <!-- Loading Skeleton -->
-          <div class="loading-skeleton" id="loading-skeleton">
-            <div class="skeleton-card">
-              <div class="skeleton-content">
-                <div>
-                  <div class="skeleton-bar skeleton-ticker"></div>
-                  <div class="skeleton-bar skeleton-name"></div>
-                </div>
-                <div>
-                  <div class="skeleton-bar skeleton-price"></div>
-                  <div class="skeleton-bar skeleton-change"></div>
-                </div>
-              </div>
+        <div class="stocks-section fade-in">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">📈</span>
+                    <span id="section-title-text">Top Gainers</span>
+                </h2>
             </div>
-            <div class="skeleton-card">
-              <div class="skeleton-content">
-                <div>
-                  <div class="skeleton-bar skeleton-ticker"></div>
-                  <div class="skeleton-bar skeleton-name"></div>
+
+            <div class="stocks-container" id="stocks-container">
+                <div class="loading" id="loading">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Loading stocks...</div>
                 </div>
-                <div>
-                  <div class="skeleton-bar skeleton-price"></div>
-                  <div class="skeleton-bar skeleton-change"></div>
-                </div>
-              </div>
             </div>
-            <div class="skeleton-card">
-              <div class="skeleton-content">
-                <div>
-                  <div class="skeleton-bar skeleton-ticker"></div>
-                  <div class="skeleton-bar skeleton-name"></div>
-                </div>
-                <div>
-                  <div class="skeleton-bar skeleton-price"></div>
-                  <div class="skeleton-bar skeleton-change"></div>
-                </div>
-              </div>
-            </div>
-            <div class="skeleton-card">
-              <div class="skeleton-content">
-                <div>
-                  <div class="skeleton-bar skeleton-ticker"></div>
-                  <div class="skeleton-bar skeleton-name"></div>
-                </div>
-                <div>
-                  <div class="skeleton-bar skeleton-price"></div>
-                  <div class="skeleton-bar skeleton-change"></div>
-                </div>
-              </div>
-            </div>
-            <div class="skeleton-card">
-              <div class="skeleton-content">
-                <div>
-                  <div class="skeleton-bar skeleton-ticker"></div>
-                  <div class="skeleton-bar skeleton-name"></div>
-                </div>
-                <div>
-                  <div class="skeleton-bar skeleton-price"></div>
-                  <div class="skeleton-bar skeleton-change"></div>
-                </div>
-              </div>
-            </div>
-          </div>
+
+            <div class="nav-dots" id="nav-dots"></div>
+            <div class="last-updated" id="last-updated"></div>
+            <div class="update-indicator" id="update-indicator">Updated ✨</div>
         </div>
-      </div>
-
-      <!-- Footer -->
-      <div class="footer">
-        <div class="last-updated" id="last-updated"></div>
-      </div>
-
-      <!-- Update Indicator -->
-      <div class="update-indicator" id="update-indicator">Updated ✨</div>
     </div>
-  </div>
 
-  <!-- Papa Parse for CSV -->
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script>
+        class StockDashboard {
+            constructor() {
+                this.csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
+                this.stocks = [];
+                this.gainers = [];
+                this.losers = [];
+                this.currentType = 'gainers';
+                this.currentPage = 0;
+                this.stocksPerPage = 5;
+                this.isLoading = false;
+                this.touchStartX = 0;
+                this.touchEndX = 0;
+                this.lastUpdateTime = null;
 
-  <!-- Main JavaScript -->
-  <script>
-    class ProStockDashboard {
-      constructor() {
-        this.csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
-        this.stockData = [];
-        this.currentView = 'gainers';
-        this.isLoading = false;
-        this.lastUpdateTime = null;
-        this.visibleStockCount = 5;
-        
-        this.init();
-      }
-
-      init() {
-        this.setupEventListeners();
-        this.loadCachedData();
-        this.fetchData();
-        this.startAutoRefresh();
-      }
-
-      setupEventListeners() {
-        const gainersBtn = document.getElementById('gainers-btn');
-        const losersBtn = document.getElementById('losers-btn');
-        
-        gainersBtn.addEventListener('click', () => this.switchView('gainers'));
-        losersBtn.addEventListener('click', () => this.switchView('losers'));
-
-        // Smooth scroll handling
-        const stocksContainer = document.getElementById('stocks-container');
-        let isScrolling;
-        stocksContainer.addEventListener('scroll', () => {
-          window.clearTimeout(isScrolling);
-          isScrolling = setTimeout(() => {
-            // Handle scroll end
-          }, 66);
-        });
-      }
-
-      loadCachedData() {
-        try {
-          const cached = localStorage.getItem('pro_stock_data');
-          const cacheTime = localStorage.getItem('pro_stock_time');
-          
-          if (cached && cacheTime) {
-            const age = Date.now() - parseInt(cacheTime);
-            if (age < 5 * 60 * 1000) { // 5 minutes cache
-              this.stockData = JSON.parse(cached);
-              this.renderStocks();
-              this.updateTimestamp();
+                this.initializeElements();
+                this.attachEventListeners();
+                this.loadData();
             }
-          }
-        } catch (error) {
-          console.log('Cache load error:', error);
-        }
-      }
 
-      saveToCache(data) {
-        try {
-          localStorage.setItem('pro_stock_data', JSON.stringify(data));
-          localStorage.setItem('pro_stock_time', Date.now().toString());
-        } catch (error) {
-          console.log('Cache save error:', error);
-        }
-      }
-
-      async fetchData(showUpdateIndicator = false) {
-        if (this.isLoading) return;
-        
-        this.isLoading = true;
-        
-        try {
-          const response = await fetch(this.csvUrl);
-          const csvText = await response.text();
-          const newData = this.parseCSV(csvText);
-          
-          if (JSON.stringify(newData) !== JSON.stringify(this.stockData)) {
-            this.stockData = newData;
-            this.saveToCache(newData);
-            this.renderStocks();
-            
-            if (showUpdateIndicator) {
-              this.showUpdateIndicator();
+            initializeElements() {
+                this.toggleButtons = document.querySelectorAll('.toggle-btn');
+                this.stocksContainer = document.getElementById('stocks-container');
+                this.loading = document.getElementById('loading');
+                this.navDots = document.getElementById('nav-dots');
+                this.lastUpdated = document.getElementById('last-updated');
+                this.updateIndicator = document.getElementById('update-indicator');
+                this.sectionTitleText = document.getElementById('section-title-text');
+                this.sectionIcon = document.querySelector('.section-icon');
             }
-          }
-          
-          this.updateTimestamp();
-          
-        } catch (error) {
-          console.error('Data fetch error:', error);
-          if (this.stockData.length === 0) {
-            this.showError();
-          }
-        } finally {
-          this.isLoading = false;
+
+            attachEventListeners() {
+                // Toggle buttons
+                this.toggleButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const type = btn.dataset.type;
+                        this.switchType(type);
+                    });
+                });
+
+                // Touch events for swipe
+                this.stocksContainer.addEventListener('touchstart', this.handleTouchStart.bind(this));
+                this.stocksContainer.addEventListener('touchend', this.handleTouchEnd.bind(this));
+                
+                // Mouse events for drag
+                this.stocksContainer.addEventListener('mousedown', this.handleMouseDown.bind(this));
+                document.addEventListener('mouseup', this.handleMouseUp.bind(this));
+                document.addEventListener('mousemove', this.handleMouseMove.bind(this));
+
+                // Visibility change for auto-refresh
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) {
+                        const timeSinceUpdate = this.lastUpdateTime ? 
+                            Date.now() - this.lastUpdateTime.getTime() : Infinity;
+                        if (timeSinceUpdate > 60000) {
+                            this.loadData(true);
+                        }
+                    }
+                });
+            }
+
+            getCachedData() {
+                try {
+                    const cached = localStorage.getItem('stockData');
+                    const cacheTime = localStorage.getItem('stockDataTime');
+                    if (cached && cacheTime) {
+                        const age = Date.now() - parseInt(cacheTime);
+                        if (age < 5 * 60 * 1000) {
+                            return JSON.parse(cached);
+                        }
+                    }
+                } catch (e) {
+                    console.log('Cache error:', e);
+                }
+                return null;
+            }
+
+            setCachedData(data) {
+                try {
+                    localStorage.setItem('stockData', JSON.stringify(data));
+                    localStorage.setItem('stockDataTime', Date.now().toString());
+                } catch (e) {
+                    console.log('Cache save error:', e);
+                }
+            }
+
+            async loadData(showIndicator = false) {
+                if (this.isLoading) return;
+
+                // Try cache first
+                const cached = this.getCachedData();
+                if (cached && this.stocks.length === 0) {
+                    this.stocks = cached;
+                    this.processStocks();
+                    this.render();
+                    this.updateLastUpdatedTime();
+                }
+
+                this.isLoading = true;
+
+                try {
+                    const response = await fetch(this.csvUrl);
+                    const csvText = await response.text();
+                    
+                    Papa.parse(csvText, {
+                        header: false,
+                        skipEmptyLines: true,
+                        complete: (results) => {
+                            try {
+                                const rows = results.data;
+                                if (rows.length < 3) {
+                                    throw new Error('Insufficient data');
+                                }
+
+                                const dataRows = rows.slice(2);
+                                const newData = dataRows.map(row => {
+                                    if (!row[0] || row[0].toString().trim() === '') return null;
+                                    
+                                    const ticker = row[0] ? row[0].toString().trim() : '';
+                                    const name = row[2] ? row[2].toString().trim() : '';
+                                    const ltp = row[9] ? parseFloat(row[9].toString().trim()) : 0;
+                                    const change = row[10] ? parseFloat(row[10].toString().trim()) : 0;
+                                    const changePct = row[11] ? row[11].toString().trim() : '0%';
+
+                                    return {
+                                        ticker,
+                                        name,
+                                        ltp,
+                                        change,
+                                        changePct
+                                    };
+                                }).filter(stock => stock && stock.ticker && stock.ltp > 0);
+
+                                if (JSON.stringify(newData) !== JSON.stringify(this.stocks)) {
+                                    this.stocks = newData;
+                                    this.setCachedData(this.stocks);
+                                    this.processStocks();
+                                    this.render();
+                                    if (showIndicator) this.showUpdateIndicator();
+                                }
+
+                                this.updateLastUpdatedTime();
+                                this.isLoading = false;
+
+                            } catch (error) {
+                                console.error('Data processing error:', error);
+                                this.showError('Error processing data');
+                                this.isLoading = false;
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error('Network error:', error);
+                    if (this.stocks.length === 0) {
+                        this.showError('Failed to load data');
+                    }
+                    this.isLoading = false;
+                }
+            }
+
+            processStocks() {
+                this.gainers = this.stocks
+                    .filter(stock => stock.change > 0)
+                    .sort((a, b) => {
+                        const aPercent = parseFloat(a.changePct.replace('%', ''));
+                        const bPercent = parseFloat(b.changePct.replace('%', ''));
+                        return bPercent - aPercent;
+                    });
+
+                this.losers = this.stocks
+                    .filter(stock => stock.change < 0)
+                    .sort((a, b) => {
+                        const aPercent = parseFloat(a.changePct.replace('%', ''));
+                        const bPercent = parseFloat(b.changePct.replace('%', ''));
+                        return aPercent - bPercent;
+                    });
+            }
+
+            switchType(type) {
+                if (this.currentType === type) return;
+
+                this.currentType = type;
+                this.currentPage = 0;
+
+                // Update toggle buttons
+                this.toggleButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.type === type);
+                });
+
+                // Update section header
+                if (type === 'gainers') {
+                    this.sectionTitleText.textContent = 'Top Gainers';
+                    this.sectionIcon.textContent = '📈';
+                } else {
+                    this.sectionTitleText.textContent = 'Top Losers';
+                    this.sectionIcon.textContent = '📉';
+                }
+
+                this.render();
+            }
+
+            render() {
+                this.loading.style.display = 'none';
+                
+                const currentStocks = this.currentType === 'gainers' ? this.gainers : this.losers;
+                
+                if (currentStocks.length === 0) {
+                    this.showError(`No ${this.currentType} found`);
+                    return;
+                }
+
+                const totalPages = Math.ceil(currentStocks.length / this.stocksPerPage);
+                
+                // Create stock pages
+                const stocksWrapper = document.createElement('div');
+                stocksWrapper.className = 'stocks-wrapper';
+                
+                for (let page = 0; page < totalPages; page++) {
+                    const startIdx = page * this.stocksPerPage;
+                    const endIdx = startIdx + this.stocksPerPage;
+                    const pageStocks = currentStocks.slice(startIdx, endIdx);
+                    
+                    const stocksPage = document.createElement('div');
+                    stocksPage.className = 'stocks-page';
+                    
+                    pageStocks.forEach(stock => {
+                        const stockCard = this.createStockCard(stock);
+                        stocksPage.appendChild(stockCard);
+                    });
+                    
+                    stocksWrapper.appendChild(stocksPage);
+                }
+                
+                this.stocksContainer.innerHTML = '';
+                this.stocksContainer.appendChild(stocksWrapper);
+                
+                // Create navigation dots
+                this.createNavDots(totalPages);
+                
+                // Update wrapper position
+                this.updateWrapperPosition();
+            }
+
+            createStockCard(stock) {
+                const card = document.createElement('div');
+                const changeClass = stock.change > 0 ? 'positive' : stock.change < 0 ? 'negative' : 'neutral';
+                card.className = `stock-card ${changeClass}`;
+                
+                const arrowClass = stock.change > 0 ? 'arrow-up' : stock.change < 0 ? 'arrow-down' : 'arrow-neutral';
+                const changeColorClass = stock.change > 0 ? 'change-positive' : stock.change < 0 ? 'change-negative' : 'change-neutral';
+                
+                let percentDisplay = stock.changePct;
+                if (percentDisplay.includes('%')) {
+                    percentDisplay = percentDisplay.replace('-', '');
+                }
+
+                card.innerHTML = `
+                    <div class="stock-content">
+                        <div class="stock-info">
+                            <div class="stock-ticker">${stock.ticker}</div>
+                            <div class="stock-name">${stock.name}</div>
+                        </div>
+                        <div class="stock-metrics">
+                            <div class="stock-price">₹${stock.ltp.toLocaleString('en-IN', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            })}</div>
+                            <div class="stock-change ${changeColorClass}">
+                                <span class="${arrowClass}"></span>
+                                ${Math.abs(stock.change).toFixed(2)} (${percentDisplay})
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                return card;
+            }
+
+            createNavDots(totalPages) {
+                if (totalPages <= 1) {
+                    this.navDots.innerHTML = '';
+                    return;
+                }
+
+                let dotsHTML = '';
+                for (let i = 0; i < totalPages; i++) {
+                    dotsHTML += `<div class="nav-dot ${i === this.currentPage ? 'active' : ''}" data-page="${i}"></div>`;
+                }
+                this.navDots.innerHTML = dotsHTML;
+
+                // Add click handlers
+                this.navDots.querySelectorAll('.nav-dot').forEach(dot => {
+                    dot.addEventListener('click', () => {
+                        this.currentPage = parseInt(dot.dataset.page);
+                        this.updateWrapperPosition();
+                        this.updateActiveDot();
+                    });
+                });
+            }
+
+            updateWrapperPosition() {
+                const wrapper = this.stocksContainer.querySelector('.stocks-wrapper');
+                if (wrapper) {
+                    wrapper.style.transform = `translateX(-${this.currentPage * 100}%)`;
+                }
+            }
+
+            updateActiveDot() {
+                this.navDots.querySelectorAll('.nav-dot').forEach((dot, index) => {
+                    dot.classList.toggle('active', index === this.currentPage);
+                });
+            }
+
+            // Touch and swipe handlers
+            handleTouchStart(e) {
+                this.touchStartX = e.touches[0].clientX;
+            }
+
+            handleTouchEnd(e) {
+                this.touchEndX = e.changedTouches[0].clientX;
+                this.handleSwipe();
+            }
+
+            handleMouseDown(e) {
+                this.touchStartX = e.clientX;
+                this.isDragging = true;
+            }
+
+            handleMouseUp(e) {
+                if (!this.isDragging) return;
+                this.touchEndX = e.clientX;
+                this.handleSwipe();
+                this.isDragging = false;
+            }
+
+            handleMouseMove(e) {
+                if (!this.isDragging) return;
+                e.preventDefault();
+            }
+
+            handleSwipe() {
+                const threshold = 50;
+                const diff = this.touchStartX - this.touchEndX;
+                
+                const currentStocks = this.currentType === 'gainers' ? this.gainers : this.losers;
+                const totalPages = Math.ceil(currentStocks.length / this.stocksPerPage);
+
+                if (Math.abs(diff) > threshold) {
+                    if (diff > 0 && this.currentPage < totalPages - 1) {
+                        // Swipe left - next page
+                        this.currentPage++;
+                    } else if (diff < 0 && this.currentPage > 0) {
+                        // Swipe right - previous page
+                        this.currentPage--;
+                    }
+                    
+                    this.updateWrapperPosition();
+                    this.updateActiveDot();
+                }
+            }
+
+            showError(message) {
+                this.stocksContainer.innerHTML = `
+                    <div class="error">
+                        <div style="text-align: center; padding: 40px; color: #f87171; font-size: 14px;">
+                            <div style="font-size: 32px; margin-bottom: 16px;">⚠️</div>
+                            ${message}
+                        </div>
+                    </div>
+                `;
+                this.navDots.innerHTML = '';
+            }
+
+            showUpdateIndicator() {
+                this.updateIndicator.classList.add('show');
+                setTimeout(() => {
+                    this.updateIndicator.classList.remove('show');
+                }, 3000);
+            }
+
+            updateLastUpdatedTime() {
+                const now = new Date();
+                this.lastUpdated.textContent = `Updated ${now.toLocaleTimeString('en-IN', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                })}`;
+                this.lastUpdateTime = now;
+            }
         }
-      }
 
-      parseCSV(csvText) {
-        const lines = csvText.trim().split('\n');
-        if (lines.length < 3) return [];
-        
-        // Skip first 2 header rows, start from row 3 (index 2)
-        const dataRows = lines.slice(2);
-        
-        return dataRows.map(line => {
-          const values = this.parseCSVLine(line);
-          
-          if (!values[0] || values[0].trim() === '') return null;
-          
-          const ticker = values[0] ? values[0].trim() : '';
-          const name = values[2] ? values[2].trim() : '';
-          const ltp = values[9] ? parseFloat(values[9]) || 0 : 0;
-          const change = values[10] ? parseFloat(values[10]) || 0 : 0;
-          const changePct = values[11] ? values[11].trim() : '0%';
-          
-          return {
-            ticker,
-            name,
-            ltp,
-            change,
-            changePct,
-            ltpFormatted: values[9] ? values[9].trim() : '0'
-          };
-        }).filter(stock => stock && stock.ticker && stock.ltp > 0);
-      }
-
-      parseCSVLine(line) {
-        const values = [];
-        let current = '';
-        let inQuotes = false;
-        
-        for (let i = 0; i < line.length; i++) {
-          const char = line[i];
-          
-          if (char === '"') {
-            inQuotes = !inQuotes;
-          } else if (char === ',' && !inQuotes) {
-            values.push(current);
-            current = '';
-          } else {
-            current += char;
-          }
-        }
-        values.push(current);
-        
-        return values;
-      }
-
-      switchView(view) {
-        if (this.currentView === view) return;
-        
-        this.currentView = view;
-        
-        // Update button states
-        const gainersBtn = document.getElementById('gainers-btn');
-        const losersBtn = document.getElementById('losers-btn');
-        
-        gainersBtn.classList.toggle('active', view === 'gainers');
-        losersBtn.classList.toggle('active', view === 'losers');
-        
-        this.renderStocks();
-      }
-
-      renderStocks() {
-        const stocksList = document.getElementById('stocks-list');
-        const loadingSkeleton = document.getElementById('loading-skeleton');
-        
-        if (this.stockData.length === 0) {
-          loadingSkeleton.style.display = 'flex';
-          return;
-        }
-        
-        loadingSkeleton.style.display = 'none';
-        
-        let filteredData = [...this.stockData];
-        
-        if (this.currentView === 'gainers') {
-          filteredData = filteredData
-            .filter(stock => stock.change > 0)
-            .sort((a, b) => {
-              const aPercent = parseFloat(a.changePct.replace('%', ''));
-              const bPercent = parseFloat(b.changePct.replace('%', ''));
-              return bPercent - aPercent;
-            });
-        } else {
-          filteredData = filteredData
-            .filter(stock => stock.change < 0)
-            .sort((a, b) => {
-              const aPercent = parseFloat(a.changePct.replace('%', ''));
-              const bPercent = parseFloat(b.changePct.replace('%', ''));
-              return aPercent - bPercent;
-            });
-        }
-        
-        if (filteredData.length === 0) {
-          stocksList.innerHTML = `
-            <div class="error-state">
-              <div class="error-icon">📊</div>
-              <div class="error-message">No ${this.currentView} found</div>
-            </div>
-          `;
-          return;
-        }
-        
-        const stocksHTML = filteredData.map(stock => {
-          const isPositive = stock.change > 0;
-          const changeClass = isPositive ? 'change-positive' : 'change-negative';
-          const changeIcon = isPositive ? '▲' : '▼';
-          
-          let percentDisplay = stock.changePct;
-          if (percentDisplay.includes('%')) {
-            percentDisplay = percentDisplay.replace('-', '');
-          }
-          
-          return `
-            <div class="stock-card">
-              <div class="stock-content">
-                <div class="stock-info">
-                  <div class="stock-ticker">${stock.ticker}</div>
-                  <div class="stock-name">${stock.name}</div>
-                </div>
-                <div class="stock-metrics">
-                  <div class="stock-price">₹${parseFloat(stock.ltpFormatted).toLocaleString('en-IN', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                  })}</div>
-                  <div class="stock-change ${changeClass}">
-                    <span class="change-icon">${changeIcon}</span>
-                    <span>${Math.abs(stock.change).toFixed(2)} (${percentDisplay})</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('');
-        
-        stocksList.innerHTML = stocksHTML;
-        
-        // Reset scroll position
-        document.getElementById('stocks-container').scrollTop = 0;
-      }
-
-      showUpdateIndicator() {
-        const indicator = document.getElementById('update-indicator');
-        indicator.classList.add('show');
-        
-        setTimeout(() => {
-          indicator.classList.remove('show');
-        }, 3000);
-      }
-
-      showError() {
-        const stocksList = document.getElementById('stocks-list');
-        stocksList.innerHTML = `
-          <div class="error-state">
-            <div class="error-icon">⚠️</div>
-            <div class="error-message">Failed to load data. Please refresh.</div>
-          </div>
-        `;
-      }
-
-      updateTimestamp() {
-        const lastUpdated = document.getElementById('last-updated');
-        const now = new Date();
-        lastUpdated.textContent = `Last updated: ${now.toLocaleTimeString('en-IN', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true
-        })}`;
-        this.lastUpdateTime = now;
-      }
-
-      startAutoRefresh() {
-        // Smart refresh - only if user hasn't interacted recently
-        let lastInteraction = Date.now();
-        
-        ['click', 'scroll', 'touchstart'].forEach(event => {
-          document.addEventListener(event, () => {
-            lastInteraction = Date.now();
-          });
+        // Initialize the dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new StockDashboard();
         });
-        
+
+        // Smart refresh every 2 minutes
         setInterval(() => {
-          const timeSinceInteraction = Date.now() - lastInteraction;
-          const timeSinceUpdate = this.lastUpdateTime ? 
-            Date.now() - this.lastUpdateTime.getTime() : Infinity;
-          
-          // Only refresh if user hasn't interacted in 15 seconds and it's been 2+ minutes
-          if (timeSinceInteraction > 15000 && timeSinceUpdate > 120000) {
-            this.fetchData(true);
-          }
-        }, 30000);
-        
-        // Refresh on page visibility change
-        document.addEventListener('visibilitychange', () => {
-          if (!document.hidden) {
-            const timeSinceUpdate = this.lastUpdateTime ? 
-              Date.now() - this.lastUpdateTime.getTime() : Infinity;
-            
-            if (timeSinceUpdate > 60000) { // 1 minute
-              this.fetchData(true);
+            if (window.stockDashboard && !document.hidden) {
+                const timeSinceUpdate = window.stockDashboard.lastUpdateTime ? 
+                    Date.now() - window.stockDashboard.lastUpdateTime.getTime() : Infinity;
+                if (timeSinceUpdate > 120000) {
+                    window.stockDashboard.loadData(true);
+                }
             }
-          }
-        });
-      }
-    }
-
-    // Initialize the dashboard when DOM is loaded
-    document.addEventListener('DOMContentLoaded', () => {
-      new ProStockDashboard();
-    });
-  </script>
+        }, 30000);
+    </script>
 </body>
 </html>
