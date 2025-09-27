@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stock Dashboard</title>
+  <title>Pro Stock Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -12,138 +13,247 @@
     }
     
     body {
-      background: #0f172a;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      padding: 12px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #667eea 100%);
       min-height: 100vh;
-      color: #e2e8f0;
-    }
-    
-    .dashboard-container {
-      max-width: 400px;
-      margin: 0 auto;
+      overflow-x: hidden;
+      position: relative;
     }
 
-    /* Main Section */
-    .top-movers-section {
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(12px);
-      border-radius: 16px;
-      border: 1px solid rgba(71, 85, 105, 0.3);
+    /* Animated Background Elements */
+    .background-shapes {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.1;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    .shape-1 {
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 70%);
+      top: -150px;
+      right: -150px;
+      animation-delay: 0s;
+    }
+
+    .shape-2 {
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(59,130,246,0.4) 0%, rgba(59,130,246,0.1) 70%);
+      bottom: -100px;
+      left: -100px;
+      animation-delay: 7s;
+    }
+
+    .shape-3 {
+      width: 150px;
+      height: 150px;
+      background: radial-gradient(circle, rgba(147,51,234,0.3) 0%, rgba(147,51,234,0.1) 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: 14s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33% { transform: translateY(-30px) rotate(120deg); }
+      66% { transform: translateY(20px) rotate(240deg); }
+    }
+
+    /* Main Container */
+    .dashboard-container {
+      position: relative;
+      z-index: 1;
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    /* Glass Card */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
       overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      position: relative;
     }
-    
-    .section-header {
-      display: flex;
-      align-items: center;
-      padding: 16px 20px;
-      background: rgba(30, 41, 59, 0.8);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
     }
-    
-    .section-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-right: auto;
-      color: #f1f5f9;
+
+    /* Header */
+    .header {
+      padding: 24px 24px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
-    
-    .toggle-buttons {
-      display: flex;
-      background: rgba(51, 65, 85, 0.4);
-      border-radius: 10px;
-      padding: 2px;
-      border: 1px solid rgba(71, 85, 105, 0.3);
-    }
-    
-    .toggle-btn {
-      padding: 6px 12px;
-      border: none;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      color: #94a3b8;
-      background: transparent;
-    }
-    
-    .toggle-btn.active {
-      background: rgba(59, 130, 246, 0.8);
+
+    .title {
       color: white;
-      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+      font-size: 20px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    /* Toggle Buttons */
+    .toggle-container {
+      display: flex;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 4px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .toggle-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .toggle-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .toggle-btn:hover::before {
+      opacity: 1;
+    }
+
+    .toggle-btn.active {
+      background: linear-gradient(135deg, rgba(59,130,246,0.8), rgba(147,51,234,0.6));
+      color: white;
+      box-shadow: 0 8px 25px rgba(59,130,246,0.4);
+      transform: translateY(-1px);
+    }
+
+    .toggle-btn.active::before {
+      opacity: 0;
     }
 
     /* Stocks Container */
     .stocks-container {
-      height: 480px;
+      height: 500px;
       overflow-y: auto;
       overflow-x: hidden;
       scrollbar-width: none;
       -ms-overflow-style: none;
-      padding: 0;
     }
 
     .stocks-container::-webkit-scrollbar {
       display: none;
     }
-    
+
     .stocks-list {
+      padding: 16px;
       display: flex;
       flex-direction: column;
+      gap: 12px;
     }
-    
+
+    /* Stock Cards */
     .stock-card {
-      background: rgba(30, 41, 59, 0.4);
-      backdrop-filter: blur(4px);
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: all 0.2s ease;
-      border-bottom: 1px solid rgba(71, 85, 105, 0.15);
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(15px);
+      border-radius: 18px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .stock-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
 
     .stock-card:hover {
-      background: rgba(30, 41, 59, 0.6);
-      transform: translateX(2px);
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      border-color: rgba(255, 255, 255, 0.3);
     }
 
-    .stock-card.positive {
-      border-left: 3px solid #10b981;
+    .stock-card:hover::before {
+      opacity: 1;
     }
 
-    .stock-card.negative {
-      border-left: 3px solid #ef4444;
+    .stock-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
     }
 
-    .stock-card.neutral {
-      border-left: 3px solid #6b7280;
-    }
-    
     .stock-info {
       flex: 1;
-      margin-right: 12px;
     }
-    
+
     .stock-ticker {
-      font-size: 14px;
+      color: white;
+      font-size: 16px;
       font-weight: 700;
-      color: #f8fafc;
-      margin-bottom: 2px;
-      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+      letter-spacing: -0.02em;
     }
-    
+
     .stock-name {
-      font-size: 11px;
-      color: #94a3b8;
-      line-height: 1.3;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
       font-weight: 400;
+      line-height: 1.4;
       display: -webkit-box;
-      -webkit-line-clamp: 1;
+      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
@@ -153,159 +263,122 @@
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 2px;
-      min-width: 90px;
+      gap: 4px;
     }
-    
+
     .stock-price {
-      font-size: 14px;
-      font-weight: 600;
-      color: #f8fafc;
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
       font-variant-numeric: tabular-nums;
     }
-    
+
     .stock-change {
       display: flex;
       align-items: center;
-      gap: 3px;
-      font-size: 11px;
+      gap: 6px;
+      font-size: 12px;
       font-weight: 600;
-      padding: 2px 6px;
-      border-radius: 4px;
+      padding: 6px 10px;
+      border-radius: 12px;
       font-variant-numeric: tabular-nums;
+      backdrop-filter: blur(10px);
     }
-    
+
     .change-positive {
+      background: rgba(34, 197, 94, 0.2);
       color: #22c55e;
-      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
     }
-    
+
     .change-negative {
+      background: rgba(239, 68, 68, 0.2);
       color: #f87171;
-      background: rgba(248, 113, 113, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
     }
 
-    .change-neutral {
-      color: #9ca3af;
-      background: rgba(156, 163, 175, 0.1);
-    }
-    
-    .arrow-up::before {
-      content: "▲";
-      font-size: 8px;
-    }
-    
-    .arrow-down::before {
-      content: "▼";
-      font-size: 8px;
+    .change-icon {
+      font-size: 10px;
     }
 
-    .arrow-neutral::before {
-      content: "●";
-      font-size: 8px;
-    }
-
-    /* Performance-based row coloring */
-    .stock-card.high-gain {
-      background: linear-gradient(90deg, rgba(34, 197, 94, 0.08) 0%, rgba(30, 41, 59, 0.4) 30%);
-    }
-
-    .stock-card.medium-gain {
-      background: linear-gradient(90deg, rgba(34, 197, 94, 0.04) 0%, rgba(30, 41, 59, 0.4) 30%);
-    }
-
-    .stock-card.high-loss {
-      background: linear-gradient(90deg, rgba(248, 113, 113, 0.08) 0%, rgba(30, 41, 59, 0.4) 30%);
-    }
-
-    .stock-card.medium-loss {
-      background: linear-gradient(90deg, rgba(248, 113, 113, 0.04) 0%, rgba(30, 41, 59, 0.4) 30%);
-    }
-
-    /* Loading States */
+    /* Loading Skeleton */
     .loading-skeleton {
       display: flex;
       flex-direction: column;
+      gap: 12px;
+      padding: 16px;
     }
 
     .skeleton-card {
-      background: rgba(30, 41, 59, 0.4);
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      animation: pulse 1.5s ease-in-out infinite;
-      border-bottom: 1px solid rgba(71, 85, 105, 0.15);
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(15px);
+      border-radius: 18px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      animation: pulse 2s ease-in-out infinite;
     }
 
-    .skeleton-text {
-      background: rgba(71, 85, 105, 0.4);
-      border-radius: 4px;
-      height: 12px;
+    .skeleton-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .skeleton-bar {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      animation: shimmer 2s ease-in-out infinite;
     }
 
     .skeleton-ticker {
-      width: 60px;
-      height: 14px;
-      background: rgba(71, 85, 105, 0.5);
-      border-radius: 4px;
-      margin-bottom: 4px;
+      width: 80px;
+      height: 16px;
+      margin-bottom: 8px;
     }
 
     .skeleton-name {
-      width: 100px;
+      width: 140px;
+      height: 12px;
     }
 
     .skeleton-price {
-      width: 50px;
-      height: 14px;
-      background: rgba(71, 85, 105, 0.5);
-      border-radius: 4px;
-      margin-bottom: 2px;
+      width: 70px;
+      height: 16px;
+      margin-bottom: 8px;
     }
 
     .skeleton-change {
-      width: 70px;
+      width: 90px;
+      height: 12px;
     }
 
     @keyframes pulse {
-      0%, 100% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.4;
-      }
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
     }
 
-    /* Error States */
-    .error {
-      text-align: center;
-      padding: 40px 20px;
-      color: #f87171;
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .error-icon {
-      font-size: 24px;
-      margin-bottom: 8px;
-      display: block;
+    @keyframes shimmer {
+      0% { background-position: -200px 0; }
+      100% { background-position: calc(200px + 100%) 0; }
     }
 
     /* Update Indicator */
     .update-indicator {
       position: absolute;
-      top: 16px;
+      top: 20px;
       right: 20px;
       background: rgba(34, 197, 94, 0.9);
       color: white;
-      padding: 2px 6px;
-      border-radius: 8px;
-      font-size: 9px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
       font-weight: 600;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(34, 197, 94, 0.3);
       opacity: 0;
-      transform: translateY(-5px);
+      transform: translateY(-10px);
       transition: all 0.3s ease;
+      z-index: 10;
     }
 
     .update-indicator.show {
@@ -313,411 +386,513 @@
       transform: translateY(0);
     }
 
-    /* Last Updated */
-    .last-updated {
-      color: #64748b;
-      font-size: 10px;
+    /* Footer */
+    .footer {
+      padding: 16px 24px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
       text-align: center;
-      padding: 8px;
-      background: rgba(30, 41, 59, 0.3);
     }
 
-    /* Responsive */
+    .last-updated {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    /* Error State */
+    .error-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .error-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .error-message {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* Responsive Design */
     @media (max-width: 480px) {
-      body {
-        padding: 8px;
+      .dashboard-container {
+        padding: 12px;
       }
 
-      .top-movers-section {
-        border-radius: 14px;
-      }
-      
-      .section-header {
-        padding: 14px 16px;
+      .glass-card {
+        border-radius: 20px;
       }
 
-      .section-title {
-        font-size: 15px;
+      .header {
+        padding: 20px 20px 16px;
       }
-      
+
+      .title {
+        font-size: 18px;
+        margin-bottom: 16px;
+      }
+
       .toggle-btn {
-        padding: 5px 10px;
-        font-size: 11px;
+        padding: 10px 14px;
+        font-size: 13px;
       }
 
       .stocks-container {
-        height: 500px;
+        height: 460px;
       }
-      
+
+      .stocks-list {
+        padding: 12px;
+        gap: 10px;
+      }
+
       .stock-card {
-        padding: 12px 16px;
+        padding: 16px;
+        border-radius: 16px;
       }
-      
+
       .stock-ticker {
-        font-size: 13px;
+        font-size: 15px;
       }
-      
+
       .stock-name {
-        font-size: 10px;
+        font-size: 11px;
       }
-      
+
       .stock-price {
-        font-size: 13px;
+        font-size: 15px;
       }
 
       .stock-change {
-        font-size: 10px;
-        padding: 2px 5px;
+        font-size: 11px;
+        padding: 5px 8px;
       }
     }
   </style>
 </head>
 <body>
+  <!-- Animated Background -->
+  <div class="background-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+
+  <!-- Main Dashboard -->
   <div class="dashboard-container">
-    <!-- Main Section -->
-    <div class="top-movers-section">
-      <div class="section-header">
-        <h2 class="section-title">Top Movers</h2>
-        <div class="toggle-buttons">
-          <button class="toggle-btn active" id="gainers-btn">Gainers</button>
-          <button class="toggle-btn" id="losers-btn">Losers</button>
+    <div class="glass-card">
+      <!-- Header -->
+      <div class="header">
+        <h1 class="title">Stock Dashboard</h1>
+        <div class="toggle-container">
+          <button class="toggle-btn active" id="gainers-btn">
+            📈 Top Gainers
+          </button>
+          <button class="toggle-btn" id="losers-btn">
+            📉 Top Losers
+          </button>
         </div>
       </div>
-      
+
+      <!-- Stocks Container -->
       <div class="stocks-container" id="stocks-container">
         <div class="stocks-list" id="stocks-list">
           <!-- Loading Skeleton -->
           <div class="loading-skeleton" id="loading-skeleton">
             <div class="skeleton-card">
-              <div>
-                <div class="skeleton-ticker"></div>
-                <div class="skeleton-text skeleton-name"></div>
-              </div>
-              <div>
-                <div class="skeleton-price"></div>
-                <div class="skeleton-text skeleton-change"></div>
-              </div>
-            </div>
-            <div class="skeleton-card">
-              <div>
-                <div class="skeleton-ticker"></div>
-                <div class="skeleton-text skeleton-name"></div>
-              </div>
-              <div>
-                <div class="skeleton-price"></div>
-                <div class="skeleton-text skeleton-change"></div>
+              <div class="skeleton-content">
+                <div>
+                  <div class="skeleton-bar skeleton-ticker"></div>
+                  <div class="skeleton-bar skeleton-name"></div>
+                </div>
+                <div>
+                  <div class="skeleton-bar skeleton-price"></div>
+                  <div class="skeleton-bar skeleton-change"></div>
+                </div>
               </div>
             </div>
             <div class="skeleton-card">
-              <div>
-                <div class="skeleton-ticker"></div>
-                <div class="skeleton-text skeleton-name"></div>
-              </div>
-              <div>
-                <div class="skeleton-price"></div>
-                <div class="skeleton-text skeleton-change"></div>
+              <div class="skeleton-content">
+                <div>
+                  <div class="skeleton-bar skeleton-ticker"></div>
+                  <div class="skeleton-bar skeleton-name"></div>
+                </div>
+                <div>
+                  <div class="skeleton-bar skeleton-price"></div>
+                  <div class="skeleton-bar skeleton-change"></div>
+                </div>
               </div>
             </div>
             <div class="skeleton-card">
-              <div>
-                <div class="skeleton-ticker"></div>
-                <div class="skeleton-text skeleton-name"></div>
+              <div class="skeleton-content">
+                <div>
+                  <div class="skeleton-bar skeleton-ticker"></div>
+                  <div class="skeleton-bar skeleton-name"></div>
+                </div>
+                <div>
+                  <div class="skeleton-bar skeleton-price"></div>
+                  <div class="skeleton-bar skeleton-change"></div>
+                </div>
               </div>
-              <div>
-                <div class="skeleton-price"></div>
-                <div class="skeleton-text skeleton-change"></div>
+            </div>
+            <div class="skeleton-card">
+              <div class="skeleton-content">
+                <div>
+                  <div class="skeleton-bar skeleton-ticker"></div>
+                  <div class="skeleton-bar skeleton-name"></div>
+                </div>
+                <div>
+                  <div class="skeleton-bar skeleton-price"></div>
+                  <div class="skeleton-bar skeleton-change"></div>
+                </div>
+              </div>
+            </div>
+            <div class="skeleton-card">
+              <div class="skeleton-content">
+                <div>
+                  <div class="skeleton-bar skeleton-ticker"></div>
+                  <div class="skeleton-bar skeleton-name"></div>
+                </div>
+                <div>
+                  <div class="skeleton-bar skeleton-price"></div>
+                  <div class="skeleton-bar skeleton-change"></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="last-updated" id="last-updated"></div>
-      <div class="update-indicator" id="update-indicator">Updated</div>
+      <!-- Footer -->
+      <div class="footer">
+        <div class="last-updated" id="last-updated"></div>
+      </div>
+
+      <!-- Update Indicator -->
+      <div class="update-indicator" id="update-indicator">Updated ✨</div>
     </div>
   </div>
 
+  <!-- Papa Parse for CSV -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <!-- Main JavaScript -->
   <script>
-    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
-    
-    let stockData = [];
-    let currentView = 'gainers';
-    let isLoading = false;
-    let lastUpdateTime = null;
-    
-    // DOM Elements
-    const gainersBtn = document.getElementById('gainers-btn');
-    const losersBtn = document.getElementById('losers-btn');
-    const stocksList = document.getElementById('stocks-list');
-    const stocksContainer = document.getElementById('stocks-container');
-    const lastUpdated = document.getElementById('last-updated');
-    const loadingSkeleton = document.getElementById('loading-skeleton');
-    const updateIndicator = document.getElementById('update-indicator');
-    
-    // Cache management
-    function getCachedData() {
-      try {
-        const cached = localStorage.getItem('stockData');
-        const cacheTime = localStorage.getItem('stockDataTime');
-        if (cached && cacheTime) {
-          const age = Date.now() - parseInt(cacheTime);
-          if (age < 5 * 60 * 1000) {
-            return JSON.parse(cached);
-          }
-        }
-      } catch (e) {
-        console.log('Cache error:', e);
-      }
-      return null;
-    }
-
-    function setCachedData(data) {
-      try {
-        localStorage.setItem('stockData', JSON.stringify(data));
-        localStorage.setItem('stockDataTime', Date.now().toString());
-      } catch (e) {
-        console.log('Cache save error:', e);
-      }
-    }
-
-    function showUpdateIndicator() {
-      updateIndicator.classList.add('show');
-      setTimeout(() => {
-        updateIndicator.classList.remove('show');
-      }, 2000);
-    }
-
-    function getPerformanceClass(changePct) {
-      const pct = Math.abs(parseFloat(changePct.replace('%', '')));
-      
-      if (changePct.includes('-')) {
-        if (pct >= 5) return 'high-loss';
-        if (pct >= 2) return 'medium-loss';
-        return '';
-      } else {
-        if (pct >= 5) return 'high-gain';
-        if (pct >= 2) return 'medium-gain';
-        return '';
-      }
-    }
-
-    function loadData(showIndicator = false) {
-      if (isLoading) return;
-      
-      const cached = getCachedData();
-      if (cached && stockData.length === 0) {
-        stockData = cached;
-        renderStocks();
-        updateLastUpdatedTime();
-      }
-      
-      isLoading = true;
-      
-      Papa.parse(CSV_URL, {
-        download: true,
-        header: false,
-        skipEmptyLines: true,
-        complete: function(results) {
-          try {
-            const rows = results.data;
-            
-            if (rows.length < 3) {
-              throw new Error('Insufficient data rows');
-            }
-            
-            const dataRows = rows.slice(2);
-            
-            const newData = dataRows.map(row => {
-              if (!row[0] || row[0].toString().trim() === '') return null;
-              
-              const ticker = row[0] ? row[0].toString().trim() : '';
-              const name = row[2] ? row[2].toString().trim() : '';
-              const ltp = row[9] ? row[9].toString().trim() : '0';
-              const change = row[10] ? row[10].toString().trim() : '0';
-              const changePct = row[11] ? row[11].toString().trim() : '0%';
-              
-              return {
-                ticker: ticker,
-                name: name,
-                ltp: parseFloat(ltp) || 0,
-                change: parseFloat(change) || 0,
-                changePct: changePct,
-                ltpFormatted: ltp,
-                changeFormatted: change
-              };
-            }).filter(stock => stock && stock.ticker && stock.ltp > 0);
-            
-            if (JSON.stringify(newData) !== JSON.stringify(stockData)) {
-              stockData = newData;
-              setCachedData(stockData);
-              renderStocks();
-              if (showIndicator) showUpdateIndicator();
-            }
-            
-            updateLastUpdatedTime();
-            isLoading = false;
-            
-          } catch (error) {
-            console.error('Error processing data:', error);
-            if (stockData.length === 0) {
-              showError('Error loading data. Please refresh.');
-            }
-            isLoading = false;
-          }
-        },
-        error: function(error) {
-          console.error('Error loading CSV:', error);
-          if (stockData.length === 0) {
-            showError('Failed to load data. Check connection.');
-          }
-          isLoading = false;
-        }
-      });
-    }
-
-    function updateLastUpdatedTime() {
-      const now = new Date();
-      lastUpdated.textContent = `Updated ${now.toLocaleTimeString('en-IN', { 
-        hour: '2-digit', 
-        minute: '2-digit'
-      })}`;
-      lastUpdateTime = now;
-    }
-    
-    function showError(message) {
-      stocksList.innerHTML = `
-        <div class="error">
-          <span class="error-icon">⚠️</span>
-          ${message}
-        </div>
-      `;
-    }
-    
-    function renderStocks() {
-      loadingSkeleton.style.display = 'none';
-      
-      if (stockData.length === 0) {
-        showError('No stock data available');
-        return;
-      }
-      
-      let filteredData = [...stockData];
-      
-      if (currentView === 'gainers') {
-        filteredData = filteredData.filter(stock => stock.change > 0)
-                                   .sort((a, b) => {
-                                     const aPercent = parseFloat(a.changePct.replace('%', ''));
-                                     const bPercent = parseFloat(b.changePct.replace('%', ''));
-                                     return bPercent - aPercent;
-                                   });
-      } else {
-        filteredData = filteredData.filter(stock => stock.change < 0)
-                                   .sort((a, b) => {
-                                     const aPercent = parseFloat(a.changePct.replace('%', ''));
-                                     const bPercent = parseFloat(b.changePct.replace('%', ''));
-                                     return aPercent - bPercent;
-                                   });
-      }
-      
-      if (filteredData.length === 0) {
-        showError(`No ${currentView} found`);
-        return;
-      }
-      
-      const stocksHTML = filteredData.map(stock => {
-        const change = stock.change;
-        let changeClass, cardClass, arrowClass;
+    class ProStockDashboard {
+      constructor() {
+        this.csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
+        this.stockData = [];
+        this.currentView = 'gainers';
+        this.isLoading = false;
+        this.lastUpdateTime = null;
+        this.visibleStockCount = 5;
         
-        if (change > 0) {
-          changeClass = 'change-positive';
-          cardClass = 'positive';
-          arrowClass = 'arrow-up';
-        } else if (change < 0) {
-          changeClass = 'change-negative';
-          cardClass = 'negative';
-          arrowClass = 'arrow-down';
+        this.init();
+      }
+
+      init() {
+        this.setupEventListeners();
+        this.loadCachedData();
+        this.fetchData();
+        this.startAutoRefresh();
+      }
+
+      setupEventListeners() {
+        const gainersBtn = document.getElementById('gainers-btn');
+        const losersBtn = document.getElementById('losers-btn');
+        
+        gainersBtn.addEventListener('click', () => this.switchView('gainers'));
+        losersBtn.addEventListener('click', () => this.switchView('losers'));
+
+        // Smooth scroll handling
+        const stocksContainer = document.getElementById('stocks-container');
+        let isScrolling;
+        stocksContainer.addEventListener('scroll', () => {
+          window.clearTimeout(isScrolling);
+          isScrolling = setTimeout(() => {
+            // Handle scroll end
+          }, 66);
+        });
+      }
+
+      loadCachedData() {
+        try {
+          const cached = localStorage.getItem('pro_stock_data');
+          const cacheTime = localStorage.getItem('pro_stock_time');
+          
+          if (cached && cacheTime) {
+            const age = Date.now() - parseInt(cacheTime);
+            if (age < 5 * 60 * 1000) { // 5 minutes cache
+              this.stockData = JSON.parse(cached);
+              this.renderStocks();
+              this.updateTimestamp();
+            }
+          }
+        } catch (error) {
+          console.log('Cache load error:', error);
+        }
+      }
+
+      saveToCache(data) {
+        try {
+          localStorage.setItem('pro_stock_data', JSON.stringify(data));
+          localStorage.setItem('pro_stock_time', Date.now().toString());
+        } catch (error) {
+          console.log('Cache save error:', error);
+        }
+      }
+
+      async fetchData(showUpdateIndicator = false) {
+        if (this.isLoading) return;
+        
+        this.isLoading = true;
+        
+        try {
+          const response = await fetch(this.csvUrl);
+          const csvText = await response.text();
+          const newData = this.parseCSV(csvText);
+          
+          if (JSON.stringify(newData) !== JSON.stringify(this.stockData)) {
+            this.stockData = newData;
+            this.saveToCache(newData);
+            this.renderStocks();
+            
+            if (showUpdateIndicator) {
+              this.showUpdateIndicator();
+            }
+          }
+          
+          this.updateTimestamp();
+          
+        } catch (error) {
+          console.error('Data fetch error:', error);
+          if (this.stockData.length === 0) {
+            this.showError();
+          }
+        } finally {
+          this.isLoading = false;
+        }
+      }
+
+      parseCSV(csvText) {
+        const lines = csvText.trim().split('\n');
+        if (lines.length < 3) return [];
+        
+        // Skip first 2 header rows, start from row 3 (index 2)
+        const dataRows = lines.slice(2);
+        
+        return dataRows.map(line => {
+          const values = this.parseCSVLine(line);
+          
+          if (!values[0] || values[0].trim() === '') return null;
+          
+          const ticker = values[0] ? values[0].trim() : '';
+          const name = values[2] ? values[2].trim() : '';
+          const ltp = values[9] ? parseFloat(values[9]) || 0 : 0;
+          const change = values[10] ? parseFloat(values[10]) || 0 : 0;
+          const changePct = values[11] ? values[11].trim() : '0%';
+          
+          return {
+            ticker,
+            name,
+            ltp,
+            change,
+            changePct,
+            ltpFormatted: values[9] ? values[9].trim() : '0'
+          };
+        }).filter(stock => stock && stock.ticker && stock.ltp > 0);
+      }
+
+      parseCSVLine(line) {
+        const values = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            values.push(current);
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        values.push(current);
+        
+        return values;
+      }
+
+      switchView(view) {
+        if (this.currentView === view) return;
+        
+        this.currentView = view;
+        
+        // Update button states
+        const gainersBtn = document.getElementById('gainers-btn');
+        const losersBtn = document.getElementById('losers-btn');
+        
+        gainersBtn.classList.toggle('active', view === 'gainers');
+        losersBtn.classList.toggle('active', view === 'losers');
+        
+        this.renderStocks();
+      }
+
+      renderStocks() {
+        const stocksList = document.getElementById('stocks-list');
+        const loadingSkeleton = document.getElementById('loading-skeleton');
+        
+        if (this.stockData.length === 0) {
+          loadingSkeleton.style.display = 'flex';
+          return;
+        }
+        
+        loadingSkeleton.style.display = 'none';
+        
+        let filteredData = [...this.stockData];
+        
+        if (this.currentView === 'gainers') {
+          filteredData = filteredData
+            .filter(stock => stock.change > 0)
+            .sort((a, b) => {
+              const aPercent = parseFloat(a.changePct.replace('%', ''));
+              const bPercent = parseFloat(b.changePct.replace('%', ''));
+              return bPercent - aPercent;
+            });
         } else {
-          changeClass = 'change-neutral';
-          cardClass = 'neutral';
-          arrowClass = 'arrow-neutral';
-        }
-
-        const performanceClass = getPerformanceClass(stock.changePct);
-        
-        let percentDisplay = stock.changePct;
-        if (percentDisplay.includes('%')) {
-          percentDisplay = percentDisplay.replace('-', '');
+          filteredData = filteredData
+            .filter(stock => stock.change < 0)
+            .sort((a, b) => {
+              const aPercent = parseFloat(a.changePct.replace('%', ''));
+              const bPercent = parseFloat(b.changePct.replace('%', ''));
+              return aPercent - bPercent;
+            });
         }
         
-        return `
-          <div class="stock-card ${cardClass} ${performanceClass}">
-            <div class="stock-info">
-              <div class="stock-ticker">${stock.ticker}</div>
-              <div class="stock-name">${stock.name}</div>
+        if (filteredData.length === 0) {
+          stocksList.innerHTML = `
+            <div class="error-state">
+              <div class="error-icon">📊</div>
+              <div class="error-message">No ${this.currentView} found</div>
             </div>
-            <div class="stock-metrics">
-              <div class="stock-price">₹${parseFloat(stock.ltpFormatted).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
-              <div class="stock-change ${changeClass}">
-                <span class="${arrowClass}"></span>
-                ${Math.abs(stock.change).toFixed(2)} (${percentDisplay})
+          `;
+          return;
+        }
+        
+        const stocksHTML = filteredData.map(stock => {
+          const isPositive = stock.change > 0;
+          const changeClass = isPositive ? 'change-positive' : 'change-negative';
+          const changeIcon = isPositive ? '▲' : '▼';
+          
+          let percentDisplay = stock.changePct;
+          if (percentDisplay.includes('%')) {
+            percentDisplay = percentDisplay.replace('-', '');
+          }
+          
+          return `
+            <div class="stock-card">
+              <div class="stock-content">
+                <div class="stock-info">
+                  <div class="stock-ticker">${stock.ticker}</div>
+                  <div class="stock-name">${stock.name}</div>
+                </div>
+                <div class="stock-metrics">
+                  <div class="stock-price">₹${parseFloat(stock.ltpFormatted).toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  })}</div>
+                  <div class="stock-change ${changeClass}">
+                    <span class="change-icon">${changeIcon}</span>
+                    <span>${Math.abs(stock.change).toFixed(2)} (${percentDisplay})</span>
+                  </div>
+                </div>
               </div>
             </div>
+          `;
+        }).join('');
+        
+        stocksList.innerHTML = stocksHTML;
+        
+        // Reset scroll position
+        document.getElementById('stocks-container').scrollTop = 0;
+      }
+
+      showUpdateIndicator() {
+        const indicator = document.getElementById('update-indicator');
+        indicator.classList.add('show');
+        
+        setTimeout(() => {
+          indicator.classList.remove('show');
+        }, 3000);
+      }
+
+      showError() {
+        const stocksList = document.getElementById('stocks-list');
+        stocksList.innerHTML = `
+          <div class="error-state">
+            <div class="error-icon">⚠️</div>
+            <div class="error-message">Failed to load data. Please refresh.</div>
           </div>
         `;
-      }).join('');
-      
-      stocksList.innerHTML = stocksHTML;
-      stocksContainer.scrollTop = 0;
+      }
+
+      updateTimestamp() {
+        const lastUpdated = document.getElementById('last-updated');
+        const now = new Date();
+        lastUpdated.textContent = `Last updated: ${now.toLocaleTimeString('en-IN', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        })}`;
+        this.lastUpdateTime = now;
+      }
+
+      startAutoRefresh() {
+        // Smart refresh - only if user hasn't interacted recently
+        let lastInteraction = Date.now();
+        
+        ['click', 'scroll', 'touchstart'].forEach(event => {
+          document.addEventListener(event, () => {
+            lastInteraction = Date.now();
+          });
+        });
+        
+        setInterval(() => {
+          const timeSinceInteraction = Date.now() - lastInteraction;
+          const timeSinceUpdate = this.lastUpdateTime ? 
+            Date.now() - this.lastUpdateTime.getTime() : Infinity;
+          
+          // Only refresh if user hasn't interacted in 15 seconds and it's been 2+ minutes
+          if (timeSinceInteraction > 15000 && timeSinceUpdate > 120000) {
+            this.fetchData(true);
+          }
+        }, 30000);
+        
+        // Refresh on page visibility change
+        document.addEventListener('visibilitychange', () => {
+          if (!document.hidden) {
+            const timeSinceUpdate = this.lastUpdateTime ? 
+              Date.now() - this.lastUpdateTime.getTime() : Infinity;
+            
+            if (timeSinceUpdate > 60000) { // 1 minute
+              this.fetchData(true);
+            }
+          }
+        });
+      }
     }
-    
-    // Event Listeners
-    gainersBtn.addEventListener('click', () => {
-      if (currentView !== 'gainers') {
-        currentView = 'gainers';
-        gainersBtn.classList.add('active');
-        losersBtn.classList.remove('active');
-        renderStocks();
-      }
-    });
-    
-    losersBtn.addEventListener('click', () => {
-      if (currentView !== 'losers') {
-        currentView = 'losers';
-        losersBtn.classList.add('active');
-        gainersBtn.classList.remove('active');
-        renderStocks();
-      }
-    });
-    
-    // Initialize
-    loadData();
-    
-    // Smart refresh
-    let lastScrollTime = 0;
-    
-    stocksContainer.addEventListener('scroll', () => {
-      lastScrollTime = Date.now();
-    });
-    
-    function smartRefresh() {
-      const timeSinceScroll = Date.now() - lastScrollTime;
-      const timeSinceUpdate = lastUpdateTime ? Date.now() - lastUpdateTime.getTime() : Infinity;
-      
-      if (timeSinceScroll > 10000 && timeSinceUpdate > 120000) {
-        loadData(true);
-      }
-    }
-    
-    setInterval(smartRefresh, 30000);
-    
-    document.addEventListener('visibilitychange', function() {
-      if (!document.hidden) {
-        const timeSinceUpdate = lastUpdateTime ? Date.now() - lastUpdateTime.getTime() : Infinity;
-        if (timeSinceUpdate > 60000) {
-          loadData(true);
-        }
-      }
+
+    // Initialize the dashboard when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      new ProStockDashboard();
     });
   </script>
 </body>
