@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advanced Stock Dashboard</title>
+  <title>Stock Dashboard</title>
   <style>
     * {
       margin: 0;
@@ -12,10 +12,11 @@
     }
     
     body {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #0f172a;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       padding: 12px;
       min-height: 100vh;
+      color: #e2e8f0;
     }
     
     .dashboard-container {
@@ -23,92 +24,66 @@
       margin: 0 auto;
     }
 
-    /* Header */
-    .header {
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(20px);
-      border-radius: 20px;
-      padding: 16px;
-      margin-bottom: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .header-title {
-      color: white;
-      font-size: 24px;
-      font-weight: 700;
-      text-align: center;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
-
-    .last-updated {
-      color: rgba(255, 255, 255, 0.8);
-      font-size: 11px;
-      text-align: center;
-      margin-top: 8px;
-    }
-
     /* Main Section */
     .top-movers-section {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 20px;
-      padding: 0;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      border: 1px solid rgba(71, 85, 105, 0.3);
       overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
     
     .section-header {
       display: flex;
       align-items: center;
-      padding: 20px 20px 16px;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: white;
+      padding: 16px 20px;
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(71, 85, 105, 0.2);
     }
     
     .section-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 600;
       margin-right: auto;
+      color: #f1f5f9;
     }
     
     .toggle-buttons {
       display: flex;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
-      padding: 3px;
+      background: rgba(51, 65, 85, 0.4);
+      border-radius: 10px;
+      padding: 2px;
+      border: 1px solid rgba(71, 85, 105, 0.3);
     }
     
     .toggle-btn {
-      padding: 8px 14px;
+      padding: 6px 12px;
       border: none;
-      border-radius: 9px;
-      font-size: 13px;
-      font-weight: 600;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
       cursor: pointer;
       transition: all 0.2s ease;
-      color: white;
+      color: #94a3b8;
+      background: transparent;
     }
     
     .toggle-btn.active {
-      background: white;
-      color: #667eea;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-    
-    .toggle-btn:not(.active) {
-      background: transparent;
+      background: rgba(59, 130, 246, 0.8);
+      color: white;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
     }
 
-    /* Stocks Container with Scroll */
+    /* Stocks Container */
     .stocks-container {
-      height: 400px;
+      height: 480px;
       overflow-y: auto;
       overflow-x: hidden;
       scrollbar-width: none;
       -ms-overflow-style: none;
-      padding: 0 20px 20px;
+      padding: 0;
     }
 
     .stocks-container::-webkit-scrollbar {
@@ -118,50 +93,35 @@
     .stocks-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      padding-top: 16px;
     }
     
     .stock-card {
-      background: white;
-      border-radius: 16px;
-      padding: 16px;
+      background: rgba(30, 41, 59, 0.4);
+      backdrop-filter: blur(4px);
+      padding: 14px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 1px solid rgba(0,0,0,0.08);
+      transition: all 0.2s ease;
+      border-bottom: 1px solid rgba(71, 85, 105, 0.15);
       position: relative;
-      overflow: hidden;
     }
 
-    .stock-card::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      background: var(--accent-color);
-      transform: scaleY(0);
-      transition: transform 0.3s ease;
-    }
-
-    .stock-card:hover::before {
-      transform: scaleY(1);
-    }
-    
     .stock-card:hover {
-      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
-      transform: translateY(-2px);
+      background: rgba(30, 41, 59, 0.6);
+      transform: translateX(2px);
     }
 
     .stock-card.positive {
-      --accent-color: #10b981;
+      border-left: 3px solid #10b981;
     }
 
     .stock-card.negative {
-      --accent-color: #ef4444;
+      border-left: 3px solid #ef4444;
+    }
+
+    .stock-card.neutral {
+      border-left: 3px solid #6b7280;
     }
     
     .stock-info {
@@ -170,20 +130,20 @@
     }
     
     .stock-ticker {
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 700;
-      color: #1f2937;
-      margin-bottom: 4px;
-      letter-spacing: -0.02em;
+      color: #f8fafc;
+      margin-bottom: 2px;
+      letter-spacing: -0.01em;
     }
     
     .stock-name {
-      font-size: 12px;
-      color: #6b7280;
+      font-size: 11px;
+      color: #94a3b8;
       line-height: 1.3;
-      font-weight: 500;
+      font-weight: 400;
       display: -webkit-box;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 1;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
@@ -193,94 +153,119 @@
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 4px;
-      min-width: 80px;
+      gap: 2px;
+      min-width: 90px;
     }
     
     .stock-price {
-      font-size: 16px;
-      font-weight: 700;
-      color: #1f2937;
+      font-size: 14px;
+      font-weight: 600;
+      color: #f8fafc;
       font-variant-numeric: tabular-nums;
     }
     
     .stock-change {
       display: flex;
       align-items: center;
-      gap: 4px;
-      font-size: 12px;
+      gap: 3px;
+      font-size: 11px;
       font-weight: 600;
-      padding: 4px 8px;
-      border-radius: 8px;
+      padding: 2px 6px;
+      border-radius: 4px;
       font-variant-numeric: tabular-nums;
     }
     
     .change-positive {
-      color: #059669;
-      background: rgba(16, 185, 129, 0.1);
+      color: #22c55e;
+      background: rgba(34, 197, 94, 0.1);
     }
     
     .change-negative {
-      color: #dc2626;
-      background: rgba(239, 68, 68, 0.1);
+      color: #f87171;
+      background: rgba(248, 113, 113, 0.1);
+    }
+
+    .change-neutral {
+      color: #9ca3af;
+      background: rgba(156, 163, 175, 0.1);
     }
     
     .arrow-up::before {
       content: "▲";
-      font-size: 10px;
+      font-size: 8px;
     }
     
     .arrow-down::before {
       content: "▼";
-      font-size: 10px;
+      font-size: 8px;
+    }
+
+    .arrow-neutral::before {
+      content: "●";
+      font-size: 8px;
+    }
+
+    /* Performance-based row coloring */
+    .stock-card.high-gain {
+      background: linear-gradient(90deg, rgba(34, 197, 94, 0.08) 0%, rgba(30, 41, 59, 0.4) 30%);
+    }
+
+    .stock-card.medium-gain {
+      background: linear-gradient(90deg, rgba(34, 197, 94, 0.04) 0%, rgba(30, 41, 59, 0.4) 30%);
+    }
+
+    .stock-card.high-loss {
+      background: linear-gradient(90deg, rgba(248, 113, 113, 0.08) 0%, rgba(30, 41, 59, 0.4) 30%);
+    }
+
+    .stock-card.medium-loss {
+      background: linear-gradient(90deg, rgba(248, 113, 113, 0.04) 0%, rgba(30, 41, 59, 0.4) 30%);
     }
 
     /* Loading States */
     .loading-skeleton {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      padding: 16px 20px 20px;
     }
 
     .skeleton-card {
-      background: #f3f4f6;
-      border-radius: 16px;
-      padding: 16px;
+      background: rgba(30, 41, 59, 0.4);
+      padding: 14px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       animation: pulse 1.5s ease-in-out infinite;
+      border-bottom: 1px solid rgba(71, 85, 105, 0.15);
     }
 
     .skeleton-text {
-      background: #e5e7eb;
+      background: rgba(71, 85, 105, 0.4);
       border-radius: 4px;
       height: 12px;
     }
 
     .skeleton-ticker {
-      width: 80px;
-      height: 16px;
-      background: #d1d5db;
-      border-radius: 4px;
-      margin-bottom: 8px;
-    }
-
-    .skeleton-name {
-      width: 120px;
-    }
-
-    .skeleton-price {
       width: 60px;
-      height: 16px;
-      background: #d1d5db;
+      height: 14px;
+      background: rgba(71, 85, 105, 0.5);
       border-radius: 4px;
       margin-bottom: 4px;
     }
 
+    .skeleton-name {
+      width: 100px;
+    }
+
+    .skeleton-price {
+      width: 50px;
+      height: 14px;
+      background: rgba(71, 85, 105, 0.5);
+      border-radius: 4px;
+      margin-bottom: 2px;
+    }
+
     .skeleton-change {
-      width: 80px;
+      width: 70px;
     }
 
     @keyframes pulse {
@@ -288,7 +273,7 @@
         opacity: 1;
       }
       50% {
-        opacity: 0.6;
+        opacity: 0.4;
       }
     }
 
@@ -296,50 +281,30 @@
     .error {
       text-align: center;
       padding: 40px 20px;
-      color: #dc2626;
-      font-size: 14px;
+      color: #f87171;
+      font-size: 13px;
       font-weight: 500;
     }
 
     .error-icon {
-      font-size: 32px;
-      margin-bottom: 12px;
+      font-size: 24px;
+      margin-bottom: 8px;
       display: block;
-    }
-
-    /* Scroll Indicator */
-    .scroll-indicator {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      color: #9ca3af;
-      font-size: 10px;
-      font-weight: 600;
-      background: rgba(255, 255, 255, 0.8);
-      padding: 4px 8px;
-      border-radius: 12px;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .scroll-indicator.show {
-      opacity: 1;
     }
 
     /* Update Indicator */
     .update-indicator {
       position: absolute;
-      top: 10px;
+      top: 16px;
       right: 20px;
-      background: rgba(16, 185, 129, 0.9);
+      background: rgba(34, 197, 94, 0.9);
       color: white;
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-size: 9px;
       font-weight: 600;
       opacity: 0;
-      transform: translateY(-10px);
+      transform: translateY(-5px);
       transition: all 0.3s ease;
     }
 
@@ -348,75 +313,67 @@
       transform: translateY(0);
     }
 
+    /* Last Updated */
+    .last-updated {
+      color: #64748b;
+      font-size: 10px;
+      text-align: center;
+      padding: 8px;
+      background: rgba(30, 41, 59, 0.3);
+    }
+
     /* Responsive */
     @media (max-width: 480px) {
       body {
         padding: 8px;
       }
 
-      .header {
-        padding: 12px;
-        border-radius: 16px;
-      }
-
-      .header-title {
-        font-size: 20px;
-      }
-
       .top-movers-section {
-        border-radius: 16px;
-      }
-      
-      .section-header {
-        padding: 16px 16px 12px;
-      }
-
-      .section-title {
-        font-size: 16px;
-      }
-      
-      .toggle-btn {
-        padding: 6px 12px;
-        font-size: 12px;
-      }
-
-      .stocks-container {
-        padding: 0 16px 16px;
-        height: 420px;
-      }
-      
-      .stock-card {
-        padding: 14px;
         border-radius: 14px;
       }
       
-      .stock-ticker {
+      .section-header {
+        padding: 14px 16px;
+      }
+
+      .section-title {
         font-size: 15px;
+      }
+      
+      .toggle-btn {
+        padding: 5px 10px;
+        font-size: 11px;
+      }
+
+      .stocks-container {
+        height: 500px;
+      }
+      
+      .stock-card {
+        padding: 12px 16px;
+      }
+      
+      .stock-ticker {
+        font-size: 13px;
       }
       
       .stock-name {
-        font-size: 11px;
+        font-size: 10px;
       }
       
       .stock-price {
-        font-size: 15px;
+        font-size: 13px;
       }
 
       .stock-change {
-        font-size: 11px;
-        padding: 3px 6px;
+        font-size: 10px;
+        padding: 2px 5px;
       }
     }
   </style>
 </head>
 <body>
   <div class="dashboard-container">
-    <!-- Header -->
-    <div class="header">
-      <h1 class="header-title">Stock Watch</h1>
-      <div class="last-updated" id="last-updated"></div>
-    </div>
-
     <!-- Main Section -->
     <div class="top-movers-section">
       <div class="section-header">
@@ -461,11 +418,21 @@
                 <div class="skeleton-text skeleton-change"></div>
               </div>
             </div>
+            <div class="skeleton-card">
+              <div>
+                <div class="skeleton-ticker"></div>
+                <div class="skeleton-text skeleton-name"></div>
+              </div>
+              <div>
+                <div class="skeleton-price"></div>
+                <div class="skeleton-text skeleton-change"></div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="scroll-indicator" id="scroll-indicator">Scroll for more</div>
       </div>
 
+      <div class="last-updated" id="last-updated"></div>
       <div class="update-indicator" id="update-indicator">Updated</div>
     </div>
   </div>
@@ -477,7 +444,6 @@
     let stockData = [];
     let currentView = 'gainers';
     let isLoading = false;
-    let cachedData = null;
     let lastUpdateTime = null;
     
     // DOM Elements
@@ -487,7 +453,6 @@
     const stocksContainer = document.getElementById('stocks-container');
     const lastUpdated = document.getElementById('last-updated');
     const loadingSkeleton = document.getElementById('loading-skeleton');
-    const scrollIndicator = document.getElementById('scroll-indicator');
     const updateIndicator = document.getElementById('update-indicator');
     
     // Cache management
@@ -497,7 +462,7 @@
         const cacheTime = localStorage.getItem('stockDataTime');
         if (cached && cacheTime) {
           const age = Date.now() - parseInt(cacheTime);
-          if (age < 5 * 60 * 1000) { // 5 minutes cache
+          if (age < 5 * 60 * 1000) {
             return JSON.parse(cached);
           }
         }
@@ -523,10 +488,23 @@
       }, 2000);
     }
 
+    function getPerformanceClass(changePct) {
+      const pct = Math.abs(parseFloat(changePct.replace('%', '')));
+      
+      if (changePct.includes('-')) {
+        if (pct >= 5) return 'high-loss';
+        if (pct >= 2) return 'medium-loss';
+        return '';
+      } else {
+        if (pct >= 5) return 'high-gain';
+        if (pct >= 2) return 'medium-gain';
+        return '';
+      }
+    }
+
     function loadData(showIndicator = false) {
       if (isLoading) return;
       
-      // Try cache first for instant load
       const cached = getCachedData();
       if (cached && stockData.length === 0) {
         stockData = cached;
@@ -570,7 +548,6 @@
               };
             }).filter(stock => stock && stock.ticker && stock.ltp > 0);
             
-            // Only update if data actually changed
             if (JSON.stringify(newData) !== JSON.stringify(stockData)) {
               stockData = newData;
               setCachedData(stockData);
@@ -601,10 +578,9 @@
 
     function updateLastUpdatedTime() {
       const now = new Date();
-      lastUpdated.textContent = `Last updated: ${now.toLocaleTimeString('en-IN', { 
+      lastUpdated.textContent = `Updated ${now.toLocaleTimeString('en-IN', { 
         hour: '2-digit', 
-        minute: '2-digit',
-        hour12: true 
+        minute: '2-digit'
       })}`;
       lastUpdateTime = now;
     }
@@ -630,28 +606,44 @@
       
       if (currentView === 'gainers') {
         filteredData = filteredData.filter(stock => stock.change > 0)
-                                   .sort((a, b) => b.change - a.change);
+                                   .sort((a, b) => {
+                                     const aPercent = parseFloat(a.changePct.replace('%', ''));
+                                     const bPercent = parseFloat(b.changePct.replace('%', ''));
+                                     return bPercent - aPercent;
+                                   });
       } else {
         filteredData = filteredData.filter(stock => stock.change < 0)
-                                   .sort((a, b) => a.change - b.change);
+                                   .sort((a, b) => {
+                                     const aPercent = parseFloat(a.changePct.replace('%', ''));
+                                     const bPercent = parseFloat(b.changePct.replace('%', ''));
+                                     return aPercent - bPercent;
+                                   });
       }
       
       if (filteredData.length === 0) {
         showError(`No ${currentView} found`);
         return;
       }
-
-      // Show scroll indicator if more than 5 items
-      if (filteredData.length > 5) {
-        scrollIndicator.classList.add('show');
-        setTimeout(() => scrollIndicator.classList.remove('show'), 3000);
-      }
       
       const stocksHTML = filteredData.map(stock => {
-        const isPositive = stock.change > 0;
-        const changeClass = isPositive ? 'change-positive' : 'change-negative';
-        const cardClass = isPositive ? 'positive' : 'negative';
-        const arrowClass = isPositive ? 'arrow-up' : 'arrow-down';
+        const change = stock.change;
+        let changeClass, cardClass, arrowClass;
+        
+        if (change > 0) {
+          changeClass = 'change-positive';
+          cardClass = 'positive';
+          arrowClass = 'arrow-up';
+        } else if (change < 0) {
+          changeClass = 'change-negative';
+          cardClass = 'negative';
+          arrowClass = 'arrow-down';
+        } else {
+          changeClass = 'change-neutral';
+          cardClass = 'neutral';
+          arrowClass = 'arrow-neutral';
+        }
+
+        const performanceClass = getPerformanceClass(stock.changePct);
         
         let percentDisplay = stock.changePct;
         if (percentDisplay.includes('%')) {
@@ -659,7 +651,7 @@
         }
         
         return `
-          <div class="stock-card ${cardClass}">
+          <div class="stock-card ${cardClass} ${performanceClass}">
             <div class="stock-info">
               <div class="stock-ticker">${stock.ticker}</div>
               <div class="stock-name">${stock.name}</div>
@@ -676,8 +668,6 @@
       }).join('');
       
       stocksList.innerHTML = stocksHTML;
-      
-      // Reset scroll position when switching views
       stocksContainer.scrollTop = 0;
     }
     
@@ -699,22 +689,11 @@
         renderStocks();
       }
     });
-
-    // Scroll handling
-    stocksContainer.addEventListener('scroll', () => {
-      const { scrollTop, scrollHeight, clientHeight } = stocksContainer;
-      const scrollPercent = (scrollTop / (scrollHeight - clientHeight)) * 100;
-      
-      if (scrollPercent > 10 && scrollPercent < 90) {
-        scrollIndicator.classList.remove('show');
-      }
-    });
     
     // Initialize
     loadData();
     
-    // Smart refresh - only every 2 minutes, and not if user is actively scrolling
-    let refreshTimer;
+    // Smart refresh
     let lastScrollTime = 0;
     
     stocksContainer.addEventListener('scroll', () => {
@@ -725,20 +704,17 @@
       const timeSinceScroll = Date.now() - lastScrollTime;
       const timeSinceUpdate = lastUpdateTime ? Date.now() - lastUpdateTime.getTime() : Infinity;
       
-      // Only refresh if user hasn't scrolled in 10 seconds and it's been at least 2 minutes
       if (timeSinceScroll > 10000 && timeSinceUpdate > 120000) {
         loadData(true);
       }
     }
     
-    // Set smart refresh interval
     setInterval(smartRefresh, 30000);
     
-    // Refresh on page focus
     document.addEventListener('visibilitychange', function() {
       if (!document.hidden) {
         const timeSinceUpdate = lastUpdateTime ? Date.now() - lastUpdateTime.getTime() : Infinity;
-        if (timeSinceUpdate > 60000) { // 1 minute
+        if (timeSinceUpdate > 60000) {
           loadData(true);
         }
       }
