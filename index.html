@@ -878,7 +878,7 @@
         document.documentElement.style.background = '#0a0a0a';
         document.body.style.background = '#0a0a0a';
 
-        class DualSectionStockDashboard {
+        class CorrectedStockDashboard {
             constructor() {
                 this.csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
                 
@@ -1052,8 +1052,8 @@
 
             getCachedData() {
                 try {
-                    const cached = localStorage.getItem('dualSectionData');
-                    const cacheTime = localStorage.getItem('dualSectionDataTime');
+                    const cached = localStorage.getItem('correctedStockData');
+                    const cacheTime = localStorage.getItem('correctedStockDataTime');
                     if (cached && cacheTime) {
                         const age = Date.now() - parseInt(cacheTime);
                         if (age < 180000) { // 3 minutes
@@ -1068,11 +1068,24 @@
 
             setCachedData(data) {
                 try {
-                    localStorage.setItem('dualSectionData', JSON.stringify(data));
-                    localStorage.setItem('dualSectionDataTime', Date.now().toString());
+                    localStorage.setItem('correctedStockData', JSON.stringify(data));
+                    localStorage.setItem('correctedStockDataTime', Date.now().toString());
                 } catch (e) {
                     console.log('Cache save error:', e);
                 }
+            }
+
+            // Function to calculate change amount from LTP and change percentage
+            calculateChangeAmount(ltp, changePct) {
+                if (!changePct || changePct === '0%') return 0;
+                
+                const pctValue = parseFloat(changePct.replace('%', ''));
+                if (isNaN(pctValue)) return 0;
+                
+                // Formula: change = (ltp * changePct) / (100 + changePct) for positive
+                // Formula: change = (ltp * changePct) / (100 + changePct) for negative
+                const changeAmount = (ltp * pctValue) / (100 + pctValue);
+                return changeAmount;
             }
 
             async loadData(showIndicator = false) {
@@ -1118,15 +1131,25 @@
                                 const newData = dataRows.map(row => {
                                     if (!row[0] || !row[0].toString().trim()) return null;
                                     
+                                    const ltp = row[9] ? parseFloat(row[9].toString().trim()) : 0;
+                                    const dailyChangePct = row[11] ? row[11].toString().trim() : '0%';
+                                    const weeklyChangePct = row[20] ? row[20].toString().trim() : '0%';
+                                    const monthlyChangePct = row[21] ? row[21].toString().trim() : '0%';
+                                    const threeMonthlyChangePct = row[22] ? row[22].toString().trim() : '0%';
+
                                     return {
                                         ticker: row[0] ? row[0].toString().trim() : '',
                                         name: row[2] ? row[2].toString().trim() : '',
-                                        ltp: row[9] ? parseFloat(row[9].toString().trim()) : 0,
-                                        dailyChange: row[10] ? parseFloat(row[10].toString().trim()) : 0,
-                                        dailyChangePct: row[11] ? row[11].toString().trim() : '0%',
-                                        weeklyChange: row[20] ? parseFloat(row[20].toString().trim()) : 0, // Column U
-                                        monthlyChange: row[21] ? parseFloat(row[21].toString().trim()) : 0, // Column V
-                                        threeMonthlyChange: row[22] ? parseFloat(row[22].toString().trim()) : 0 // Column W
+                                        ltp: ltp,
+                                        // Calculate actual change amounts from percentages and LTP
+                                        dailyChange: this.calculateChangeAmount(ltp, dailyChangePct),
+                                        dailyChangePct: dailyChangePct,
+                                        weeklyChange: this.calculateChangeAmount(ltp, weeklyChangePct),
+                                        weeklyChangePct: weeklyChangePct,
+                                        monthlyChange: this.calculateChangeAmount(ltp, monthlyChangePct),
+                                        monthlyChangePct: monthlyChangePct,
+                                        threeMonthlyChange: this.calculateChangeAmount(ltp, threeMonthlyChangePct),
+                                        threeMonthlyChangePct: threeMonthlyChangePct
                                     };
                                 }).filter(stock => stock && stock.ticker && stock.ltp > 0);
 
@@ -1179,58 +1202,58 @@
                 // Section 2: Weekly gainers/losers
                 this.weeklyGainers = this.allStocksData
                     .filter(stock => stock.weeklyChange > 0)
-                    .sort((a, b) => b.weeklyChange - a.weeklyChange)
+                    .sort((a, b) => parseFloat(b.weeklyChangePct.replace('%', '')) - parseFloat(a.weeklyChangePct.replace('%', '')))
                     .map(stock => ({
                         ...stock,
                         change: stock.weeklyChange,
-                        changePct: `${(stock.weeklyChange / (stock.ltp - stock.weeklyChange) * 100).toFixed(2)}%`
+                        changePct: stock.weeklyChangePct
                     }));
 
                 this.weeklyLosers = this.allStocksData
                     .filter(stock => stock.weeklyChange < 0)
-                    .sort((a, b) => a.weeklyChange - b.weeklyChange)
+                    .sort((a, b) => parseFloat(a.weeklyChangePct.replace('%', '')) - parseFloat(b.weeklyChangePct.replace('%', '')))
                     .map(stock => ({
                         ...stock,
                         change: stock.weeklyChange,
-                        changePct: `${(stock.weeklyChange / (stock.ltp - stock.weeklyChange) * 100).toFixed(2)}%`
+                        changePct: stock.weeklyChangePct
                     }));
 
                 // Section 2: Monthly gainers/losers
                 this.monthlyGainers = this.allStocksData
                     .filter(stock => stock.monthlyChange > 0)
-                    .sort((a, b) => b.monthlyChange - a.monthlyChange)
+                    .sort((a, b) => parseFloat(b.monthlyChangePct.replace('%', '')) - parseFloat(a.monthlyChangePct.replace('%', '')))
                     .map(stock => ({
                         ...stock,
                         change: stock.monthlyChange,
-                        changePct: `${(stock.monthlyChange / (stock.ltp - stock.monthlyChange) * 100).toFixed(2)}%`
+                        changePct: stock.monthlyChangePct
                     }));
 
                 this.monthlyLosers = this.allStocksData
                     .filter(stock => stock.monthlyChange < 0)
-                    .sort((a, b) => a.monthlyChange - b.monthlyChange)
+                    .sort((a, b) => parseFloat(a.monthlyChangePct.replace('%', '')) - parseFloat(b.monthlyChangePct.replace('%', '')))
                     .map(stock => ({
                         ...stock,
                         change: stock.monthlyChange,
-                        changePct: `${(stock.monthlyChange / (stock.ltp - stock.monthlyChange) * 100).toFixed(2)}%`
+                        changePct: stock.monthlyChangePct
                     }));
 
                 // Section 2: 3-Monthly gainers/losers
                 this.threeMonthlyGainers = this.allStocksData
                     .filter(stock => stock.threeMonthlyChange > 0)
-                    .sort((a, b) => b.threeMonthlyChange - a.threeMonthlyChange)
+                    .sort((a, b) => parseFloat(b.threeMonthlyChangePct.replace('%', '')) - parseFloat(a.threeMonthlyChangePct.replace('%', '')))
                     .map(stock => ({
                         ...stock,
                         change: stock.threeMonthlyChange,
-                        changePct: `${(stock.threeMonthlyChange / (stock.ltp - stock.threeMonthlyChange) * 100).toFixed(2)}%`
+                        changePct: stock.threeMonthlyChangePct
                     }));
 
                 this.threeMonthlyLosers = this.allStocksData
                     .filter(stock => stock.threeMonthlyChange < 0)
-                    .sort((a, b) => a.threeMonthlyChange - b.threeMonthlyChange)
+                    .sort((a, b) => parseFloat(a.threeMonthlyChangePct.replace('%', '')) - parseFloat(b.threeMonthlyChangePct.replace('%', '')))
                     .map(stock => ({
                         ...stock,
                         change: stock.threeMonthlyChange,
-                        changePct: `${(stock.threeMonthlyChange / (stock.ltp - stock.threeMonthlyChange) * 100).toFixed(2)}%`
+                        changePct: stock.threeMonthlyChangePct
                     }));
             }
 
@@ -1468,7 +1491,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
-                window.stockDashboard = new DualSectionStockDashboard();
+                window.stockDashboard = new CorrectedStockDashboard();
             }, 100);
         });
 
