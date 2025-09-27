@@ -12,123 +12,196 @@
     }
     
     body {
-      background: #f5f6fa;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      padding: 20px 16px;
+      padding: 12px;
+      min-height: 100vh;
     }
     
     .dashboard-container {
       max-width: 400px;
       margin: 0 auto;
     }
-    
+
+    /* Header */
+    .header {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header-title {
+      color: white;
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .last-updated {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 11px;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* Main Section */
     .top-movers-section {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 0;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      overflow: hidden;
     }
     
     .section-header {
       display: flex;
       align-items: center;
-      margin-bottom: 20px;
+      padding: 20px 20px 16px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
     }
     
     .section-title {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 600;
-      color: #2c3e50;
       margin-right: auto;
     }
     
     .toggle-buttons {
       display: flex;
-      background: #f1f2f6;
+      background: rgba(255, 255, 255, 0.2);
       border-radius: 12px;
-      padding: 4px;
+      padding: 3px;
     }
     
     .toggle-btn {
-      padding: 8px 16px;
+      padding: 8px 14px;
       border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
+      color: white;
     }
     
     .toggle-btn.active {
-      background: #3b82f6;
-      color: white;
-      box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+      background: white;
+      color: #667eea;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
     
     .toggle-btn:not(.active) {
       background: transparent;
-      color: #64748b;
     }
-    
+
+    /* Stocks Container with Scroll */
     .stocks-container {
-      position: relative;
-      overflow: hidden;
-      height: auto;
+      height: 400px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding: 0 20px 20px;
+    }
+
+    .stocks-container::-webkit-scrollbar {
+      display: none;
     }
     
     .stocks-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      transition: transform 0.3s ease;
+      gap: 10px;
+      padding-top: 16px;
     }
     
     .stock-card {
       background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
+      border-radius: 16px;
       padding: 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      transition: all 0.2s;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(0,0,0,0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stock-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--accent-color);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .stock-card:hover::before {
+      transform: scaleY(1);
     }
     
     .stock-card:hover {
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      transform: translateY(-1px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+      transform: translateY(-2px);
+    }
+
+    .stock-card.positive {
+      --accent-color: #10b981;
+    }
+
+    .stock-card.negative {
+      --accent-color: #ef4444;
     }
     
     .stock-info {
       flex: 1;
+      margin-right: 12px;
     }
     
     .stock-ticker {
       font-size: 16px;
-      font-weight: 600;
-      color: #1e293b;
+      font-weight: 700;
+      color: #1f2937;
       margin-bottom: 4px;
+      letter-spacing: -0.02em;
     }
     
     .stock-name {
       font-size: 12px;
-      color: #64748b;
-      line-height: 1.2;
+      color: #6b7280;
+      line-height: 1.3;
+      font-weight: 500;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
-    
+
     .stock-metrics {
       text-align: right;
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 2px;
+      gap: 4px;
+      min-width: 80px;
     }
     
     .stock-price {
       font-size: 16px;
-      font-weight: 600;
-      color: #1e293b;
+      font-weight: 700;
+      color: #1f2937;
+      font-variant-numeric: tabular-nums;
     }
     
     .stock-change {
@@ -136,67 +209,185 @@
       align-items: center;
       gap: 4px;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-variant-numeric: tabular-nums;
     }
     
     .change-positive {
       color: #059669;
+      background: rgba(16, 185, 129, 0.1);
     }
     
     .change-negative {
       color: #dc2626;
+      background: rgba(239, 68, 68, 0.1);
     }
     
     .arrow-up::before {
-      content: "↗";
+      content: "▲";
+      font-size: 10px;
     }
     
     .arrow-down::before {
-      content: "↘";
-    }
-    
-    .loading {
-      text-align: center;
-      padding: 20px;
-      color: #64748b;
-      font-size: 14px;
+      content: "▼";
+      font-size: 10px;
     }
 
+    /* Loading States */
+    .loading-skeleton {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 16px 20px 20px;
+    }
+
+    .skeleton-card {
+      background: #f3f4f6;
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-text {
+      background: #e5e7eb;
+      border-radius: 4px;
+      height: 12px;
+    }
+
+    .skeleton-ticker {
+      width: 80px;
+      height: 16px;
+      background: #d1d5db;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+
+    .skeleton-name {
+      width: 120px;
+    }
+
+    .skeleton-price {
+      width: 60px;
+      height: 16px;
+      background: #d1d5db;
+      border-radius: 4px;
+      margin-bottom: 4px;
+    }
+
+    .skeleton-change {
+      width: 80px;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.6;
+      }
+    }
+
+    /* Error States */
     .error {
       text-align: center;
-      padding: 20px;
+      padding: 40px 20px;
       color: #dc2626;
       font-size: 14px;
+      font-weight: 500;
     }
-    
-    .last-updated {
-      text-align: center;
-      font-size: 11px;
-      color: #64748b;
-      margin-top: 15px;
+
+    .error-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+      display: block;
     }
-    
+
+    /* Scroll Indicator */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      color: #9ca3af;
+      font-size: 10px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 4px 8px;
+      border-radius: 12px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .scroll-indicator.show {
+      opacity: 1;
+    }
+
+    /* Update Indicator */
+    .update-indicator {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      background: rgba(16, 185, 129, 0.9);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+    }
+
+    .update-indicator.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Responsive */
     @media (max-width: 480px) {
       body {
-        padding: 16px 12px;
+        padding: 8px;
       }
-      
+
+      .header {
+        padding: 12px;
+        border-radius: 16px;
+      }
+
+      .header-title {
+        font-size: 20px;
+      }
+
       .top-movers-section {
-        padding: 16px;
-        border-radius: 12px;
+        border-radius: 16px;
       }
       
+      .section-header {
+        padding: 16px 16px 12px;
+      }
+
       .section-title {
-        font-size: 18px;
+        font-size: 16px;
       }
       
       .toggle-btn {
         padding: 6px 12px;
-        font-size: 13px;
+        font-size: 12px;
+      }
+
+      .stocks-container {
+        padding: 0 16px 16px;
+        height: 420px;
       }
       
       .stock-card {
         padding: 14px;
+        border-radius: 14px;
       }
       
       .stock-ticker {
@@ -210,11 +401,23 @@
       .stock-price {
         font-size: 15px;
       }
+
+      .stock-change {
+        font-size: 11px;
+        padding: 3px 6px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="dashboard-container">
+    <!-- Header -->
+    <div class="header">
+      <h1 class="header-title">Stock Watch</h1>
+      <div class="last-updated" id="last-updated"></div>
+    </div>
+
+    <!-- Main Section -->
     <div class="top-movers-section">
       <div class="section-header">
         <h2 class="section-title">Top Movers</h2>
@@ -224,13 +427,46 @@
         </div>
       </div>
       
-      <div class="stocks-container">
+      <div class="stocks-container" id="stocks-container">
         <div class="stocks-list" id="stocks-list">
-          <div class="loading" id="loading">Loading live data...</div>
+          <!-- Loading Skeleton -->
+          <div class="loading-skeleton" id="loading-skeleton">
+            <div class="skeleton-card">
+              <div>
+                <div class="skeleton-ticker"></div>
+                <div class="skeleton-text skeleton-name"></div>
+              </div>
+              <div>
+                <div class="skeleton-price"></div>
+                <div class="skeleton-text skeleton-change"></div>
+              </div>
+            </div>
+            <div class="skeleton-card">
+              <div>
+                <div class="skeleton-ticker"></div>
+                <div class="skeleton-text skeleton-name"></div>
+              </div>
+              <div>
+                <div class="skeleton-price"></div>
+                <div class="skeleton-text skeleton-change"></div>
+              </div>
+            </div>
+            <div class="skeleton-card">
+              <div>
+                <div class="skeleton-ticker"></div>
+                <div class="skeleton-text skeleton-name"></div>
+              </div>
+              <div>
+                <div class="skeleton-price"></div>
+                <div class="skeleton-text skeleton-change"></div>
+              </div>
+            </div>
+          </div>
         </div>
+        <div class="scroll-indicator" id="scroll-indicator">Scroll for more</div>
       </div>
-      
-      <div class="last-updated" id="last-updated"></div>
+
+      <div class="update-indicator" id="update-indicator">Updated</div>
     </div>
   </div>
 
@@ -240,17 +476,65 @@
     
     let stockData = [];
     let currentView = 'gainers';
+    let isLoading = false;
+    let cachedData = null;
+    let lastUpdateTime = null;
     
     // DOM Elements
     const gainersBtn = document.getElementById('gainers-btn');
     const losersBtn = document.getElementById('losers-btn');
     const stocksList = document.getElementById('stocks-list');
-    const loading = document.getElementById('loading');
+    const stocksContainer = document.getElementById('stocks-container');
     const lastUpdated = document.getElementById('last-updated');
+    const loadingSkeleton = document.getElementById('loading-skeleton');
+    const scrollIndicator = document.getElementById('scroll-indicator');
+    const updateIndicator = document.getElementById('update-indicator');
     
-    function loadData() {
-      loading.style.display = 'block';
-      stocksList.innerHTML = '<div class="loading">Loading live data...</div>';
+    // Cache management
+    function getCachedData() {
+      try {
+        const cached = localStorage.getItem('stockData');
+        const cacheTime = localStorage.getItem('stockDataTime');
+        if (cached && cacheTime) {
+          const age = Date.now() - parseInt(cacheTime);
+          if (age < 5 * 60 * 1000) { // 5 minutes cache
+            return JSON.parse(cached);
+          }
+        }
+      } catch (e) {
+        console.log('Cache error:', e);
+      }
+      return null;
+    }
+
+    function setCachedData(data) {
+      try {
+        localStorage.setItem('stockData', JSON.stringify(data));
+        localStorage.setItem('stockDataTime', Date.now().toString());
+      } catch (e) {
+        console.log('Cache save error:', e);
+      }
+    }
+
+    function showUpdateIndicator() {
+      updateIndicator.classList.add('show');
+      setTimeout(() => {
+        updateIndicator.classList.remove('show');
+      }, 2000);
+    }
+
+    function loadData(showIndicator = false) {
+      if (isLoading) return;
+      
+      // Try cache first for instant load
+      const cached = getCachedData();
+      if (cached && stockData.length === 0) {
+        stockData = cached;
+        renderStocks();
+        updateLastUpdatedTime();
+      }
+      
+      isLoading = true;
       
       Papa.parse(CSV_URL, {
         download: true,
@@ -258,18 +542,16 @@
         skipEmptyLines: true,
         complete: function(results) {
           try {
-            console.log('CSV loaded, processing data...');
             const rows = results.data;
             
             if (rows.length < 3) {
               throw new Error('Insufficient data rows');
             }
             
-            // Skip first 2 rows (headers) and process data
             const dataRows = rows.slice(2);
             
-            stockData = dataRows.map(row => {
-              if (!row[0] || row[0].trim() === '') return null;
+            const newData = dataRows.map(row => {
+              if (!row[0] || row[0].toString().trim() === '') return null;
               
               const ticker = row[0] ? row[0].toString().trim() : '';
               const name = row[2] ? row[2].toString().trim() : '';
@@ -288,71 +570,102 @@
               };
             }).filter(stock => stock && stock.ticker && stock.ltp > 0);
             
-            console.log(`Processed ${stockData.length} stocks`);
-            renderStocks();
+            // Only update if data actually changed
+            if (JSON.stringify(newData) !== JSON.stringify(stockData)) {
+              stockData = newData;
+              setCachedData(stockData);
+              renderStocks();
+              if (showIndicator) showUpdateIndicator();
+            }
             
-            // Update last updated time
-            const now = new Date();
-            lastUpdated.textContent = `Last updated: ${now.toLocaleTimeString()}`;
+            updateLastUpdatedTime();
+            isLoading = false;
             
           } catch (error) {
             console.error('Error processing data:', error);
-            stocksList.innerHTML = '<div class="error">Error loading data. Please try again.</div>';
+            if (stockData.length === 0) {
+              showError('Error loading data. Please refresh.');
+            }
+            isLoading = false;
           }
         },
         error: function(error) {
           console.error('Error loading CSV:', error);
-          stocksList.innerHTML = '<div class="error">Failed to load data. Check connection.</div>';
+          if (stockData.length === 0) {
+            showError('Failed to load data. Check connection.');
+          }
+          isLoading = false;
         }
       });
     }
+
+    function updateLastUpdatedTime() {
+      const now = new Date();
+      lastUpdated.textContent = `Last updated: ${now.toLocaleTimeString('en-IN', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: true 
+      })}`;
+      lastUpdateTime = now;
+    }
+    
+    function showError(message) {
+      stocksList.innerHTML = `
+        <div class="error">
+          <span class="error-icon">⚠️</span>
+          ${message}
+        </div>
+      `;
+    }
     
     function renderStocks() {
-      loading.style.display = 'none';
+      loadingSkeleton.style.display = 'none';
       
       if (stockData.length === 0) {
-        stocksList.innerHTML = '<div class="error">No stock data available</div>';
+        showError('No stock data available');
         return;
       }
       
-      // Filter and sort data
       let filteredData = [...stockData];
       
       if (currentView === 'gainers') {
         filteredData = filteredData.filter(stock => stock.change > 0)
-                                   .sort((a, b) => b.change - a.change)
-                                   .slice(0, 5);
+                                   .sort((a, b) => b.change - a.change);
       } else {
         filteredData = filteredData.filter(stock => stock.change < 0)
-                                   .sort((a, b) => a.change - b.change)
-                                   .slice(0, 5);
+                                   .sort((a, b) => a.change - b.change);
       }
       
       if (filteredData.length === 0) {
-        stocksList.innerHTML = `<div class="error">No ${currentView} found</div>`;
+        showError(`No ${currentView} found`);
         return;
       }
+
+      // Show scroll indicator if more than 5 items
+      if (filteredData.length > 5) {
+        scrollIndicator.classList.add('show');
+        setTimeout(() => scrollIndicator.classList.remove('show'), 3000);
+      }
       
-      // Generate HTML
       const stocksHTML = filteredData.map(stock => {
         const isPositive = stock.change > 0;
         const changeClass = isPositive ? 'change-positive' : 'change-negative';
+        const cardClass = isPositive ? 'positive' : 'negative';
         const arrowClass = isPositive ? 'arrow-up' : 'arrow-down';
         
-        // Clean percentage display
         let percentDisplay = stock.changePct;
         if (percentDisplay.includes('%')) {
           percentDisplay = percentDisplay.replace('-', '');
         }
         
         return `
-          <div class="stock-card">
+          <div class="stock-card ${cardClass}">
             <div class="stock-info">
               <div class="stock-ticker">${stock.ticker}</div>
               <div class="stock-name">${stock.name}</div>
             </div>
             <div class="stock-metrics">
-              <div class="stock-price">₹${stock.ltpFormatted}</div>
+              <div class="stock-price">₹${parseFloat(stock.ltpFormatted).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
               <div class="stock-change ${changeClass}">
                 <span class="${arrowClass}"></span>
                 ${Math.abs(stock.change).toFixed(2)} (${percentDisplay})
@@ -363,33 +676,71 @@
       }).join('');
       
       stocksList.innerHTML = stocksHTML;
+      
+      // Reset scroll position when switching views
+      stocksContainer.scrollTop = 0;
     }
     
     // Event Listeners
     gainersBtn.addEventListener('click', () => {
-      currentView = 'gainers';
-      gainersBtn.classList.add('active');
-      losersBtn.classList.remove('active');
-      renderStocks();
+      if (currentView !== 'gainers') {
+        currentView = 'gainers';
+        gainersBtn.classList.add('active');
+        losersBtn.classList.remove('active');
+        renderStocks();
+      }
     });
     
     losersBtn.addEventListener('click', () => {
-      currentView = 'losers';
-      losersBtn.classList.add('active');
-      gainersBtn.classList.remove('active');
-      renderStocks();
+      if (currentView !== 'losers') {
+        currentView = 'losers';
+        losersBtn.classList.add('active');
+        gainersBtn.classList.remove('active');
+        renderStocks();
+      }
+    });
+
+    // Scroll handling
+    stocksContainer.addEventListener('scroll', () => {
+      const { scrollTop, scrollHeight, clientHeight } = stocksContainer;
+      const scrollPercent = (scrollTop / (scrollHeight - clientHeight)) * 100;
+      
+      if (scrollPercent > 10 && scrollPercent < 90) {
+        scrollIndicator.classList.remove('show');
+      }
     });
     
     // Initialize
     loadData();
     
-    // Auto refresh every 30 seconds
-    setInterval(loadData, 30000);
+    // Smart refresh - only every 2 minutes, and not if user is actively scrolling
+    let refreshTimer;
+    let lastScrollTime = 0;
     
-    // Refresh on page focus (when user returns to tab)
+    stocksContainer.addEventListener('scroll', () => {
+      lastScrollTime = Date.now();
+    });
+    
+    function smartRefresh() {
+      const timeSinceScroll = Date.now() - lastScrollTime;
+      const timeSinceUpdate = lastUpdateTime ? Date.now() - lastUpdateTime.getTime() : Infinity;
+      
+      // Only refresh if user hasn't scrolled in 10 seconds and it's been at least 2 minutes
+      if (timeSinceScroll > 10000 && timeSinceUpdate > 120000) {
+        loadData(true);
+      }
+    }
+    
+    // Set smart refresh interval
+    setInterval(smartRefresh, 30000);
+    
+    // Refresh on page focus
     document.addEventListener('visibilitychange', function() {
       if (!document.hidden) {
-        loadData();
+        const timeSinceUpdate = lastUpdateTime ? Date.now() - lastUpdateTime.getTime() : Infinity;
+        if (timeSinceUpdate > 60000) { // 1 minute
+          loadData(true);
+        }
       }
     });
   </script>
