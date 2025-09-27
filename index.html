@@ -2,22 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1b2e">
     <title>Stock Dashboard</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(180deg, #1a1b2e 0%, #16213e 50%, #0f1419 100%);
             color: #ffffff;
-            overflow-x: hidden;
-            min-height: 100vh;
             position: relative;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* iOS safe area */
+        body {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
         }
 
         /* Subtle background effects */
@@ -29,88 +50,98 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 25% 25%, rgba(139, 92, 246, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 75% 75%, rgba(59, 130, 246, 0.08) 0%, transparent 40%);
+                radial-gradient(circle at 25% 25%, rgba(139, 92, 246, 0.08) 0%, transparent 35%),
+                radial-gradient(circle at 75% 75%, rgba(59, 130, 246, 0.06) 0%, transparent 35%);
             z-index: -1;
         }
 
         .container {
-            max-width: 380px;
+            width: 100%;
+            max-width: 100vw;
             margin: 0 auto;
-            padding: 12px;
+            padding: 8px;
             position: relative;
         }
 
-        /* Main Section */
+        /* Main Section - Mobile First */
         .stocks-section {
-            background: rgba(30, 32, 54, 0.4);
-            backdrop-filter: blur(20px);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(30, 32, 54, 0.3);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
             overflow: hidden;
             box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+                0 10px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+            margin: 0 4px;
         }
 
-        /* Section Header */
+        /* Section Header - Mobile Optimized */
         .section-header {
-            padding: 16px 20px 12px;
+            padding: 18px 20px 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             background: rgba(255, 255, 255, 0.02);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
         }
 
         .section-title {
-            font-size: 17px;
+            font-size: 18px;
             font-weight: 700;
             color: #ffffff;
             letter-spacing: -0.3px;
         }
 
-        /* Toggle Pills */
+        /* Toggle Pills - Mobile Touch Optimized */
         .toggle-pills {
             display: flex;
-            gap: 6px;
+            gap: 8px;
         }
 
         .pill-btn {
-            padding: 6px 12px;
+            padding: 10px 16px;
             border: none;
-            border-radius: 20px;
-            font-size: 12px;
+            border-radius: 25px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.06);
             color: rgba(255, 255, 255, 0.6);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            min-width: 70px;
+            text-align: center;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .pill-btn.active {
             background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
             color: white;
             box-shadow: 
-                0 4px 12px rgba(139, 92, 246, 0.4),
+                0 6px 20px rgba(139, 92, 246, 0.4),
                 inset 0 1px 0 rgba(255, 255, 255, 0.2);
             transform: translateY(-1px);
             border: 1px solid rgba(139, 92, 246, 0.3);
         }
 
-        .pill-btn:not(.active):hover {
-            background: rgba(255, 255, 255, 0.12);
-            color: rgba(255, 255, 255, 0.8);
-            transform: translateY(-0.5px);
+        .pill-btn:active {
+            transform: translateY(0px) scale(0.98);
         }
 
-        /* Stocks Container - Vertical Scroll */
+        /* Stocks Container - Mobile Scroll */
         .stocks-container {
-            height: 480px;
+            height: calc(100vh - 140px);
+            max-height: 600px;
+            min-height: 400px;
             overflow-y: auto;
             overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
             -ms-overflow-style: none;
             position: relative;
@@ -123,17 +154,22 @@
         .stocks-list {
             display: flex;
             flex-direction: column;
+            padding-bottom: 10px;
         }
 
-        /* Stock Card with Gradient Backgrounds */
+        /* Stock Card - Mobile Touch Optimized */
         .stock-card {
-            padding: 16px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.025);
             position: relative;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             cursor: pointer;
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(255, 255, 255, 0.015);
             overflow: hidden;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            min-height: 70px;
         }
 
         .stock-card::before {
@@ -145,46 +181,47 @@
             bottom: 0;
             background: var(--card-gradient);
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.2s ease;
             pointer-events: none;
         }
 
-        /* Gradient variations like music app */
+        /* Mobile-friendly gradient variations */
         .stock-card.positive {
             --card-gradient: linear-gradient(135deg, 
-                rgba(34, 197, 94, 0.15) 0%, 
-                rgba(16, 185, 129, 0.08) 50%, 
-                rgba(5, 150, 105, 0.05) 100%);
+                rgba(34, 197, 94, 0.12) 0%, 
+                rgba(16, 185, 129, 0.06) 50%, 
+                rgba(5, 150, 105, 0.03) 100%);
         }
 
         .stock-card.negative {
             --card-gradient: linear-gradient(135deg, 
-                rgba(239, 68, 68, 0.15) 0%, 
-                rgba(220, 38, 38, 0.08) 50%, 
-                rgba(185, 28, 28, 0.05) 100%);
+                rgba(239, 68, 68, 0.12) 0%, 
+                rgba(220, 38, 38, 0.06) 50%, 
+                rgba(185, 28, 28, 0.03) 100%);
         }
 
         .stock-card.high-positive {
             --card-gradient: linear-gradient(135deg, 
-                rgba(34, 197, 94, 0.2) 0%, 
-                rgba(16, 185, 129, 0.12) 50%, 
-                rgba(5, 150, 105, 0.08) 100%);
+                rgba(34, 197, 94, 0.18) 0%, 
+                rgba(16, 185, 129, 0.10) 50%, 
+                rgba(5, 150, 105, 0.06) 100%);
         }
 
         .stock-card.high-negative {
             --card-gradient: linear-gradient(135deg, 
-                rgba(239, 68, 68, 0.2) 0%, 
-                rgba(220, 38, 38, 0.12) 50%, 
-                rgba(185, 28, 28, 0.08) 100%);
+                rgba(239, 68, 68, 0.18) 0%, 
+                rgba(220, 38, 38, 0.10) 50%, 
+                rgba(185, 28, 28, 0.06) 100%);
         }
 
-        .stock-card:hover::before {
+        /* Mobile touch feedback */
+        .stock-card:active {
+            transform: scale(0.98);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .stock-card:active::before {
             opacity: 1;
-        }
-
-        .stock-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
         .stock-card:last-child {
@@ -201,22 +238,23 @@
 
         .stock-info {
             flex: 1;
+            min-width: 0;
         }
 
         .stock-ticker {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 700;
             color: #ffffff;
-            margin-bottom: 2px;
-            letter-spacing: 0.3px;
+            margin-bottom: 3px;
+            letter-spacing: 0.2px;
         }
 
         .stock-name {
-            font-size: 11px;
+            font-size: 12px;
             color: rgba(255, 255, 255, 0.5);
             font-weight: 400;
             line-height: 1.3;
-            max-width: 180px;
+            max-width: 200px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -227,11 +265,12 @@
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 2px;
+            gap: 3px;
+            min-width: 90px;
         }
 
         .stock-price {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 700;
             color: #ffffff;
             font-variant-numeric: tabular-nums;
@@ -240,11 +279,11 @@
         .stock-change {
             display: flex;
             align-items: center;
-            gap: 3px;
-            font-size: 11px;
+            gap: 4px;
+            font-size: 12px;
             font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 12px;
+            padding: 4px 10px;
+            border-radius: 15px;
             font-variant-numeric: tabular-nums;
         }
 
@@ -265,32 +304,32 @@
 
         .arrow-up::before {
             content: "▲";
-            font-size: 8px;
+            font-size: 9px;
         }
 
         .arrow-down::before {
             content: "▼";
-            font-size: 8px;
+            font-size: 9px;
         }
 
         .arrow-neutral::before {
             content: "●";
-            font-size: 6px;
+            font-size: 7px;
         }
 
-        /* Loading Animation */
+        /* Loading Animation - Mobile Optimized */
         .loading {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 400px;
+            height: 300px;
             gap: 16px;
         }
 
         .loading-spinner {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border: 3px solid rgba(255, 255, 255, 0.1);
             border-top: 3px solid #8b5cf6;
             border-radius: 50%;
@@ -304,48 +343,48 @@
 
         .loading-text {
             color: rgba(255, 255, 255, 0.6);
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 500;
         }
 
-        /* Error State */
+        /* Error State - Mobile */
         .error {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 300px;
+            height: 250px;
             gap: 12px;
             text-align: center;
             padding: 20px;
         }
 
         .error-icon {
-            font-size: 28px;
+            font-size: 32px;
             margin-bottom: 8px;
         }
 
         .error-text {
             color: #f87171;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 500;
         }
 
-        /* Update Indicator */
+        /* Update Indicator - Mobile */
         .update-indicator {
             position: absolute;
-            top: 16px;
+            top: 18px;
             right: 20px;
             background: rgba(34, 197, 94, 0.9);
             color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 10px;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 11px;
             font-weight: 600;
             opacity: 0;
-            transform: translateY(-8px);
+            transform: translateY(-10px);
             transition: all 0.3s ease;
-            z-index: 10;
+            z-index: 15;
         }
 
         .update-indicator.show {
@@ -353,92 +392,25 @@
             transform: translateY(0);
         }
 
-        /* Last Updated */
+        /* Last Updated - Mobile */
         .last-updated {
             text-align: center;
-            padding: 10px;
-            font-size: 10px;
+            padding: 12px;
+            font-size: 11px;
             color: rgba(255, 255, 255, 0.4);
-            background: rgba(255, 255, 255, 0.02);
-            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.015);
+            border-top: 1px solid rgba(255, 255, 255, 0.025);
         }
 
-        /* Smooth scroll behavior */
-        .stocks-container {
-            scroll-behavior: smooth;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 480px) {
-            .container {
-                padding: 10px 8px;
-            }
-
-            .stocks-section {
-                border-radius: 14px;
-            }
-
-            .section-header {
-                padding: 14px 16px 10px;
-            }
-
-            .section-title {
-                font-size: 16px;
-            }
-
-            .pill-btn {
-                padding: 5px 10px;
-                font-size: 11px;
-            }
-
-            .stock-card {
-                padding: 14px 16px;
-            }
-
-            .stock-ticker {
-                font-size: 14px;
-            }
-
-            .stock-name {
-                font-size: 10px;
-                max-width: 160px;
-            }
-
-            .stock-price {
-                font-size: 14px;
-            }
-
-            .stock-change {
-                font-size: 10px;
-                padding: 2px 6px;
-            }
-        }
-
-        /* Fade-in animation */
-        .fade-in {
-            animation: fadeInUp 0.5s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(15px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Scroll indicators */
+        /* Scroll indicators - Mobile */
         .scroll-gradient-top {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 20px;
-            background: linear-gradient(to bottom, rgba(30, 32, 54, 0.8), transparent);
-            z-index: 5;
+            height: 25px;
+            background: linear-gradient(to bottom, rgba(30, 32, 54, 0.7), transparent);
+            z-index: 10;
             pointer-events: none;
         }
 
@@ -447,10 +419,164 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 20px;
-            background: linear-gradient(to top, rgba(30, 32, 54, 0.8), transparent);
-            z-index: 5;
+            height: 25px;
+            background: linear-gradient(to top, rgba(30, 32, 54, 0.7), transparent);
+            z-index: 10;
             pointer-events: none;
+        }
+
+        /* Fade-in animation */
+        .fade-in {
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Portrait orientation optimized */
+        @media screen and (orientation: portrait) {
+            .container {
+                padding: 6px;
+            }
+            
+            .stocks-container {
+                height: calc(100vh - 130px);
+            }
+        }
+
+        /* Landscape orientation */
+        @media screen and (orientation: landscape) and (max-height: 500px) {
+            .stocks-container {
+                height: calc(100vh - 110px);
+                max-height: none;
+            }
+            
+            .section-header {
+                padding: 14px 20px 10px;
+            }
+            
+            .section-title {
+                font-size: 16px;
+            }
+        }
+
+        /* Small mobile devices */
+        @media (max-width: 360px) {
+            .container {
+                padding: 4px;
+            }
+            
+            .stocks-section {
+                margin: 0 2px;
+                border-radius: 16px;
+            }
+            
+            .section-header {
+                padding: 16px 16px 12px;
+            }
+            
+            .section-title {
+                font-size: 16px;
+            }
+            
+            .pill-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+                min-width: 60px;
+            }
+            
+            .stock-card {
+                padding: 16px 16px;
+            }
+            
+            .stock-ticker {
+                font-size: 15px;
+            }
+            
+            .stock-name {
+                font-size: 11px;
+                max-width: 150px;
+            }
+            
+            .stock-price {
+                font-size: 15px;
+            }
+            
+            .stock-change {
+                font-size: 11px;
+                padding: 3px 8px;
+            }
+        }
+
+        /* Large mobile devices */
+        @media (min-width: 400px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .stocks-section {
+                margin: 0 6px;
+            }
+            
+            .stock-name {
+                max-width: 220px;
+            }
+        }
+
+        /* Tablet landscape */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 400px;
+                padding: 16px;
+            }
+            
+            .stocks-section {
+                margin: 0;
+            }
+        }
+
+        /* High DPI displays */
+        @media (-webkit-min-device-pixel-ratio: 2) {
+            body {
+                -webkit-font-smoothing: antialiased;
+            }
+        }
+
+        /* Dark mode preference */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(180deg, #0a0b1a 0%, #12192e 50%, #0a0d14 100%);
+            }
+        }
+
+        /* Reduce motion for accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Focus styles for accessibility */
+        .pill-btn:focus {
+            outline: 2px solid #8b5cf6;
+            outline-offset: 2px;
+        }
+
+        .stock-card:focus {
+            outline: 2px solid rgba(139, 92, 246, 0.6);
+            outline-offset: -2px;
         }
     </style>
 </head>
@@ -481,7 +607,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <script>
-        class StockDashboard {
+        class MobileStockDashboard {
             constructor() {
                 this.csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
                 this.stocks = [];
@@ -490,10 +616,13 @@
                 this.currentType = 'gainers';
                 this.isLoading = false;
                 this.lastUpdateTime = null;
+                this.touchStartTime = 0;
+                this.lastTouchEndTime = 0;
 
                 this.initializeElements();
                 this.attachEventListeners();
                 this.loadData();
+                this.setupMobileOptimizations();
             }
 
             initializeElements() {
@@ -505,16 +634,58 @@
                 this.sectionTitle = document.getElementById('section-title');
             }
 
+            setupMobileOptimizations() {
+                // Prevent double-tap zoom
+                let lastTouchEnd = 0;
+                document.addEventListener('touchend', (e) => {
+                    const now = Date.now();
+                    if (now - lastTouchEnd <= 300) {
+                        e.preventDefault();
+                    }
+                    lastTouchEnd = now;
+                }, { passive: false });
+
+                // Handle viewport changes
+                const handleViewportChange = () => {
+                    const vh = window.innerHeight * 0.01;
+                    document.documentElement.style.setProperty('--vh', `${vh}px`);
+                };
+                
+                window.addEventListener('resize', handleViewportChange);
+                window.addEventListener('orientationchange', () => {
+                    setTimeout(handleViewportChange, 100);
+                });
+                handleViewportChange();
+
+                // Improve scroll performance
+                let ticking = false;
+                this.stocksContainer.addEventListener('scroll', () => {
+                    if (!ticking) {
+                        requestAnimationFrame(() => {
+                            this.handleScroll();
+                            ticking = false;
+                        });
+                        ticking = true;
+                    }
+                });
+            }
+
             attachEventListeners() {
-                // Toggle pills
+                // Touch-optimized pill buttons
                 this.pillButtons.forEach(btn => {
-                    btn.addEventListener('click', () => {
+                    // Touch events
+                    btn.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: true });
+                    btn.addEventListener('touchend', this.handleTouchEnd.bind(this, btn), { passive: false });
+                    
+                    // Click fallback
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
                         const type = btn.dataset.type;
                         this.switchType(type);
                     });
                 });
 
-                // Auto-refresh on visibility change
+                // Handle app state changes
                 document.addEventListener('visibilitychange', () => {
                     if (!document.hidden) {
                         const timeSinceUpdate = this.lastUpdateTime ? 
@@ -524,15 +695,58 @@
                         }
                     }
                 });
+
+                // Handle network changes
+                if ('connection' in navigator) {
+                    navigator.connection.addEventListener('change', () => {
+                        if (navigator.connection.effectiveType !== 'slow-2g') {
+                            this.loadData();
+                        }
+                    });
+                }
+            }
+
+            handleTouchStart(e) {
+                this.touchStartTime = Date.now();
+            }
+
+            handleTouchEnd(btn, e) {
+                const touchDuration = Date.now() - this.touchStartTime;
+                const timeSinceLastTouch = Date.now() - this.lastTouchEndTime;
+                
+                // Prevent accidental double-taps
+                if (touchDuration < 500 && timeSinceLastTouch > 100) {
+                    e.preventDefault();
+                    const type = btn.dataset.type;
+                    this.switchType(type);
+                }
+                
+                this.lastTouchEndTime = Date.now();
+            }
+
+            handleScroll() {
+                const { scrollTop, scrollHeight, clientHeight } = this.stocksContainer;
+                const scrollPercent = scrollTop / (scrollHeight - clientHeight);
+                
+                // Show/hide scroll indicators
+                const topGradient = this.stocksContainer.querySelector('.scroll-gradient-top');
+                const bottomGradient = this.stocksContainer.querySelector('.scroll-gradient-bottom');
+                
+                if (topGradient) {
+                    topGradient.style.opacity = scrollTop > 20 ? '1' : '0';
+                }
+                if (bottomGradient) {
+                    bottomGradient.style.opacity = scrollPercent < 0.95 ? '1' : '0';
+                }
             }
 
             getCachedData() {
                 try {
-                    const cached = localStorage.getItem('stockData');
-                    const cacheTime = localStorage.getItem('stockDataTime');
+                    const cached = localStorage.getItem('mobileStockData');
+                    const cacheTime = localStorage.getItem('mobileStockDataTime');
                     if (cached && cacheTime) {
                         const age = Date.now() - parseInt(cacheTime);
-                        if (age < 5 * 60 * 1000) {
+                        if (age < 3 * 60 * 1000) { // 3 minutes for mobile
                             return JSON.parse(cached);
                         }
                     }
@@ -544,8 +758,8 @@
 
             setCachedData(data) {
                 try {
-                    localStorage.setItem('stockData', JSON.stringify(data));
-                    localStorage.setItem('stockDataTime', Date.now().toString());
+                    localStorage.setItem('mobileStockData', JSON.stringify(data));
+                    localStorage.setItem('mobileStockDataTime', Date.now().toString());
                 } catch (e) {
                     console.log('Cache save error:', e);
                 }
@@ -554,7 +768,7 @@
             async loadData(showIndicator = false) {
                 if (this.isLoading) return;
 
-                // Try cache first
+                // Try cache first for instant mobile loading
                 const cached = this.getCachedData();
                 if (cached && this.stocks.length === 0) {
                     this.stocks = cached;
@@ -566,7 +780,21 @@
                 this.isLoading = true;
 
                 try {
-                    const response = await fetch(this.csvUrl);
+                    // Add timeout for mobile networks
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+                    const response = await fetch(this.csvUrl, {
+                        signal: controller.signal,
+                        cache: 'no-cache'
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
                     const csvText = await response.text();
                     
                     Papa.parse(csvText, {
@@ -611,15 +839,24 @@
 
                             } catch (error) {
                                 console.error('Data processing error:', error);
-                                this.showError('Error processing data');
+                                if (this.stocks.length === 0) {
+                                    this.showError('Error processing data');
+                                }
                                 this.isLoading = false;
                             }
+                        },
+                        error: (error) => {
+                            console.error('CSV parse error:', error);
+                            if (this.stocks.length === 0) {
+                                this.showError('Failed to parse data');
+                            }
+                            this.isLoading = false;
                         }
                     });
                 } catch (error) {
                     console.error('Network error:', error);
                     if (this.stocks.length === 0) {
-                        this.showError('Failed to load data');
+                        this.showError(error.name === 'AbortError' ? 'Request timeout' : 'Network error');
                     }
                     this.isLoading = false;
                 }
@@ -648,7 +885,7 @@
 
                 this.currentType = type;
 
-                // Update pill buttons
+                // Update pill buttons with animation
                 this.pillButtons.forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.type === type);
                 });
@@ -672,8 +909,13 @@
                 const stocksList = document.createElement('div');
                 stocksList.className = 'stocks-list';
                 
-                currentStocks.forEach(stock => {
+                currentStocks.forEach((stock, index) => {
                     const stockCard = this.createStockCard(stock);
+                    // Stagger animations for mobile
+                    setTimeout(() => {
+                        stockCard.style.opacity = '1';
+                        stockCard.style.transform = 'translateY(0)';
+                    }, index * 50);
                     stocksList.appendChild(stockCard);
                 });
                 
@@ -689,8 +931,8 @@
                 
                 this.stocksContainer.insertBefore(stocksList, bottomGradient);
                 
-                // Reset scroll position
-                this.stocksContainer.scrollTop = 0;
+                // Reset scroll position smoothly
+                this.stocksContainer.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
             createStockCard(stock) {
@@ -715,6 +957,9 @@
                 }
                 
                 card.className = cardClass;
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(10px)';
+                card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
                 
                 let percentDisplay = stock.changePct;
                 if (percentDisplay.includes('%')) {
@@ -740,6 +985,15 @@
                     </div>
                 `;
 
+                // Add mobile touch feedback
+                card.addEventListener('touchstart', (e) => {
+                    card.style.transform = 'scale(0.98)';
+                }, { passive: true });
+
+                card.addEventListener('touchend', (e) => {
+                    card.style.transform = 'scale(1)';
+                }, { passive: true });
+
                 return card;
             }
 
@@ -754,6 +1008,16 @@
                 errorDiv.innerHTML = `
                     <div class="error-icon">⚠️</div>
                     <div class="error-text">${message}</div>
+                    <button onclick="window.location.reload()" style="
+                        margin-top: 16px;
+                        padding: 8px 16px;
+                        background: rgba(139, 92, 246, 0.2);
+                        border: 1px solid rgba(139, 92, 246, 0.4);
+                        border-radius: 20px;
+                        color: #8b5cf6;
+                        font-size: 12px;
+                        cursor: pointer;
+                    ">Retry</button>
                 `;
 
                 const bottomGradient = this.stocksContainer.querySelector('.scroll-gradient-bottom');
@@ -762,9 +1026,13 @@
 
             showUpdateIndicator() {
                 this.updateIndicator.classList.add('show');
+                // Haptic feedback if available
+                if ('vibrate' in navigator) {
+                    navigator.vibrate(50);
+                }
                 setTimeout(() => {
                     this.updateIndicator.classList.remove('show');
-                }, 2500);
+                }, 3000);
             }
 
             updateLastUpdatedTime() {
@@ -778,21 +1046,30 @@
             }
         }
 
-        // Initialize dashboard
+        // Initialize dashboard when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            window.stockDashboard = new StockDashboard();
+            window.mobileStockDashboard = new MobileStockDashboard();
         });
 
-        // Smart auto-refresh
+        // Mobile-optimized auto-refresh
         setInterval(() => {
-            if (window.stockDashboard && !document.hidden) {
-                const timeSinceUpdate = window.stockDashboard.lastUpdateTime ? 
-                    Date.now() - window.stockDashboard.lastUpdateTime.getTime() : Infinity;
-                if (timeSinceUpdate > 120000) { // 2 minutes
-                    window.stockDashboard.loadData(true);
+            if (window.mobileStockDashboard && !document.hidden) {
+                const timeSinceUpdate = window.mobileStockDashboard.lastUpdateTime ? 
+                    Date.now() - window.mobileStockDashboard.lastUpdateTime.getTime() : Infinity;
+                if (timeSinceUpdate > 150000) { // 2.5 minutes for mobile
+                    window.mobileStockDashboard.loadData(true);
                 }
             }
-        }, 30000);
+        }, 45000); // Check every 45 seconds
+
+        // Service Worker registration for offline capability
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(() => {
+                    // Service worker registration failed, continue without it
+                });
+            });
+        }
     </script>
 </body>
 </html>
