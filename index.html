@@ -1,138 +1,397 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Glassy Navy Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Stock Dashboard</title>
   <style>
-    /* reset & base */
-    * { margin:0; padding:0; box-sizing:border-box }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
     body {
-      background:#0a0f24;
-      font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;
-      color:#e0e0e0;
-      padding:16px;
+      background: #f5f6fa;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 20px 16px;
     }
-    .dashboard { max-width:380px; margin:auto }
-    h1 { font-size:20px; margin-bottom:12px; text-align:center }
-    /* segment control */
-    .controls {
-      display:flex; background:rgba(10,15,36,0.4);
-      border-radius:12px; backdrop-filter:blur(12px);
-      overflow:hidden; margin-bottom:16px;
+    
+    .dashboard-container {
+      max-width: 400px;
+      margin: 0 auto;
     }
-    .btn {
-      flex:1; text-align:center; padding:8px 0;
-      font-weight:600; font-size:14px; cursor:pointer;
-      transition:background 0.2s,color 0.2s;
+    
+    .top-movers-section {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
     }
-    .btn.active {
-      background:#1f3264; color:#fff;
+    
+    .section-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
     }
-    /* card stack */
-    .stack { position:relative; height:600px; overflow:hidden }
-    .list {
-      position:absolute; top:0; left:0; right:0;
-      transition:transform 0.5s cubic-bezier(.2,.8,.2,1);
+    
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-right: auto;
     }
-    .card {
-      display:flex; justify-content:space-between;
-      padding:16px; margin-bottom:12px;
-      background:rgba(31,50,100,0.3);
-      border-radius:16px; backdrop-filter:blur(16px);
-      border:1px solid rgba(255,255,255,0.1);
+    
+    .toggle-buttons {
+      display: flex;
+      background: #f1f2f6;
+      border-radius: 12px;
+      padding: 4px;
     }
-    .info { display:flex; flex-direction:column }
-    .ticker { font-size:16px; font-weight:600; color:#cdd6f4 }
-    .name { font-size:12px; color:#a6adc8 }
-    .metrics { text-align:right; display:flex; flex-direction:column }
-    .price { font-size:16px; font-weight:600; color:#f5f5f5 }
-    .chg {
-      margin-top:4px; font-size:12px; font-weight:600;
-      display:flex; align-items:center; gap:4px;
+    
+    .toggle-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    .pos { color:#4ade80 }
-    .neg { color:#f87171 }
-    .pos::before { content:"↑" }
-    .neg::before { content:"↓" }
+    
+    .toggle-btn.active {
+      background: #3b82f6;
+      color: white;
+      box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+    }
+    
+    .toggle-btn:not(.active) {
+      background: transparent;
+      color: #64748b;
+    }
+    
+    .stocks-container {
+      position: relative;
+      overflow: hidden;
+      height: auto;
+    }
+    
+    .stocks-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.3s ease;
+    }
+    
+    .stock-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s;
+    }
+    
+    .stock-card:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transform: translateY(-1px);
+    }
+    
+    .stock-info {
+      flex: 1;
+    }
+    
+    .stock-ticker {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 4px;
+    }
+    
+    .stock-name {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.2;
+    }
+    
+    .stock-metrics {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+    }
+    
+    .stock-price {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    .stock-change {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .change-positive {
+      color: #059669;
+    }
+    
+    .change-negative {
+      color: #dc2626;
+    }
+    
+    .arrow-up::before {
+      content: "↗";
+    }
+    
+    .arrow-down::before {
+      content: "↘";
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .error {
+      text-align: center;
+      padding: 20px;
+      color: #dc2626;
+      font-size: 14px;
+    }
+    
+    .last-updated {
+      text-align: center;
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 15px;
+    }
+    
+    @media (max-width: 480px) {
+      body {
+        padding: 16px 12px;
+      }
+      
+      .top-movers-section {
+        padding: 16px;
+        border-radius: 12px;
+      }
+      
+      .section-title {
+        font-size: 18px;
+      }
+      
+      .toggle-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+      
+      .stock-card {
+        padding: 14px;
+      }
+      
+      .stock-ticker {
+        font-size: 15px;
+      }
+      
+      .stock-name {
+        font-size: 11px;
+      }
+      
+      .stock-price {
+        font-size: 15px;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="dashboard">
-    <h1>Top Movers</h1>
-    <div class="controls">
-      <div class="btn active" id="btnG">Gainers</div>
-      <div class="btn" id="btnL">Losers</div>
-    </div>
-    <div class="stack">
-      <div class="list" id="list"></div>
+  <div class="dashboard-container">
+    <div class="top-movers-section">
+      <div class="section-header">
+        <h2 class="section-title">Top Movers</h2>
+        <div class="toggle-buttons">
+          <button class="toggle-btn active" id="gainers-btn">Gainers</button>
+          <button class="toggle-btn" id="losers-btn">Losers</button>
+        </div>
+      </div>
+      
+      <div class="stocks-container">
+        <div class="stocks-list" id="stocks-list">
+          <div class="loading" id="loading">Loading live data...</div>
+        </div>
+      </div>
+      
+      <div class="last-updated" id="last-updated"></div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
-    const CSV_URL = 
-      'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pubhtml?gid=1581897548&single=true';
-    const perPage = 5, totalToShow = 20;
-    let data = [], view='g', page=0;
-
-    // parse CSV & initialize
-    Papa.parse(CSV_URL, {
-      download:true, header:true, dynamicTyping:true,
-      complete: r => {
-        data = r.data
-          .filter(d=>d.Ticker && d.change)
-          .map(d=>({
-            ticker:d.Ticker,
-            name:d['Name']||d['stock name']||'',
-            price:parseFloat(d.LTP||d.price).toFixed(2),
-            change:parseFloat(d.change)
-          }))
-          .slice(0,totalToShow);
-        render();
-        setInterval(nextPage,3000);
-      }
-    });
-
-    const listEl = document.getElementById('list');
-    document.getElementById('btnG').onclick=()=>toggle('g');
-    document.getElementById('btnL').onclick=()=>toggle('l');
-
-    function toggle(v){
-      view=v; page=0;
-      document.getElementById('btnG').classList.toggle('active',v==='g');
-      document.getElementById('btnL').classList.toggle('active',v==='l');
-      render();
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
+    
+    let stockData = [];
+    let currentView = 'gainers';
+    
+    // DOM Elements
+    const gainersBtn = document.getElementById('gainers-btn');
+    const losersBtn = document.getElementById('losers-btn');
+    const stocksList = document.getElementById('stocks-list');
+    const loading = document.getElementById('loading');
+    const lastUpdated = document.getElementById('last-updated');
+    
+    function loadData() {
+      loading.style.display = 'block';
+      stocksList.innerHTML = '<div class="loading">Loading live data...</div>';
+      
+      Papa.parse(CSV_URL, {
+        download: true,
+        header: false,
+        skipEmptyLines: true,
+        complete: function(results) {
+          try {
+            console.log('CSV loaded, processing data...');
+            const rows = results.data;
+            
+            if (rows.length < 3) {
+              throw new Error('Insufficient data rows');
+            }
+            
+            // Skip first 2 rows (headers) and process data
+            const dataRows = rows.slice(2);
+            
+            stockData = dataRows.map(row => {
+              if (!row[0] || row[0].trim() === '') return null;
+              
+              const ticker = row[0] ? row[0].toString().trim() : '';
+              const name = row[2] ? row[2].toString().trim() : '';
+              const ltp = row[9] ? row[9].toString().trim() : '0';
+              const change = row[10] ? row[10].toString().trim() : '0';
+              const changePct = row[11] ? row[11].toString().trim() : '0%';
+              
+              return {
+                ticker: ticker,
+                name: name,
+                ltp: parseFloat(ltp) || 0,
+                change: parseFloat(change) || 0,
+                changePct: changePct,
+                ltpFormatted: ltp,
+                changeFormatted: change
+              };
+            }).filter(stock => stock && stock.ticker && stock.ltp > 0);
+            
+            console.log(`Processed ${stockData.length} stocks`);
+            renderStocks();
+            
+            // Update last updated time
+            const now = new Date();
+            lastUpdated.textContent = `Last updated: ${now.toLocaleTimeString()}`;
+            
+          } catch (error) {
+            console.error('Error processing data:', error);
+            stocksList.innerHTML = '<div class="error">Error loading data. Please try again.</div>';
+          }
+        },
+        error: function(error) {
+          console.error('Error loading CSV:', error);
+          stocksList.innerHTML = '<div class="error">Failed to load data. Check connection.</div>';
+        }
+      });
     }
-
-    function render(){
-      const sorted = data.slice()
-        .sort((a,b)=> view==='g' 
-          ? b.change - a.change 
-          : a.change - b.change
-        );
-      const slice = sorted.slice(page*perPage, page*perPage+perPage);
-      listEl.style.transform = `translateY(${-(page*(80+12))}px)`;
-      listEl.innerHTML = slice.map(d=>`
-        <div class="card">
-          <div class="info">
-            <div class="ticker">${d.ticker}</div>
-            <div class="name">${d.name}</div>
-          </div>
-          <div class="metrics">
-            <div class="price">₹${d.price}</div>
-            <div class="chg ${d.change>=0?'pos':'neg'}">
-              ${Math.abs(d.change).toFixed(2)}
+    
+    function renderStocks() {
+      loading.style.display = 'none';
+      
+      if (stockData.length === 0) {
+        stocksList.innerHTML = '<div class="error">No stock data available</div>';
+        return;
+      }
+      
+      // Filter and sort data
+      let filteredData = [...stockData];
+      
+      if (currentView === 'gainers') {
+        filteredData = filteredData.filter(stock => stock.change > 0)
+                                   .sort((a, b) => b.change - a.change)
+                                   .slice(0, 5);
+      } else {
+        filteredData = filteredData.filter(stock => stock.change < 0)
+                                   .sort((a, b) => a.change - b.change)
+                                   .slice(0, 5);
+      }
+      
+      if (filteredData.length === 0) {
+        stocksList.innerHTML = `<div class="error">No ${currentView} found</div>`;
+        return;
+      }
+      
+      // Generate HTML
+      const stocksHTML = filteredData.map(stock => {
+        const isPositive = stock.change > 0;
+        const changeClass = isPositive ? 'change-positive' : 'change-negative';
+        const arrowClass = isPositive ? 'arrow-up' : 'arrow-down';
+        
+        // Clean percentage display
+        let percentDisplay = stock.changePct;
+        if (percentDisplay.includes('%')) {
+          percentDisplay = percentDisplay.replace('-', '');
+        }
+        
+        return `
+          <div class="stock-card">
+            <div class="stock-info">
+              <div class="stock-ticker">${stock.ticker}</div>
+              <div class="stock-name">${stock.name}</div>
+            </div>
+            <div class="stock-metrics">
+              <div class="stock-price">₹${stock.ltpFormatted}</div>
+              <div class="stock-change ${changeClass}">
+                <span class="${arrowClass}"></span>
+                ${Math.abs(stock.change).toFixed(2)} (${percentDisplay})
+              </div>
             </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
+      
+      stocksList.innerHTML = stocksHTML;
     }
-
-    function nextPage(){
-      page = (page+1) % Math.ceil(totalToShow/perPage);
-      render();
-    }
+    
+    // Event Listeners
+    gainersBtn.addEventListener('click', () => {
+      currentView = 'gainers';
+      gainersBtn.classList.add('active');
+      losersBtn.classList.remove('active');
+      renderStocks();
+    });
+    
+    losersBtn.addEventListener('click', () => {
+      currentView = 'losers';
+      losersBtn.classList.add('active');
+      gainersBtn.classList.remove('active');
+      renderStocks();
+    });
+    
+    // Initialize
+    loadData();
+    
+    // Auto refresh every 30 seconds
+    setInterval(loadData, 30000);
+    
+    // Refresh on page focus (when user returns to tab)
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) {
+        loadData();
+      }
+    });
   </script>
 </body>
 </html>
