@@ -124,6 +124,7 @@
                 inset 0 -1px 0 rgba(255, 255, 255, 0.02);
             position: relative;
             animation: sectionFloat 6s ease-in-out infinite alternate;
+            margin-bottom: 16px;
         }
 
         /* Section background overlay with 15% purple */
@@ -257,9 +258,104 @@
             transform: scale(0.94);
         }
 
+        /* Dropdown for Time Period */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.08) !important;
+            color: var(--text-secondary) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            min-width: 60px;
+            text-align: center;
+            touch-action: manipulation;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .dropdown-btn.active {
+            background: var(--accent-gradient) !important;
+            color: white !important;
+            box-shadow: 
+                0 4px 20px rgba(139, 92, 246, 0.4),
+                0 2px 10px rgba(139, 92, 246, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .dropdown-arrow {
+            font-size: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 4px);
+            right: 0;
+            background: rgba(26, 26, 26, 0.95) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 4px;
+            min-width: 80px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.6),
+                0 8px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .dropdown.open .dropdown-menu {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: all;
+        }
+
+        .dropdown-item {
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            text-align: left;
+            border: none;
+            background: transparent;
+            width: 100%;
+        }
+
+        .dropdown-item:hover,
+        .dropdown-item.active {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--text-primary);
+        }
+
         /* Stocks Container - SCROLLABLE for ALL Stocks */
         .stocks-container {
-            height: 400px;
+            height: 360px;
             overflow-y: auto;
             overflow-x: hidden;
             -webkit-overflow-scrolling: touch;
@@ -657,7 +753,7 @@
                 font-size: 15px;
             }
             
-            .pill-btn {
+            .pill-btn, .dropdown-btn {
                 padding: 5px 10px;
                 font-size: 11px;
                 min-width: 55px;
@@ -709,25 +805,59 @@
 </head>
 <body>
     <div class="container">
+        <!-- First Section: Top Gainers/Losers -->
         <div class="stocks-section fade-in">
             <div class="section-header">
-                <h2 class="section-title" id="section-title">Top Gainers</h2>
+                <h2 class="section-title" id="section-title-1">Top Gainers</h2>
                 <div class="toggle-pills">
-                    <button class="pill-btn active" data-type="gainers">Gainers</button>
-                    <button class="pill-btn" data-type="losers">Losers</button>
+                    <button class="pill-btn active" data-type="gainers" data-section="1">Gainers</button>
+                    <button class="pill-btn" data-type="losers" data-section="1">Losers</button>
                 </div>
             </div>
 
-            <div class="stocks-container" id="stocks-container">
+            <div class="stocks-container" id="stocks-container-1">
                 <div class="scroll-gradient-top"></div>
-                <div class="loading" id="loading">
+                <div class="loading" id="loading-1">
                     <div class="loading-spinner"></div>
                     <div class="loading-text">Loading stocks...</div>
                 </div>
                 <div class="scroll-gradient-bottom"></div>
             </div>
 
-            <div class="update-indicator" id="update-indicator">Updated</div>
+            <div class="update-indicator" id="update-indicator-1">Updated</div>
+        </div>
+
+        <!-- Second Section: Weekly Gainers/Losers -->
+        <div class="stocks-section fade-in">
+            <div class="section-header">
+                <h2 class="section-title" id="section-title-2">Top Weekly Gainers</h2>
+                <div class="toggle-pills">
+                    <button class="pill-btn active" data-type="gainers" data-section="2">Gainers</button>
+                    <button class="pill-btn" data-type="losers" data-section="2">Losers</button>
+                    <div class="dropdown">
+                        <button class="dropdown-btn active" id="period-btn">
+                            <span id="period-text">Weekly</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </button>
+                        <div class="dropdown-menu" id="period-dropdown">
+                            <button class="dropdown-item active" data-period="weekly">Weekly</button>
+                            <button class="dropdown-item" data-period="monthly">Monthly</button>
+                            <button class="dropdown-item" data-period="yearly">Yearly</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stocks-container" id="stocks-container-2">
+                <div class="scroll-gradient-top"></div>
+                <div class="loading" id="loading-2">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Loading weekly data...</div>
+                </div>
+                <div class="scroll-gradient-bottom"></div>
+            </div>
+
+            <div class="update-indicator" id="update-indicator-2">Updated</div>
         </div>
     </div>
 
@@ -737,15 +867,49 @@
         document.documentElement.style.background = '#0a0a0a';
         document.body.style.background = '#0a0a0a';
 
-        class PerfectStockDashboard {
+        class AdvancedStockDashboard {
             constructor() {
                 this.csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
                 this.stocks = [];
                 this.gainers = [];
                 this.losers = [];
-                this.currentType = 'gainers';
+                this.section1State = { type: 'gainers' };
+                this.section2State = { type: 'gainers', period: 'weekly' };
                 this.isLoading = false;
                 this.lastUpdateTime = null;
+
+                // Mock data for second section (weekly/monthly/yearly)
+                this.weeklyData = [
+                    { ticker: "ANANTRAJ", name: "Anant Raj Ltd", ltp: 837.00, change: 51.42, changePct: "6.14%" },
+                    { ticker: "TCI", name: "Transport Corporation of India Ltd", ltp: 1245.30, change: 30.10, changePct: "2.47%" },
+                    { ticker: "ADANIGREEN", name: "Adani Green Energy Ltd", ltp: 988.75, change: 15.75, changePct: "1.62%" },
+                    { ticker: "PITTIENG", name: "Pitti Engineering Ltd", ltp: 654.20, change: 2.25, changePct: "0.35%" },
+                    { ticker: "NTPC", name: "NTPC Ltd", ltp: 432.15, change: -0.95, changePct: "-0.22%" },
+                    { ticker: "HBLENGINE", name: "HBL Engineering Ltd", ltp: 298.60, change: -0.96, changePct: "-0.32%" },
+                    { ticker: "FINCABLES", name: "Finolex Cables Ltd", ltp: 567.40, change: -7.62, changePct: "-1.33%" },
+                    { ticker: "MCX", name: "Multi Commodity Exchange Of India Ltd", ltp: 3245.80, change: -45.20, changePct: "-1.63%" },
+                    { ticker: "NMDC", name: "NMDC Ltd", ltp: 198.45, change: -4.05, changePct: "-2.01%" },
+                    { ticker: "RELIANCE", name: "Reliance Industries Ltd", ltp: 2456.75, change: -53.25, changePct: "-2.12%" },
+                ];
+
+                this.monthlyData = [
+                    { ticker: "ADANIGREEN", name: "Adani Green Energy Ltd", ltp: 988.75, change: 125.30, changePct: "14.52%" },
+                    { ticker: "TCS", name: "Tata Consultancy Services", ltp: 3890.50, change: 285.40, changePct: "7.91%" },
+                    { ticker: "INFY", name: "Infosys Limited", ltp: 1678.90, change: 98.50, changePct: "6.23%" },
+                    { ticker: "WIPRO", name: "Wipro Limited", ltp: 432.15, change: 18.75, changePct: "4.54%" },
+                    { ticker: "HDFCBANK", name: "HDFC Bank Limited", ltp: 1589.25, change: -45.80, changePct: "-2.80%" },
+                    { ticker: "ICICIBANK", name: "ICICI Bank Limited", ltp: 1023.40, change: -52.30, changePct: "-4.86%" },
+                    { ticker: "SBIN", name: "State Bank of India", ltp: 567.30, change: -68.20, changePct: "-10.73%" }
+                ];
+
+                this.yearlyData = [
+                    { ticker: "ADANIGREEN", name: "Adani Green Energy Ltd", ltp: 988.75, change: 456.30, changePct: "85.72%" },
+                    { ticker: "RELIANCE", name: "Reliance Industries Ltd", ltp: 2456.75, change: 678.25, changePct: "38.12%" },
+                    { ticker: "TCS", name: "Tata Consultancy Services", ltp: 3890.50, change: 892.40, changePct: "29.78%" },
+                    { ticker: "INFY", name: "Infosys Limited", ltp: 1678.90, change: 298.50, changePct: "21.64%" },
+                    { ticker: "BHARTIARTL", name: "Bharti Airtel Limited", ltp: 912.80, change: -156.45, changePct: "-14.64%" },
+                    { ticker: "ITC", name: "ITC Limited", ltp: 445.60, change: -89.75, changePct: "-16.77%" }
+                ];
 
                 this.initializeElements();
                 this.attachEventListeners();
@@ -754,11 +918,26 @@
             }
 
             initializeElements() {
-                this.pillButtons = document.querySelectorAll('.pill-btn');
-                this.stocksContainer = document.getElementById('stocks-container');
-                this.loading = document.getElementById('loading');
-                this.updateIndicator = document.getElementById('update-indicator');
-                this.sectionTitle = document.getElementById('section-title');
+                // Section 1 elements
+                this.section1Pills = document.querySelectorAll('[data-section="1"]');
+                this.section1Container = document.getElementById('stocks-container-1');
+                this.section1Loading = document.getElementById('loading-1');
+                this.section1UpdateIndicator = document.getElementById('update-indicator-1');
+                this.section1Title = document.getElementById('section-title-1');
+
+                // Section 2 elements
+                this.section2Pills = document.querySelectorAll('[data-section="2"]');
+                this.section2Container = document.getElementById('stocks-container-2');
+                this.section2Loading = document.getElementById('loading-2');
+                this.section2UpdateIndicator = document.getElementById('update-indicator-2');
+                this.section2Title = document.getElementById('section-title-2');
+
+                // Dropdown elements
+                this.dropdownBtn = document.getElementById('period-btn');
+                this.dropdown = document.querySelector('.dropdown');
+                this.dropdownMenu = document.getElementById('period-dropdown');
+                this.dropdownItems = document.querySelectorAll('.dropdown-item');
+                this.periodText = document.getElementById('period-text');
             }
 
             setupOptimizations() {
@@ -782,47 +961,55 @@
                 window.addEventListener('resize', setVH);
                 window.addEventListener('orientationchange', () => setTimeout(setVH, 100));
 
-                // Optimized scrolling with animation frame
-                let ticking = false;
-                this.stocksContainer.addEventListener('scroll', () => {
-                    if (!ticking) {
-                        requestAnimationFrame(() => {
-                            this.handleScroll();
-                            ticking = false;
-                        });
-                        ticking = true;
+                // Optimized scrolling for both sections
+                [this.section1Container, this.section2Container].forEach((container, index) => {
+                    let ticking = false;
+                    container.addEventListener('scroll', () => {
+                        if (!ticking) {
+                            requestAnimationFrame(() => {
+                                this.handleScroll(container);
+                                ticking = false;
+                            });
+                            ticking = true;
+                        }
+                    }, { passive: true });
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!this.dropdown.contains(e.target)) {
+                        this.dropdown.classList.remove('open');
                     }
-                }, { passive: true });
+                });
             }
 
             attachEventListeners() {
-                this.pillButtons.forEach(btn => {
-                    let touchStartTime = 0;
+                // Section 1 pills
+                this.section1Pills.forEach(btn => {
+                    this.attachPillEventListeners(btn, 1);
+                });
 
-                    btn.addEventListener('touchstart', (e) => {
-                        touchStartTime = Date.now();
-                        btn.style.transform = 'scale(0.94)';
-                    }, { passive: true });
+                // Section 2 pills
+                this.section2Pills.forEach(btn => {
+                    this.attachPillEventListeners(btn, 2);
+                });
 
-                    btn.addEventListener('touchend', (e) => {
-                        e.preventDefault();
-                        btn.style.transform = 'scale(1)';
-                        
-                        const touchDuration = Date.now() - touchStartTime;
-                        if (touchDuration < 500) {
-                            const type = btn.dataset.type;
-                            this.switchType(type);
-                        }
-                    }, { passive: false });
+                // Dropdown functionality
+                this.dropdownBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.dropdown.classList.toggle('open');
+                });
 
-                    btn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const type = btn.dataset.type;
-                        this.switchType(type);
+                this.dropdownItems.forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const period = item.dataset.period;
+                        this.changePeriod(period);
+                        this.dropdown.classList.remove('open');
                     });
                 });
 
-                // Auto refresh on visibility change
+                // Auto refresh
                 document.addEventListener('visibilitychange', () => {
                     if (!document.hidden) {
                         const timeSinceUpdate = this.lastUpdateTime ? 
@@ -834,10 +1021,36 @@
                 });
             }
 
-            handleScroll() {
-                const { scrollTop, scrollHeight, clientHeight } = this.stocksContainer;
-                const topGradient = this.stocksContainer.querySelector('.scroll-gradient-top');
-                const bottomGradient = this.stocksContainer.querySelector('.scroll-gradient-bottom');
+            attachPillEventListeners(btn, section) {
+                let touchStartTime = 0;
+
+                btn.addEventListener('touchstart', (e) => {
+                    touchStartTime = Date.now();
+                    btn.style.transform = 'scale(0.94)';
+                }, { passive: true });
+
+                btn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    btn.style.transform = 'scale(1)';
+                    
+                    const touchDuration = Date.now() - touchStartTime;
+                    if (touchDuration < 500) {
+                        const type = btn.dataset.type;
+                        this.switchType(type, section);
+                    }
+                }, { passive: false });
+
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const type = btn.dataset.type;
+                    this.switchType(type, section);
+                });
+            }
+
+            handleScroll(container) {
+                const { scrollTop, scrollHeight, clientHeight } = container;
+                const topGradient = container.querySelector('.scroll-gradient-top');
+                const bottomGradient = container.querySelector('.scroll-gradient-bottom');
                 
                 if (topGradient) {
                     topGradient.style.opacity = scrollTop > 15 ? '1' : '0';
@@ -849,8 +1062,8 @@
 
             getCachedData() {
                 try {
-                    const cached = localStorage.getItem('perfectStockData');
-                    const cacheTime = localStorage.getItem('perfectStockDataTime');
+                    const cached = localStorage.getItem('dualStockData');
+                    const cacheTime = localStorage.getItem('dualStockDataTime');
                     if (cached && cacheTime) {
                         const age = Date.now() - parseInt(cacheTime);
                         if (age < 180000) { // 3 minutes
@@ -865,8 +1078,8 @@
 
             setCachedData(data) {
                 try {
-                    localStorage.setItem('perfectStockData', JSON.stringify(data));
-                    localStorage.setItem('perfectStockDataTime', Date.now().toString());
+                    localStorage.setItem('dualStockData', JSON.stringify(data));
+                    localStorage.setItem('dualStockDataTime', Date.now().toString());
                 } catch (e) {
                     console.log('Cache save error:', e);
                 }
@@ -875,12 +1088,13 @@
             async loadData(showIndicator = false) {
                 if (this.isLoading) return;
 
-                // Cache first load
+                // Load cached data first
                 const cached = this.getCachedData();
                 if (cached && this.stocks.length === 0) {
                     this.stocks = cached;
                     this.processStocks();
-                    this.render();
+                    this.renderSection1();
+                    this.renderSection2();
                     this.lastUpdateTime = new Date();
                 }
 
@@ -926,8 +1140,12 @@
                                     this.stocks = newData;
                                     this.setCachedData(this.stocks);
                                     this.processStocks();
-                                    this.render();
-                                    if (showIndicator) this.showUpdateIndicator();
+                                    this.renderSection1();
+                                    this.renderSection2();
+                                    if (showIndicator) {
+                                        this.showUpdateIndicator(1);
+                                        this.showUpdateIndicator(2);
+                                    }
                                 }
 
                                 this.lastUpdateTime = new Date();
@@ -936,7 +1154,8 @@
                             } catch (error) {
                                 console.error('Processing error:', error);
                                 if (this.stocks.length === 0) {
-                                    this.showError('Error loading data');
+                                    this.showError('Error loading data', 1);
+                                    this.showError('Error loading data', 2);
                                 }
                                 this.isLoading = false;
                             }
@@ -945,7 +1164,8 @@
                 } catch (error) {
                     console.error('Network error:', error);
                     if (this.stocks.length === 0) {
-                        this.showError('Network error');
+                        this.showError('Network error', 1);
+                        this.showError('Network error', 2);
                     }
                     this.isLoading = false;
                 }
@@ -961,54 +1181,117 @@
                     .sort((a, b) => parseFloat(a.changePct.replace('%', '')) - parseFloat(b.changePct.replace('%', '')));
             }
 
-            switchType(type) {
-                if (this.currentType === type) return;
+            switchType(type, section) {
+                if (section === 1) {
+                    if (this.section1State.type === type) return;
+                    this.section1State.type = type;
 
-                this.currentType = type;
+                    this.section1Pills.forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.type === type);
+                    });
 
-                this.pillButtons.forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.type === type);
-                });
+                    this.section1Title.textContent = type === 'gainers' ? 'Top Gainers' : 'Top Losers';
+                    this.renderSection1();
+                } else if (section === 2) {
+                    if (this.section2State.type === type) return;
+                    this.section2State.type = type;
 
-                this.sectionTitle.textContent = type === 'gainers' ? 'Top Gainers' : 'Top Losers';
-                this.render();
+                    this.section2Pills.forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.type === type);
+                    });
+
+                    this.updateSection2Title();
+                    this.renderSection2();
+                }
             }
 
-            render() {
-                this.loading.style.display = 'none';
+            changePeriod(period) {
+                if (this.section2State.period === period) return;
                 
-                const currentStocks = this.currentType === 'gainers' ? this.gainers : this.losers;
+                this.section2State.period = period;
+                
+                this.dropdownItems.forEach(item => {
+                    item.classList.toggle('active', item.dataset.period === period);
+                });
+
+                this.periodText.textContent = period.charAt(0).toUpperCase() + period.slice(1);
+                this.updateSection2Title();
+                this.renderSection2();
+            }
+
+            updateSection2Title() {
+                const periodText = this.section2State.period.charAt(0).toUpperCase() + this.section2State.period.slice(1);
+                const typeText = this.section2State.type === 'gainers' ? 'Gainers' : 'Losers';
+                this.section2Title.textContent = `Top ${periodText} ${typeText}`;
+            }
+
+            renderSection1() {
+                this.section1Loading.style.display = 'none';
+                
+                const currentStocks = this.section1State.type === 'gainers' ? this.gainers : this.losers;
                 
                 if (!currentStocks.length) {
-                    this.showError(`No ${this.currentType} found`);
+                    this.showError(`No ${this.section1State.type} found`, 1);
                     return;
                 }
 
-                // Show ALL stocks with scrollable container
+                this.renderStocksList(currentStocks, this.section1Container, 1);
+            }
+
+            renderSection2() {
+                this.section2Loading.style.display = 'none';
+                
+                let currentData;
+                switch (this.section2State.period) {
+                    case 'weekly':
+                        currentData = this.weeklyData;
+                        break;
+                    case 'monthly':
+                        currentData = this.monthlyData;
+                        break;
+                    case 'yearly':
+                        currentData = this.yearlyData;
+                        break;
+                    default:
+                        currentData = this.weeklyData;
+                }
+
+                const filteredStocks = this.section2State.type === 'gainers' 
+                    ? currentData.filter(stock => stock.change > 0).sort((a, b) => parseFloat(b.changePct.replace('%', '')) - parseFloat(a.changePct.replace('%', '')))
+                    : currentData.filter(stock => stock.change < 0).sort((a, b) => parseFloat(a.changePct.replace('%', '')) - parseFloat(b.changePct.replace('%', '')));
+
+                if (!filteredStocks.length) {
+                    this.showError(`No ${this.section2State.period} ${this.section2State.type} found`, 2);
+                    return;
+                }
+
+                this.renderStocksList(filteredStocks, this.section2Container, 2);
+            }
+
+            renderStocksList(stocks, container, section) {
                 const stocksList = document.createElement('div');
                 stocksList.className = 'stocks-list';
                 
-                currentStocks.forEach((stock, index) => {
-                    const stockCard = this.createStockCard(stock);
-                    // Stagger animation with delay
+                stocks.forEach((stock, index) => {
+                    const stockCard = this.createStockCard(stock, section);
                     setTimeout(() => {
                         stockCard.style.opacity = '1';
                         stockCard.style.transform = 'translateY(0) translateX(0)';
-                    }, index * 50); // 50ms delay between cards
+                    }, index * 50);
                     stocksList.appendChild(stockCard);
                 });
                 
-                const existingList = this.stocksContainer.querySelector('.stocks-list');
+                const existingList = container.querySelector('.stocks-list');
                 if (existingList) existingList.remove();
                 
-                const topGradient = this.stocksContainer.querySelector('.scroll-gradient-top');
-                const bottomGradient = this.stocksContainer.querySelector('.scroll-gradient-bottom');
+                const topGradient = container.querySelector('.scroll-gradient-top');
+                const bottomGradient = container.querySelector('.scroll-gradient-bottom');
                 
-                this.stocksContainer.insertBefore(stocksList, bottomGradient);
-                this.stocksContainer.scrollTo({ top: 0, behavior: 'smooth' });
+                container.insertBefore(stocksList, bottomGradient);
+                container.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
-            createStockCard(stock) {
+            createStockCard(stock, section) {
                 const card = document.createElement('div');
                 
                 let cardClass = 'stock-card';
@@ -1082,16 +1365,15 @@
             }
 
             handleStockTap(stock) {
-                // Haptic feedback
                 if ('vibrate' in navigator) {
                     navigator.vibrate(10);
                 }
-                
                 console.log('Stock tapped:', stock.ticker);
             }
 
-            showError(message) {
-                const existingList = this.stocksContainer.querySelector('.stocks-list');
+            showError(message, section) {
+                const container = section === 1 ? this.section1Container : this.section2Container;
+                const existingList = container.querySelector('.stocks-list');
                 if (existingList) existingList.remove();
 
                 const errorDiv = document.createElement('div');
@@ -1101,26 +1383,26 @@
                     <div class="error-text">${message}</div>
                 `;
 
-                const bottomGradient = this.stocksContainer.querySelector('.scroll-gradient-bottom');
-                this.stocksContainer.insertBefore(errorDiv, bottomGradient);
+                const bottomGradient = container.querySelector('.scroll-gradient-bottom');
+                container.insertBefore(errorDiv, bottomGradient);
             }
 
-            showUpdateIndicator() {
-                this.updateIndicator.classList.add('show');
+            showUpdateIndicator(section) {
+                const indicator = section === 1 ? this.section1UpdateIndicator : this.section2UpdateIndicator;
+                indicator.classList.add('show');
                 if ('vibrate' in navigator) navigator.vibrate(15);
-                setTimeout(() => this.updateIndicator.classList.remove('show'), 3000);
+                setTimeout(() => indicator.classList.remove('show'), 3000);
             }
         }
 
-        // Initialize with enhanced animations
+        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            // Add entrance animation delay
             setTimeout(() => {
-                window.stockDashboard = new PerfectStockDashboard();
+                window.stockDashboard = new AdvancedStockDashboard();
             }, 100);
         });
 
-        // Smart auto-refresh with reduced frequency
+        // Auto refresh
         setInterval(() => {
             if (window.stockDashboard && !document.hidden) {
                 const timeSinceUpdate = window.stockDashboard.lastUpdateTime ? 
