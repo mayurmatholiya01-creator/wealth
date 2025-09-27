@@ -54,7 +54,7 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Enhanced background with purple gradient like your image */
+        /* Enhanced background with purple gradient */
         body::before {
             content: '';
             position: fixed;
@@ -86,6 +86,21 @@
             padding-right: env(safe-area-inset-right);
         }
 
+        .page-container {
+            width: 100%;
+            height: 100vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .page-container::-webkit-scrollbar {
+            display: none;
+        }
+
         .container {
             width: 100%;
             max-width: 100vw;
@@ -106,28 +121,30 @@
             }
         }
 
-        /* Enhanced Main Section with Section Purple Background */
+        /* Enhanced Main Section with Professional Transparency */
         .stocks-section {
             background: linear-gradient(135deg, 
-                rgba(26, 26, 26, 0.85) 0%, 
-                rgba(20, 20, 20, 0.9) 50%, 
-                rgba(15, 15, 15, 0.95) 100%) !important;
-            backdrop-filter: blur(25px) saturate(180%);
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
+                rgba(26, 26, 26, 0.75) 0%, 
+                rgba(20, 20, 20, 0.85) 50%, 
+                rgba(15, 15, 15, 0.9) 100%) !important;
+            backdrop-filter: blur(30px) saturate(200%);
+            -webkit-backdrop-filter: blur(30px) saturate(200%);
             border-radius: 24px;
-            border: 1px solid var(--glass-border);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             overflow: hidden;
             box-shadow: 
-                0 25px 50px rgba(0, 0, 0, 0.7),
-                0 8px 16px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.08),
+                0 30px 60px rgba(0, 0, 0, 0.8),
+                0 12px 24px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
                 inset 0 -1px 0 rgba(255, 255, 255, 0.02);
             position: relative;
-            animation: sectionFloat 6s ease-in-out infinite alternate;
+            animation: sectionFloat 8s ease-in-out infinite alternate;
             margin-bottom: 16px;
+            scroll-snap-align: start;
+            min-height: calc(100vh - 32px);
         }
 
-        /* Section background overlay with 15% purple */
+        /* Section background overlay with enhanced transparency */
         .stocks-section::after {
             content: '';
             position: absolute;
@@ -135,17 +152,20 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: var(--section-purple);
+            background: linear-gradient(135deg, 
+                rgba(139, 92, 246, 0.12) 0%, 
+                rgba(99, 102, 241, 0.08) 50%, 
+                rgba(79, 70, 229, 0.06) 100%);
             z-index: 0;
             pointer-events: none;
         }
 
         @keyframes sectionFloat {
             0% { transform: translateY(0px) scale(1); }
-            100% { transform: translateY(-2px) scale(1.002); }
+            100% { transform: translateY(-3px) scale(1.003); }
         }
 
-        /* Glass shine effect */
+        /* Enhanced glass shine effect */
         .stocks-section::before {
             content: '';
             position: absolute;
@@ -155,74 +175,104 @@
             height: 100%;
             background: linear-gradient(90deg, 
                 transparent 0%, 
-                rgba(255, 255, 255, 0.05) 50%, 
+                rgba(255, 255, 255, 0.08) 30%, 
+                rgba(255, 255, 255, 0.12) 50%, 
+                rgba(255, 255, 255, 0.08) 70%, 
                 transparent 100%);
-            animation: glassShine 4s ease-in-out infinite;
+            animation: glassShine 6s ease-in-out infinite;
             z-index: 1;
         }
 
         @keyframes glassShine {
-            0%, 90%, 100% { left: -100%; opacity: 0; }
-            45% { left: 100%; opacity: 1; }
+            0%, 85%, 100% { left: -100%; opacity: 0; }
+            50% { left: 100%; opacity: 1; }
         }
 
-        /* Enhanced Section Header */
+        /* Professional Transparent Section Header */
         .section-header {
-            padding: 12px 18px 10px;
+            padding: 14px 20px 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             background: linear-gradient(135deg, 
-                rgba(42, 42, 42, 0.8) 0%, 
-                rgba(35, 35, 35, 0.9) 100%) !important;
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                rgba(42, 42, 42, 0.6) 0%, 
+                rgba(35, 35, 35, 0.7) 50%, 
+                rgba(30, 30, 30, 0.8) 100%) !important;
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             position: relative;
             z-index: 3;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        /* Professional header glow */
+        .section-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(139, 92, 246, 0.4) 20%, 
+                rgba(99, 102, 241, 0.6) 50%, 
+                rgba(79, 70, 229, 0.4) 80%, 
+                transparent 100%);
+            animation: headerGlow 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes headerGlow {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.8; }
         }
 
         .section-title {
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 700;
             color: var(--text-primary) !important;
-            letter-spacing: -0.2px;
+            letter-spacing: -0.3px;
             animation: titlePulse 3s ease-in-out infinite alternate;
             position: relative;
             z-index: 4;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         @keyframes titlePulse {
-            0% { opacity: 0.9; }
-            100% { opacity: 1; }
+            0% { opacity: 0.9; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
+            100% { opacity: 1; text-shadow: 0 4px 16px rgba(139, 92, 246, 0.2); }
         }
 
-        /* Enhanced Toggle Pills */
+        /* Enhanced Toggle Pills with Professional Transparency */
         .toggle-pills {
             display: flex;
-            gap: 4px;
+            gap: 5px;
             position: relative;
             z-index: 4;
         }
 
         .pill-btn {
-            padding: 6px 12px;
+            padding: 7px 14px;
             border: none;
-            border-radius: 16px;
+            border-radius: 18px;
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(255, 255, 255, 0.08) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.06) !important;
             color: var(--text-secondary) !important;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            min-width: 60px;
+            backdrop-filter: blur(15px) saturate(130%);
+            -webkit-backdrop-filter: blur(15px) saturate(130%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            min-width: 65px;
             text-align: center;
             touch-action: manipulation;
             position: relative;
             overflow: hidden;
+            box-shadow: 
+                inset 0 1px 0 rgba(255, 255, 255, 0.08),
+                0 2px 8px rgba(0, 0, 0, 0.15);
         }
 
         .pill-btn::before {
@@ -234,9 +284,9 @@
             height: 100%;
             background: linear-gradient(90deg, 
                 transparent 0%, 
-                rgba(255, 255, 255, 0.1) 50%, 
+                rgba(255, 255, 255, 0.12) 50%, 
                 transparent 100%);
-            transition: left 0.5s ease;
+            transition: left 0.6s ease;
         }
 
         .pill-btn:hover::before {
@@ -247,59 +297,63 @@
             background: var(--accent-gradient) !important;
             color: white !important;
             box-shadow: 
-                0 4px 20px rgba(139, 92, 246, 0.4),
-                0 2px 10px rgba(139, 92, 246, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            transform: translateY(-1px);
+                0 6px 25px rgba(139, 92, 246, 0.5),
+                0 3px 12px rgba(139, 92, 246, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            transform: translateY(-1px) scale(1.02);
         }
 
         .pill-btn:active {
-            transform: scale(0.94);
+            transform: scale(0.95);
         }
 
-        /* Dropdown for Time Period */
+        /* Professional Dropdown with Enhanced Transparency */
         .dropdown {
             position: relative;
             display: inline-block;
         }
 
         .dropdown-btn {
-            padding: 6px 12px;
+            padding: 7px 14px;
             border: none;
-            border-radius: 16px;
+            border-radius: 18px;
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(255, 255, 255, 0.08) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.06) !important;
             color: var(--text-secondary) !important;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            min-width: 60px;
+            backdrop-filter: blur(15px) saturate(130%);
+            -webkit-backdrop-filter: blur(15px) saturate(130%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            min-width: 70px;
             text-align: center;
             touch-action: manipulation;
             position: relative;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
+            box-shadow: 
+                inset 0 1px 0 rgba(255, 255, 255, 0.08),
+                0 2px 8px rgba(0, 0, 0, 0.15);
         }
 
         .dropdown-btn.active {
             background: var(--accent-gradient) !important;
             color: white !important;
             box-shadow: 
-                0 4px 20px rgba(139, 92, 246, 0.4),
-                0 2px 10px rgba(139, 92, 246, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            transform: translateY(-1px);
+                0 6px 25px rgba(139, 92, 246, 0.5),
+                0 3px 12px rgba(139, 92, 246, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            transform: translateY(-1px) scale(1.02);
         }
 
         .dropdown-arrow {
-            font-size: 8px;
-            transition: transform 0.3s ease;
+            font-size: 9px;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .dropdown.open .dropdown-arrow {
@@ -308,23 +362,26 @@
 
         .dropdown-menu {
             position: absolute;
-            top: calc(100% + 4px);
+            top: calc(100% + 6px);
             right: 0;
-            background: rgba(26, 26, 26, 0.95) !important;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 4px;
-            min-width: 80px;
+            background: linear-gradient(135deg, 
+                rgba(26, 26, 26, 0.9) 0%, 
+                rgba(20, 20, 20, 0.95) 100%) !important;
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 6px;
+            min-width: 90px;
             z-index: 1000;
             opacity: 0;
-            transform: translateY(-10px) scale(0.95);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(-15px) scale(0.9);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             pointer-events: none;
             box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.6),
-                0 8px 16px rgba(0, 0, 0, 0.4);
+                0 25px 50px rgba(0, 0, 0, 0.8),
+                0 10px 20px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .dropdown.open .dropdown-menu {
@@ -334,32 +391,38 @@
         }
 
         .dropdown-item {
-            padding: 8px 12px;
+            padding: 10px 14px;
             font-size: 12px;
             font-weight: 500;
             color: var(--text-secondary);
             cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s ease;
+            border-radius: 10px;
+            transition: all 0.25s ease;
             text-align: left;
             border: none;
             background: transparent;
             width: 100%;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
 
         .dropdown-item:hover,
         .dropdown-item.active {
-            background: rgba(139, 92, 246, 0.15);
+            background: rgba(139, 92, 246, 0.2);
             color: var(--text-primary);
+            transform: translateX(2px);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
-        /* Stocks Container - SCROLLABLE for ALL Stocks */
+        /* Professional Optimized Stocks Container */
         .stocks-container {
-            height: 360px;
+            height: calc(100vh - 200px);
+            max-height: 600px;
             overflow-y: auto;
             overflow-x: hidden;
             -webkit-overflow-scrolling: touch;
             overscroll-behavior-y: contain;
+            scroll-behavior: smooth;
             scrollbar-width: none;
             -ms-overflow-style: none;
             position: relative;
@@ -373,47 +436,47 @@
         .stocks-list {
             display: flex;
             flex-direction: column;
-            padding-bottom: 8px;
+            padding-bottom: 12px;
         }
 
-        /* Enhanced Stock Card - Premium Glass Effect */
+        /* Enhanced Stock Card with Professional Glass */
         .stock-card {
-            padding: 12px 18px;
-            margin: 2px 0;
+            padding: 14px 20px;
+            margin: 3px 0;
             position: relative;
             cursor: pointer;
             background: linear-gradient(135deg, 
-                rgba(30, 30, 30, 0.9) 0%, 
-                rgba(25, 25, 25, 0.85) 50%, 
-                rgba(20, 20, 20, 0.9) 100%) !important;
-            backdrop-filter: blur(15px) saturate(120%);
-            -webkit-backdrop-filter: blur(15px) saturate(120%);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
+                rgba(30, 30, 30, 0.85) 0%, 
+                rgba(25, 25, 25, 0.8) 50%, 
+                rgba(20, 20, 20, 0.85) 100%) !important;
+            backdrop-filter: blur(20px) saturate(140%);
+            -webkit-backdrop-filter: blur(20px) saturate(140%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
             box-shadow: 
-                0 4px 12px rgba(0, 0, 0, 0.4),
-                0 2px 6px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.04),
+                0 6px 16px rgba(0, 0, 0, 0.5),
+                0 3px 8px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06),
                 inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             touch-action: manipulation;
             overflow: hidden;
-            animation: cardSlideIn 0.5s ease-out;
+            animation: cardSlideIn 0.6s ease-out;
             z-index: 2;
         }
 
         @keyframes cardSlideIn {
             from {
                 opacity: 0;
-                transform: translateX(-20px);
+                transform: translateX(-25px) scale(0.95);
             }
             to {
                 opacity: 1;
-                transform: translateX(0);
+                transform: translateX(0) scale(1);
             }
         }
 
-        /* Card hover glow effect */
+        /* Professional card hover glow */
         .stock-card::after {
             content: '';
             position: absolute;
@@ -422,10 +485,11 @@
             right: 0;
             bottom: 0;
             background: linear-gradient(135deg, 
-                rgba(139, 92, 246, 0.1) 0%, 
-                transparent 50%);
+                rgba(139, 92, 246, 0.12) 0%, 
+                rgba(99, 102, 241, 0.08) 50%,
+                transparent 70%);
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.4s ease;
             pointer-events: none;
         }
 
@@ -433,19 +497,19 @@
             opacity: 1;
         }
 
-        /* Touch animations */
+        /* Enhanced touch animations */
         .stock-card:active {
-            transform: scale(0.98) translateY(1px);
+            transform: scale(0.97) translateY(2px);
             background: linear-gradient(135deg, 
-                rgba(40, 40, 40, 0.95) 0%, 
-                rgba(35, 35, 35, 0.9) 50%, 
-                rgba(30, 30, 30, 0.95) 100%) !important;
+                rgba(40, 40, 40, 0.9) 0%, 
+                rgba(35, 35, 35, 0.85) 50%, 
+                rgba(30, 30, 30, 0.9) 100%) !important;
             box-shadow: 
-                0 2px 8px rgba(0, 0, 0, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+                0 3px 12px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
         }
 
-        /* Performance-based subtle overlays */
+        /* Performance-based overlays with enhanced effects */
         .stock-card.positive::before {
             content: '';
             position: absolute;
@@ -454,8 +518,9 @@
             right: 0;
             bottom: 0;
             background: linear-gradient(135deg, 
-                rgba(34, 197, 94, 0.08) 0%, 
-                transparent 60%);
+                rgba(34, 197, 94, 0.1) 0%, 
+                rgba(16, 185, 129, 0.06) 50%,
+                transparent 70%);
             opacity: 0;
             transition: opacity 0.3s ease;
             pointer-events: none;
@@ -469,8 +534,9 @@
             right: 0;
             bottom: 0;
             background: linear-gradient(135deg, 
-                rgba(239, 68, 68, 0.08) 0%, 
-                transparent 60%);
+                rgba(239, 68, 68, 0.1) 0%, 
+                rgba(220, 38, 38, 0.06) 50%,
+                transparent 70%);
             opacity: 0;
             transition: opacity 0.3s ease;
             pointer-events: none;
@@ -494,25 +560,25 @@
         }
 
         .stock-ticker {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 700;
             color: var(--text-primary) !important;
-            margin-bottom: 2px;
+            margin-bottom: 3px;
             letter-spacing: 0.1px;
-            animation: tickerGlow 2s ease-in-out infinite alternate;
+            animation: tickerGlow 3s ease-in-out infinite alternate;
         }
 
         @keyframes tickerGlow {
-            0% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.1); }
-            100% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.2); }
+            0% { text-shadow: 0 0 8px rgba(255, 255, 255, 0.1); }
+            100% { text-shadow: 0 0 16px rgba(255, 255, 255, 0.2); }
         }
 
         .stock-name {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--text-secondary) !important;
             font-weight: 400;
-            line-height: 1.2;
-            max-width: 200px;
+            line-height: 1.3;
+            max-width: 220px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -523,12 +589,12 @@
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 2px;
-            min-width: 90px;
+            gap: 3px;
+            min-width: 95px;
         }
 
         .stock-price {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 700;
             color: var(--text-primary) !important;
             font-variant-numeric: tabular-nums;
@@ -537,79 +603,83 @@
         .stock-change {
             display: flex;
             align-items: center;
-            gap: 3px;
-            font-size: 11px;
+            gap: 4px;
+            font-size: 12px;
             font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 12px;
+            padding: 4px 10px;
+            border-radius: 14px;
             font-variant-numeric: tabular-nums;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            animation: changeGlow 1.5s ease-in-out infinite alternate;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            animation: changeGlow 2s ease-in-out infinite alternate;
         }
 
         @keyframes changeGlow {
-            0% { box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); }
-            100% { box-shadow: 0 0 15px rgba(0, 0, 0, 0.4); }
+            0% { box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); }
+            100% { box-shadow: 0 0 20px rgba(0, 0, 0, 0.4); }
         }
 
         .change-positive {
             color: #22c55e !important;
-            background: rgba(34, 197, 94, 0.15) !important;
-            border: 1px solid rgba(34, 197, 94, 0.2);
+            background: rgba(34, 197, 94, 0.18) !important;
+            border: 1px solid rgba(34, 197, 94, 0.25);
+            box-shadow: 0 0 12px rgba(34, 197, 94, 0.15);
         }
 
         .change-negative {
             color: #f87171 !important;
-            background: rgba(248, 113, 113, 0.15) !important;
-            border: 1px solid rgba(248, 113, 113, 0.2);
+            background: rgba(248, 113, 113, 0.18) !important;
+            border: 1px solid rgba(248, 113, 113, 0.25);
+            box-shadow: 0 0 12px rgba(248, 113, 113, 0.15);
         }
 
         .change-neutral {
             color: #94a3b8 !important;
-            background: rgba(148, 163, 184, 0.15) !important;
-            border: 1px solid rgba(148, 163, 184, 0.2);
+            background: rgba(148, 163, 184, 0.18) !important;
+            border: 1px solid rgba(148, 163, 184, 0.25);
         }
 
         .arrow-up::before {
             content: "▲";
-            font-size: 8px;
-            animation: arrowBounce 1s ease-in-out infinite alternate;
+            font-size: 9px;
+            animation: arrowBounce 1.2s ease-in-out infinite alternate;
         }
 
         .arrow-down::before {
             content: "▼";
-            font-size: 8px;
-            animation: arrowBounce 1s ease-in-out infinite alternate;
+            font-size: 9px;
+            animation: arrowBounce 1.2s ease-in-out infinite alternate;
         }
 
         .arrow-neutral::before {
             content: "●";
-            font-size: 6px;
+            font-size: 7px;
         }
 
         @keyframes arrowBounce {
             0% { transform: translateY(0px); }
-            100% { transform: translateY(-1px); }
+            100% { transform: translateY(-1.5px); }
         }
 
+        /* Rest of the styles remain the same... */
+        
         /* Enhanced Loading Animation */
         .loading {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 250px;
-            gap: 16px;
+            height: 300px;
+            gap: 20px;
         }
 
         .loading-spinner {
-            width: 36px;
-            height: 36px;
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top: 3px solid #8b5cf6;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #8b5cf6;
             border-radius: 50%;
-            animation: spin 1s linear infinite, spinGlow 2s ease-in-out infinite alternate;
+            animation: spin 1s linear infinite, spinGlow 2.5s ease-in-out infinite alternate;
         }
 
         @keyframes spin {
@@ -618,15 +688,15 @@
         }
 
         @keyframes spinGlow {
-            0% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
-            100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.6); }
+            0% { box-shadow: 0 0 15px rgba(139, 92, 246, 0.4); }
+            100% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.7); }
         }
 
         .loading-text {
             color: var(--text-secondary) !important;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 500;
-            animation: textPulse 1.5s ease-in-out infinite alternate;
+            animation: textPulse 1.8s ease-in-out infinite alternate;
         }
 
         @keyframes textPulse {
@@ -640,15 +710,15 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 200px;
-            gap: 12px;
+            height: 250px;
+            gap: 16px;
             text-align: center;
-            padding: 20px;
+            padding: 24px;
         }
 
         .error-icon {
-            font-size: 32px;
-            animation: errorPulse 1s ease-in-out infinite alternate;
+            font-size: 36px;
+            animation: errorPulse 1.2s ease-in-out infinite alternate;
         }
 
         @keyframes errorPulse {
@@ -658,54 +728,55 @@
 
         .error-text {
             color: #f87171 !important;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 500;
         }
 
         /* Update Indicator */
         .update-indicator {
             position: absolute;
-            top: 12px;
-            right: 18px;
+            top: 14px;
+            right: 20px;
             background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
             color: white !important;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 10px;
+            padding: 6px 12px;
+            border-radius: 14px;
+            font-size: 11px;
             font-weight: 600;
             opacity: 0;
-            transform: translateY(-8px) scale(0.8);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(-10px) scale(0.8);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 20;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
         }
 
         .update-indicator.show {
             opacity: 1;
             transform: translateY(0) scale(1);
-            animation: updatePulse 2s ease-in-out;
+            animation: updatePulse 2.5s ease-in-out;
         }
 
         @keyframes updatePulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
-            50% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5); }
+            50% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); }
         }
 
-        /* Enhanced Scroll gradients */
+        /* Professional Scroll gradients */
         .scroll-gradient-top {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 25px;
+            height: 30px;
             background: linear-gradient(to bottom, 
                 rgba(26, 26, 26, 0.95) 0%, 
-                rgba(26, 26, 26, 0.7) 70%, 
+                rgba(26, 26, 26, 0.8) 60%, 
                 transparent 100%);
             z-index: 10;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.4s ease;
         }
 
         .scroll-gradient-bottom {
@@ -713,30 +784,77 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 25px;
+            height: 30px;
             background: linear-gradient(to top, 
                 rgba(26, 26, 26, 0.95) 0%, 
-                rgba(26, 26, 26, 0.7) 70%, 
+                rgba(26, 26, 26, 0.8) 60%, 
                 transparent 100%);
             z-index: 10;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.4s ease;
         }
 
-        /* Fade-in animation */
+        /* Enhanced Fade-in animation */
         .fade-in {
-            animation: fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px) scale(0.95);
+                transform: translateY(40px) scale(0.95);
             }
             to {
                 opacity: 1;
                 transform: translateY(0) scale(1);
             }
+        }
+
+        /* Page scroll indicators */
+        .scroll-indicator {
+            position: fixed;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .scroll-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .scroll-dot.active {
+            background: var(--accent-gradient);
+            transform: scale(1.2);
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
+        }
+
+        /* Professional pull-to-refresh indicator */
+        .pull-indicator {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .pull-indicator.show {
+            opacity: 1;
+            top: -30px;
         }
 
         /* Small devices optimization */
@@ -746,39 +864,39 @@
             }
             
             .section-header {
-                padding: 10px 16px 8px;
+                padding: 12px 16px 10px;
             }
             
             .section-title {
-                font-size: 15px;
+                font-size: 16px;
             }
             
             .pill-btn, .dropdown-btn {
-                padding: 5px 10px;
+                padding: 6px 12px;
                 font-size: 11px;
-                min-width: 55px;
+                min-width: 60px;
             }
             
             .stock-card {
-                padding: 10px 16px;
+                padding: 12px 16px;
             }
             
             .stock-ticker {
-                font-size: 14px;
+                font-size: 15px;
             }
             
             .stock-name {
-                font-size: 10px;
-                max-width: 160px;
+                font-size: 11px;
+                max-width: 180px;
             }
             
             .stock-price {
-                font-size: 14px;
+                font-size: 15px;
             }
             
             .stock-change {
-                font-size: 10px;
-                padding: 2px 6px;
+                font-size: 11px;
+                padding: 3px 8px;
             }
         }
 
@@ -804,60 +922,74 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- First Section: Top Gainers/Losers -->
-        <div class="stocks-section fade-in">
-            <div class="section-header">
-                <h2 class="section-title" id="section-title-1">Top Gainers</h2>
-                <div class="toggle-pills">
-                    <button class="pill-btn active" data-type="gainers" data-section="1">Gainers</button>
-                    <button class="pill-btn" data-type="losers" data-section="1">Losers</button>
+    <div class="page-container" id="page-container">
+        <div class="container">
+            <!-- First Section: Top Gainers/Losers -->
+            <div class="stocks-section fade-in" data-section="1">
+                <div class="section-header">
+                    <h2 class="section-title" id="section-title-1">Top Gainers</h2>
+                    <div class="toggle-pills">
+                        <button class="pill-btn active" data-type="gainers" data-section="1">Gainers</button>
+                        <button class="pill-btn" data-type="losers" data-section="1">Losers</button>
+                    </div>
                 </div>
+
+                <div class="stocks-container" id="stocks-container-1">
+                    <div class="scroll-gradient-top"></div>
+                    <div class="pull-indicator" id="pull-indicator-1">
+                        <span>↓</span> Pull to refresh
+                    </div>
+                    <div class="loading" id="loading-1">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Loading stocks...</div>
+                    </div>
+                    <div class="scroll-gradient-bottom"></div>
+                </div>
+
+                <div class="update-indicator" id="update-indicator-1">Updated</div>
             </div>
 
-            <div class="stocks-container" id="stocks-container-1">
-                <div class="scroll-gradient-top"></div>
-                <div class="loading" id="loading-1">
-                    <div class="loading-spinner"></div>
-                    <div class="loading-text">Loading stocks...</div>
-                </div>
-                <div class="scroll-gradient-bottom"></div>
-            </div>
-
-            <div class="update-indicator" id="update-indicator-1">Updated</div>
-        </div>
-
-        <!-- Second Section: Weekly Gainers/Losers -->
-        <div class="stocks-section fade-in">
-            <div class="section-header">
-                <h2 class="section-title" id="section-title-2">Top Weekly Gainers</h2>
-                <div class="toggle-pills">
-                    <button class="pill-btn active" data-type="gainers" data-section="2">Gainers</button>
-                    <button class="pill-btn" data-type="losers" data-section="2">Losers</button>
-                    <div class="dropdown">
-                        <button class="dropdown-btn active" id="period-btn">
-                            <span id="period-text">Weekly</span>
-                            <span class="dropdown-arrow">▼</span>
-                        </button>
-                        <div class="dropdown-menu" id="period-dropdown">
-                            <button class="dropdown-item active" data-period="weekly">Weekly</button>
-                            <button class="dropdown-item" data-period="monthly">Monthly</button>
-                            <button class="dropdown-item" data-period="yearly">Yearly</button>
+            <!-- Second Section: Weekly/Monthly/Yearly Gainers/Losers -->
+            <div class="stocks-section fade-in" data-section="2">
+                <div class="section-header">
+                    <h2 class="section-title" id="section-title-2">Top Weekly Gainers</h2>
+                    <div class="toggle-pills">
+                        <button class="pill-btn active" data-type="gainers" data-section="2">Gainers</button>
+                        <button class="pill-btn" data-type="losers" data-section="2">Losers</button>
+                        <div class="dropdown">
+                            <button class="dropdown-btn active" id="period-btn">
+                                <span id="period-text">Weekly</span>
+                                <span class="dropdown-arrow">▼</span>
+                            </button>
+                            <div class="dropdown-menu" id="period-dropdown">
+                                <button class="dropdown-item active" data-period="weekly">Weekly</button>
+                                <button class="dropdown-item" data-period="monthly">Monthly</button>
+                                <button class="dropdown-item" data-period="yearly">Yearly</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="stocks-container" id="stocks-container-2">
-                <div class="scroll-gradient-top"></div>
-                <div class="loading" id="loading-2">
-                    <div class="loading-spinner"></div>
-                    <div class="loading-text">Loading weekly data...</div>
+                <div class="stocks-container" id="stocks-container-2">
+                    <div class="scroll-gradient-top"></div>
+                    <div class="pull-indicator" id="pull-indicator-2">
+                        <span>↓</span> Pull to refresh
+                    </div>
+                    <div class="loading" id="loading-2">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Loading weekly data...</div>
+                    </div>
+                    <div class="scroll-gradient-bottom"></div>
                 </div>
-                <div class="scroll-gradient-bottom"></div>
-            </div>
 
-            <div class="update-indicator" id="update-indicator-2">Updated</div>
+                <div class="update-indicator" id="update-indicator-2">Updated</div>
+            </div>
+        </div>
+
+        <!-- Page Scroll Indicators -->
+        <div class="scroll-indicator" id="scroll-indicator">
+            <div class="scroll-dot active" data-section="1"></div>
+            <div class="scroll-dot" data-section="2"></div>
         </div>
     </div>
 
@@ -867,7 +999,7 @@
         document.documentElement.style.background = '#0a0a0a';
         document.body.style.background = '#0a0a0a';
 
-        class AdvancedStockDashboard {
+        class ProfessionalStockDashboard {
             constructor() {
                 this.csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
                 this.stocks = [];
@@ -877,53 +1009,28 @@
                 this.section2State = { type: 'gainers', period: 'weekly' };
                 this.isLoading = false;
                 this.lastUpdateTime = null;
-
-                // Mock data for second section (weekly/monthly/yearly)
-                this.weeklyData = [
-                    { ticker: "ANANTRAJ", name: "Anant Raj Ltd", ltp: 837.00, change: 51.42, changePct: "6.14%" },
-                    { ticker: "TCI", name: "Transport Corporation of India Ltd", ltp: 1245.30, change: 30.10, changePct: "2.47%" },
-                    { ticker: "ADANIGREEN", name: "Adani Green Energy Ltd", ltp: 988.75, change: 15.75, changePct: "1.62%" },
-                    { ticker: "PITTIENG", name: "Pitti Engineering Ltd", ltp: 654.20, change: 2.25, changePct: "0.35%" },
-                    { ticker: "NTPC", name: "NTPC Ltd", ltp: 432.15, change: -0.95, changePct: "-0.22%" },
-                    { ticker: "HBLENGINE", name: "HBL Engineering Ltd", ltp: 298.60, change: -0.96, changePct: "-0.32%" },
-                    { ticker: "FINCABLES", name: "Finolex Cables Ltd", ltp: 567.40, change: -7.62, changePct: "-1.33%" },
-                    { ticker: "MCX", name: "Multi Commodity Exchange Of India Ltd", ltp: 3245.80, change: -45.20, changePct: "-1.63%" },
-                    { ticker: "NMDC", name: "NMDC Ltd", ltp: 198.45, change: -4.05, changePct: "-2.01%" },
-                    { ticker: "RELIANCE", name: "Reliance Industries Ltd", ltp: 2456.75, change: -53.25, changePct: "-2.12%" },
-                ];
-
-                this.monthlyData = [
-                    { ticker: "ADANIGREEN", name: "Adani Green Energy Ltd", ltp: 988.75, change: 125.30, changePct: "14.52%" },
-                    { ticker: "TCS", name: "Tata Consultancy Services", ltp: 3890.50, change: 285.40, changePct: "7.91%" },
-                    { ticker: "INFY", name: "Infosys Limited", ltp: 1678.90, change: 98.50, changePct: "6.23%" },
-                    { ticker: "WIPRO", name: "Wipro Limited", ltp: 432.15, change: 18.75, changePct: "4.54%" },
-                    { ticker: "HDFCBANK", name: "HDFC Bank Limited", ltp: 1589.25, change: -45.80, changePct: "-2.80%" },
-                    { ticker: "ICICIBANK", name: "ICICI Bank Limited", ltp: 1023.40, change: -52.30, changePct: "-4.86%" },
-                    { ticker: "SBIN", name: "State Bank of India", ltp: 567.30, change: -68.20, changePct: "-10.73%" }
-                ];
-
-                this.yearlyData = [
-                    { ticker: "ADANIGREEN", name: "Adani Green Energy Ltd", ltp: 988.75, change: 456.30, changePct: "85.72%" },
-                    { ticker: "RELIANCE", name: "Reliance Industries Ltd", ltp: 2456.75, change: 678.25, changePct: "38.12%" },
-                    { ticker: "TCS", name: "Tata Consultancy Services", ltp: 3890.50, change: 892.40, changePct: "29.78%" },
-                    { ticker: "INFY", name: "Infosys Limited", ltp: 1678.90, change: 298.50, changePct: "21.64%" },
-                    { ticker: "BHARTIARTL", name: "Bharti Airtel Limited", ltp: 912.80, change: -156.45, changePct: "-14.64%" },
-                    { ticker: "ITC", name: "ITC Limited", ltp: 445.60, change: -89.75, changePct: "-16.77%" }
-                ];
+                this.currentSection = 1;
 
                 this.initializeElements();
                 this.attachEventListeners();
                 this.setupOptimizations();
                 this.loadData();
+                this.setupPageScroll();
             }
 
             initializeElements() {
+                // Page container
+                this.pageContainer = document.getElementById('page-container');
+                this.scrollIndicator = document.getElementById('scroll-indicator');
+                this.scrollDots = document.querySelectorAll('.scroll-dot');
+
                 // Section 1 elements
                 this.section1Pills = document.querySelectorAll('[data-section="1"]');
                 this.section1Container = document.getElementById('stocks-container-1');
                 this.section1Loading = document.getElementById('loading-1');
                 this.section1UpdateIndicator = document.getElementById('update-indicator-1');
                 this.section1Title = document.getElementById('section-title-1');
+                this.section1PullIndicator = document.getElementById('pull-indicator-1');
 
                 // Section 2 elements
                 this.section2Pills = document.querySelectorAll('[data-section="2"]');
@@ -931,6 +1038,7 @@
                 this.section2Loading = document.getElementById('loading-2');
                 this.section2UpdateIndicator = document.getElementById('update-indicator-2');
                 this.section2Title = document.getElementById('section-title-2');
+                this.section2PullIndicator = document.getElementById('pull-indicator-2');
 
                 // Dropdown elements
                 this.dropdownBtn = document.getElementById('period-btn');
@@ -938,6 +1046,84 @@
                 this.dropdownMenu = document.getElementById('period-dropdown');
                 this.dropdownItems = document.querySelectorAll('.dropdown-item');
                 this.periodText = document.getElementById('period-text');
+            }
+
+            setupPageScroll() {
+                let isScrolling = false;
+                
+                this.pageContainer.addEventListener('scroll', () => {
+                    if (!isScrolling) {
+                        requestAnimationFrame(() => {
+                            this.handlePageScroll();
+                            isScrolling = false;
+                        });
+                        isScrolling = true;
+                    }
+                }, { passive: true });
+
+                // Scroll dot navigation
+                this.scrollDots.forEach(dot => {
+                    dot.addEventListener('click', (e) => {
+                        const sectionNum = parseInt(dot.dataset.section);
+                        this.scrollToSection(sectionNum);
+                    });
+                });
+
+                // Touch swipe detection for page navigation
+                let startY = 0;
+                let startTime = 0;
+
+                this.pageContainer.addEventListener('touchstart', (e) => {
+                    startY = e.touches[0].clientY;
+                    startTime = Date.now();
+                }, { passive: true });
+
+                this.pageContainer.addEventListener('touchend', (e) => {
+                    const endY = e.changedTouches[0].clientY;
+                    const deltaY = startY - endY;
+                    const deltaTime = Date.now() - startTime;
+                    
+                    // Quick swipe detection
+                    if (Math.abs(deltaY) > 50 && deltaTime < 300) {
+                        if (deltaY > 0 && this.currentSection < 2) {
+                            // Swipe up - go to next section
+                            this.scrollToSection(this.currentSection + 1);
+                        } else if (deltaY < 0 && this.currentSection > 1) {
+                            // Swipe down - go to previous section
+                            this.scrollToSection(this.currentSection - 1);
+                        }
+                    }
+                }, { passive: true });
+            }
+
+            handlePageScroll() {
+                const scrollTop = this.pageContainer.scrollTop;
+                const sectionHeight = window.innerHeight;
+                
+                // Determine current section
+                const newSection = Math.round(scrollTop / sectionHeight) + 1;
+                
+                if (newSection !== this.currentSection && newSection >= 1 && newSection <= 2) {
+                    this.currentSection = newSection;
+                    this.updateScrollDots();
+                }
+            }
+
+            updateScrollDots() {
+                this.scrollDots.forEach(dot => {
+                    const sectionNum = parseInt(dot.dataset.section);
+                    dot.classList.toggle('active', sectionNum === this.currentSection);
+                });
+            }
+
+            scrollToSection(section) {
+                if (section < 1 || section > 2) return;
+                
+                const targetY = (section - 1) * window.innerHeight;
+                this.pageContainer.scrollTo({
+                    top: targetY,
+                    behavior: 'smooth'
+                });
             }
 
             setupOptimizations() {
@@ -961,9 +1147,42 @@
                 window.addEventListener('resize', setVH);
                 window.addEventListener('orientationchange', () => setTimeout(setVH, 100));
 
-                // Optimized scrolling for both sections
+                // Optimized scrolling for stock containers
                 [this.section1Container, this.section2Container].forEach((container, index) => {
                     let ticking = false;
+                    let startY = 0;
+
+                    // Pull to refresh
+                    container.addEventListener('touchstart', (e) => {
+                        startY = e.touches[0].clientY;
+                    }, { passive: true });
+
+                    container.addEventListener('touchmove', (e) => {
+                        if (container.scrollTop === 0) {
+                            const currentY = e.touches[0].clientY;
+                            const deltaY = currentY - startY;
+                            
+                            if (deltaY > 30) {
+                                const indicator = index === 0 ? this.section1PullIndicator : this.section2PullIndicator;
+                                indicator.classList.add('show');
+                            }
+                        }
+                    }, { passive: true });
+
+                    container.addEventListener('touchend', (e) => {
+                        const indicator = index === 0 ? this.section1PullIndicator : this.section2PullIndicator;
+                        indicator.classList.remove('show');
+                        
+                        if (container.scrollTop === 0) {
+                            const currentY = e.changedTouches[0].clientY;
+                            const deltaY = currentY - startY;
+                            
+                            if (deltaY > 80) {
+                                this.loadData(true);
+                            }
+                        }
+                    }, { passive: true });
+
                     container.addEventListener('scroll', () => {
                         if (!ticking) {
                             requestAnimationFrame(() => {
@@ -1026,7 +1245,7 @@
 
                 btn.addEventListener('touchstart', (e) => {
                     touchStartTime = Date.now();
-                    btn.style.transform = 'scale(0.94)';
+                    btn.style.transform = 'scale(0.95)';
                 }, { passive: true });
 
                 btn.addEventListener('touchend', (e) => {
@@ -1053,17 +1272,17 @@
                 const bottomGradient = container.querySelector('.scroll-gradient-bottom');
                 
                 if (topGradient) {
-                    topGradient.style.opacity = scrollTop > 15 ? '1' : '0';
+                    topGradient.style.opacity = scrollTop > 20 ? '1' : '0';
                 }
                 if (bottomGradient) {
-                    bottomGradient.style.opacity = scrollTop < scrollHeight - clientHeight - 15 ? '1' : '0';
+                    bottomGradient.style.opacity = scrollTop < scrollHeight - clientHeight - 20 ? '1' : '0';
                 }
             }
 
             getCachedData() {
                 try {
-                    const cached = localStorage.getItem('dualStockData');
-                    const cacheTime = localStorage.getItem('dualStockDataTime');
+                    const cached = localStorage.getItem('professionalStockData');
+                    const cacheTime = localStorage.getItem('professionalStockDataTime');
                     if (cached && cacheTime) {
                         const age = Date.now() - parseInt(cacheTime);
                         if (age < 180000) { // 3 minutes
@@ -1078,8 +1297,8 @@
 
             setCachedData(data) {
                 try {
-                    localStorage.setItem('dualStockData', JSON.stringify(data));
-                    localStorage.setItem('dualStockDataTime', Date.now().toString());
+                    localStorage.setItem('professionalStockData', JSON.stringify(data));
+                    localStorage.setItem('professionalStockDataTime', Date.now().toString());
                 } catch (e) {
                     console.log('Cache save error:', e);
                 }
@@ -1241,19 +1460,36 @@
             renderSection2() {
                 this.section2Loading.style.display = 'none';
                 
+                // Use same data as section 1 but with different filtering/sorting based on period
                 let currentData;
+                
                 switch (this.section2State.period) {
                     case 'weekly':
-                        currentData = this.weeklyData;
+                        // For weekly, we'll use the same data but simulate weekly performance
+                        currentData = this.stocks.map(stock => ({
+                            ...stock,
+                            change: stock.change * (0.5 + Math.random() * 1.5), // Simulate weekly change
+                            changePct: `${(parseFloat(stock.changePct.replace('%', '')) * (0.5 + Math.random() * 1.5)).toFixed(2)}%`
+                        }));
                         break;
                     case 'monthly':
-                        currentData = this.monthlyData;
+                        // For monthly, simulate monthly performance
+                        currentData = this.stocks.map(stock => ({
+                            ...stock,
+                            change: stock.change * (1.5 + Math.random() * 2.5), // Simulate monthly change
+                            changePct: `${(parseFloat(stock.changePct.replace('%', '')) * (1.5 + Math.random() * 2.5)).toFixed(2)}%`
+                        }));
                         break;
                     case 'yearly':
-                        currentData = this.yearlyData;
+                        // For yearly, simulate yearly performance
+                        currentData = this.stocks.map(stock => ({
+                            ...stock,
+                            change: stock.change * (3 + Math.random() * 7), // Simulate yearly change
+                            changePct: `${(parseFloat(stock.changePct.replace('%', '')) * (3 + Math.random() * 7)).toFixed(2)}%`
+                        }));
                         break;
                     default:
-                        currentData = this.weeklyData;
+                        currentData = this.stocks;
                 }
 
                 const filteredStocks = this.section2State.type === 'gainers' 
@@ -1276,8 +1512,8 @@
                     const stockCard = this.createStockCard(stock, section);
                     setTimeout(() => {
                         stockCard.style.opacity = '1';
-                        stockCard.style.transform = 'translateY(0) translateX(0)';
-                    }, index * 50);
+                        stockCard.style.transform = 'translateY(0) translateX(0) scale(1)';
+                    }, index * 60);
                     stocksList.appendChild(stockCard);
                 });
                 
@@ -1312,8 +1548,8 @@
                 
                 card.className = cardClass;
                 card.style.opacity = '0';
-                card.style.transform = 'translateY(10px) translateX(-10px)';
-                card.style.transition = 'opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                card.style.transform = 'translateY(15px) translateX(-15px) scale(0.95)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
                 
                 let percentDisplay = stock.changePct;
                 if (percentDisplay.includes('%')) {
@@ -1346,7 +1582,7 @@
                 card.addEventListener('touchstart', (e) => {
                     touchStartTime = Date.now();
                     touchMoved = false;
-                    card.style.transform = 'scale(0.98) translateY(1px)';
+                    card.style.transform = 'scale(0.97) translateY(2px)';
                 }, { passive: true });
 
                 card.addEventListener('touchmove', (e) => {
@@ -1366,7 +1602,7 @@
 
             handleStockTap(stock) {
                 if ('vibrate' in navigator) {
-                    navigator.vibrate(10);
+                    navigator.vibrate(12);
                 }
                 console.log('Stock tapped:', stock.ticker);
             }
@@ -1390,19 +1626,19 @@
             showUpdateIndicator(section) {
                 const indicator = section === 1 ? this.section1UpdateIndicator : this.section2UpdateIndicator;
                 indicator.classList.add('show');
-                if ('vibrate' in navigator) navigator.vibrate(15);
-                setTimeout(() => indicator.classList.remove('show'), 3000);
+                if ('vibrate' in navigator) navigator.vibrate(18);
+                setTimeout(() => indicator.classList.remove('show'), 3500);
             }
         }
 
-        // Initialize
+        // Initialize with enhanced professional experience
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
-                window.stockDashboard = new AdvancedStockDashboard();
-            }, 100);
+                window.stockDashboard = new ProfessionalStockDashboard();
+            }, 150);
         });
 
-        // Auto refresh
+        // Smart auto-refresh
         setInterval(() => {
             if (window.stockDashboard && !document.hidden) {
                 const timeSinceUpdate = window.stockDashboard.lastUpdateTime ? 
