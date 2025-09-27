@@ -18,6 +18,13 @@
             --accent-gradient: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
             --glass-border: rgba(255, 255, 255, 0.1);
             --glass-bg: rgba(255, 255, 255, 0.05);
+            --purple-gradient: linear-gradient(135deg, 
+                rgba(168, 85, 247, 0.45) 0%, 
+                rgba(139, 92, 246, 0.35) 25%, 
+                rgba(99, 102, 241, 0.25) 50%, 
+                rgba(79, 70, 229, 0.15) 75%, 
+                transparent 100%);
+            --section-purple: rgba(139, 92, 246, 0.15);
         }
 
         * {
@@ -47,25 +54,28 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Enhanced background with purple gradient effect */
+        /* Enhanced background with purple gradient like your image */
         body::before {
             content: '';
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 25% 25%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 75% 75%, rgba(99, 102, 241, 0.06) 0%, transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.04) 0%, transparent 60%);
-            animation: backgroundPulse 8s ease-in-out infinite alternate;
+            height: 45%;
+            background: var(--purple-gradient);
+            animation: backgroundFlow 10s ease-in-out infinite alternate;
             z-index: -1;
         }
 
-        @keyframes backgroundPulse {
-            0% { opacity: 0.6; }
-            100% { opacity: 1; }
+        @keyframes backgroundFlow {
+            0% { 
+                opacity: 0.6;
+                transform: translateY(0px);
+            }
+            100% { 
+                opacity: 0.8;
+                transform: translateY(-5px);
+            }
         }
 
         /* iOS safe area */
@@ -96,7 +106,7 @@
             }
         }
 
-        /* Enhanced Main Section - Premium Glassmorphism */
+        /* Enhanced Main Section with Section Purple Background */
         .stocks-section {
             background: linear-gradient(135deg, 
                 rgba(26, 26, 26, 0.85) 0%, 
@@ -114,6 +124,19 @@
                 inset 0 -1px 0 rgba(255, 255, 255, 0.02);
             position: relative;
             animation: sectionFloat 6s ease-in-out infinite alternate;
+        }
+
+        /* Section background overlay with 15% purple */
+        .stocks-section::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--section-purple);
+            z-index: 0;
+            pointer-events: none;
         }
 
         @keyframes sectionFloat {
@@ -155,7 +178,7 @@
             -webkit-backdrop-filter: blur(15px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             position: relative;
-            z-index: 2;
+            z-index: 3;
         }
 
         .section-title {
@@ -164,6 +187,8 @@
             color: var(--text-primary) !important;
             letter-spacing: -0.2px;
             animation: titlePulse 3s ease-in-out infinite alternate;
+            position: relative;
+            z-index: 4;
         }
 
         @keyframes titlePulse {
@@ -175,6 +200,8 @@
         .toggle-pills {
             display: flex;
             gap: 4px;
+            position: relative;
+            z-index: 4;
         }
 
         .pill-btn {
@@ -230,7 +257,7 @@
             transform: scale(0.94);
         }
 
-        /* Stocks Container - Show Only 5 Stocks */
+        /* Stocks Container - SCROLLABLE for ALL Stocks */
         .stocks-container {
             height: 400px;
             overflow-y: auto;
@@ -276,6 +303,7 @@
             touch-action: manipulation;
             overflow: hidden;
             animation: cardSlideIn 0.5s ease-out;
+            z-index: 2;
         }
 
         @keyframes cardSlideIn {
@@ -361,7 +389,7 @@
             justify-content: space-between;
             align-items: center;
             position: relative;
-            z-index: 2;
+            z-index: 3;
         }
 
         .stock-info {
@@ -709,7 +737,7 @@
         document.documentElement.style.background = '#0a0a0a';
         document.body.style.background = '#0a0a0a';
 
-        class AdvancedStockDashboard {
+        class PerfectStockDashboard {
             constructor() {
                 this.csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
                 this.stocks = [];
@@ -718,7 +746,6 @@
                 this.currentType = 'gainers';
                 this.isLoading = false;
                 this.lastUpdateTime = null;
-                this.maxDisplayStocks = 5; // Show only 5 stocks
 
                 this.initializeElements();
                 this.attachEventListeners();
@@ -822,8 +849,8 @@
 
             getCachedData() {
                 try {
-                    const cached = localStorage.getItem('advancedStockData');
-                    const cacheTime = localStorage.getItem('advancedStockDataTime');
+                    const cached = localStorage.getItem('perfectStockData');
+                    const cacheTime = localStorage.getItem('perfectStockDataTime');
                     if (cached && cacheTime) {
                         const age = Date.now() - parseInt(cacheTime);
                         if (age < 180000) { // 3 minutes
@@ -838,8 +865,8 @@
 
             setCachedData(data) {
                 try {
-                    localStorage.setItem('advancedStockData', JSON.stringify(data));
-                    localStorage.setItem('advancedStockDataTime', Date.now().toString());
+                    localStorage.setItem('perfectStockData', JSON.stringify(data));
+                    localStorage.setItem('perfectStockDataTime', Date.now().toString());
                 } catch (e) {
                     console.log('Cache save error:', e);
                 }
@@ -957,19 +984,17 @@
                     return;
                 }
 
-                // Show only first 5 stocks
-                const displayStocks = currentStocks.slice(0, this.maxDisplayStocks);
-
+                // Show ALL stocks with scrollable container
                 const stocksList = document.createElement('div');
                 stocksList.className = 'stocks-list';
                 
-                displayStocks.forEach((stock, index) => {
+                currentStocks.forEach((stock, index) => {
                     const stockCard = this.createStockCard(stock);
                     // Stagger animation with delay
                     setTimeout(() => {
                         stockCard.style.opacity = '1';
                         stockCard.style.transform = 'translateY(0) translateX(0)';
-                    }, index * 100); // 100ms delay between cards
+                    }, index * 50); // 50ms delay between cards
                     stocksList.appendChild(stockCard);
                 });
                 
@@ -1049,7 +1074,6 @@
                     card.style.transform = 'scale(1) translateY(0px)';
                     const touchDuration = Date.now() - touchStartTime;
                     if (!touchMoved && touchDuration < 300) {
-                        // Quick tap - could add stock detail view here
                         this.handleStockTap(stock);
                     }
                 }, { passive: true });
@@ -1063,7 +1087,6 @@
                     navigator.vibrate(10);
                 }
                 
-                // Could expand to show stock details
                 console.log('Stock tapped:', stock.ticker);
             }
 
@@ -1093,7 +1116,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Add entrance animation delay
             setTimeout(() => {
-                window.stockDashboard = new AdvancedStockDashboard();
+                window.stockDashboard = new PerfectStockDashboard();
             }, 100);
         });
 
