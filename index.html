@@ -960,7 +960,7 @@
         document.documentElement.style.background = '#0a0a0a';
         document.body.style.background = '#0a0a0a';
 
-        class Fixed52WSortingDashboard {
+        class CorrectedButtonMapping52W {
             constructor() {
                 this.csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
                 
@@ -978,9 +978,9 @@
                 this.threeMonthlyGainers = [];
                 this.threeMonthlyLosers = [];
                 
-                // Section 3: 52W data
-                this.week52HighStocks = [];
-                this.week52LowStocks = [];
+                // Section 3: 52W data - CORRECTED
+                this.nearHighStocks = [];
+                this.nearLowStocks = [];
                 
                 this.section1State = { type: 'gainers' };
                 this.section2State = { type: 'gainers', period: 'weekly' };
@@ -1151,8 +1151,8 @@
 
             getCachedData() {
                 try {
-                    const cached = localStorage.getItem('fixed52WSortingData');
-                    const cacheTime = localStorage.getItem('fixed52WSortingDataTime');
+                    const cached = localStorage.getItem('corrected52WButtonData');
+                    const cacheTime = localStorage.getItem('corrected52WButtonDataTime');
                     if (cached && cacheTime) {
                         const age = Date.now() - parseInt(cacheTime);
                         if (age < 180000) { // 3 minutes
@@ -1167,8 +1167,8 @@
 
             setCachedData(data) {
                 try {
-                    localStorage.setItem('fixed52WSortingData', JSON.stringify(data));
-                    localStorage.setItem('fixed52WSortingDataTime', Date.now().toString());
+                    localStorage.setItem('corrected52WButtonData', JSON.stringify(data));
+                    localStorage.setItem('corrected52WButtonDataTime', Date.now().toString());
                 } catch (e) {
                     console.log('Cache save error:', e);
                 }
@@ -1261,8 +1261,8 @@
                                         threeMonthlyChange: this.calculateChangeAmount(ltp, threeMonthlyChangePct),
                                         threeMonthlyChangePct: threeMonthlyChangePct,
                                         // Calculate 52W distances (ALWAYS POSITIVE for sorting)
-                                        distanceFrom52WHigh: this.calculate52WDistance(ltp, week52High),
-                                        distanceFrom52WLow: this.calculate52WDistance(ltp, week52Low)
+                                        distanceFromHigh: this.calculate52WDistance(ltp, week52High),
+                                        distanceFromLow: this.calculate52WDistance(ltp, week52Low)
                                     };
                                 }).filter(stock => stock && stock.ticker && stock.ltp > 0 && stock.week52High > 0 && stock.week52Low > 0);
 
@@ -1347,27 +1347,27 @@
                     .sort((a, b) => parseFloat(a.threeMonthlyChangePct.replace('%', '')) - parseFloat(b.threeMonthlyChangePct.replace('%', '')))
                     .map(stock => ({ ...stock, change: stock.threeMonthlyChange, changePct: stock.threeMonthlyChangePct }));
 
-                // Section 3: 52W High/Low data - FIXED SORTING BY DISTANCE
-                // Sort by distance from 52W High (ASCENDING - closest first)
-                this.week52HighStocks = this.allStocksData
-                    .filter(stock => stock.week52High > 0)
-                    .sort((a, b) => a.distanceFrom52WHigh - b.distanceFrom52WHigh) // ASCENDING - smallest distance first
+                // Section 3: 52W High/Low data - CORRECTED MAPPING
+                // NEAR HIGH STOCKS: Sort by distance from 52W High (ASCENDING - closest first)
+                this.nearHighStocks = this.allStocksData
+                    .filter(stock => stock.week52High > 0 && stock.ltp < stock.week52High) // LTP below 52W High
+                    .sort((a, b) => a.distanceFromHigh - b.distanceFromHigh) // ASCENDING - smallest distance first
                     .map(stock => ({
                         ...stock,
                         change: stock.dailyChange,
                         changePct: stock.dailyChangePct,
-                        distanceText: `${stock.distanceFrom52WHigh.toFixed(2)}% away`
+                        distanceText: `${stock.distanceFromHigh.toFixed(2)}% away`
                     }));
 
-                // Sort by distance from 52W Low (ASCENDING - closest first)
-                this.week52LowStocks = this.allStocksData
-                    .filter(stock => stock.week52Low > 0)
-                    .sort((a, b) => a.distanceFrom52WLow - b.distanceFrom52WLow) // ASCENDING - smallest distance first
+                // NEAR LOW STOCKS: Sort by distance from 52W Low (ASCENDING - closest first)
+                this.nearLowStocks = this.allStocksData
+                    .filter(stock => stock.week52Low > 0 && stock.ltp > stock.week52Low) // LTP above 52W Low
+                    .sort((a, b) => a.distanceFromLow - b.distanceFromLow) // ASCENDING - smallest distance first
                     .map(stock => ({
                         ...stock,
                         change: stock.dailyChange,
                         changePct: stock.dailyChangePct,
-                        distanceText: `${stock.distanceFrom52WLow.toFixed(2)}% away`
+                        distanceText: `${stock.distanceFromLow.toFixed(2)}% away`
                     }));
             }
 
@@ -1408,6 +1408,7 @@
                         }
                     });
 
+                    // CORRECTED TITLE MAPPING
                     this.section3Title.textContent = type === 'high' ? 'Near 52W High' : 'Near 52W Low';
                     this.renderSection3();
                 }
@@ -1495,10 +1496,11 @@
             renderSection3() {
                 this.section3Loading.style.display = 'none';
                 
-                const currentData = this.section3State.type === 'high' ? this.week52HighStocks : this.week52LowStocks;
+                // CORRECTED DATA MAPPING
+                const currentData = this.section3State.type === 'high' ? this.nearHighStocks : this.nearLowStocks;
                 
                 if (!currentData.length) {
-                    this.showError(`No 52W ${this.section3State.type} data found`, 3);
+                    this.showError(`No Near 52W ${this.section3State.type === 'high' ? 'High' : 'Low'} stocks found`, 3);
                     return;
                 }
 
@@ -1645,7 +1647,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
-                window.stockDashboard = new Fixed52WSortingDashboard();
+                window.stockDashboard = new CorrectedButtonMapping52W();
             }, 100);
         });
 
