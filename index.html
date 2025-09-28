@@ -961,7 +961,7 @@
         document.documentElement.style.background = '#0a0a0a';
         document.body.style.background = '#0a0a0a';
 
-        class CorrectedFinalStockDashboard {
+        class CorrectSortingStockDashboard {
             constructor() {
                 this.csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
                 
@@ -1152,8 +1152,8 @@
 
             getCachedData() {
                 try {
-                    const cached = localStorage.getItem('correctedFinalStockData');
-                    const cacheTime = localStorage.getItem('correctedFinalStockDataTime');
+                    const cached = localStorage.getItem('correctSortingStockData');
+                    const cacheTime = localStorage.getItem('correctSortingStockDataTime');
                     if (cached && cacheTime) {
                         const age = Date.now() - parseInt(cacheTime);
                         if (age < 180000) { // 3 minutes
@@ -1168,8 +1168,8 @@
 
             setCachedData(data) {
                 try {
-                    localStorage.setItem('correctedFinalStockData', JSON.stringify(data));
-                    localStorage.setItem('correctedFinalStockDataTime', Date.now().toString());
+                    localStorage.setItem('correctSortingStockData', JSON.stringify(data));
+                    localStorage.setItem('correctSortingStockDataTime', Date.now().toString());
                 } catch (e) {
                     console.log('Cache save error:', e);
                 }
@@ -1186,17 +1186,10 @@
                 return changeAmount;
             }
 
-            // CORRECTED 52W Distance Calculation based on Excel analysis
-            calculate52WHighDistance(ltp, week52High) {
-                if (!ltp || !week52High || week52High === 0) return 100;
-                // For 52W High: How much % BELOW the high (negative means below)
-                return ((ltp - week52High) / week52High) * 100;
-            }
-
-            calculate52WLowDistance(ltp, week52Low) {
-                if (!ltp || !week52Low || week52Low === 0) return 0;
-                // For 52W Low: How much % ABOVE the low (positive means above)
-                return ((ltp - week52Low) / week52Low) * 100;
+            // Function to calculate distance from 52W High/Low
+            calculate52WDistance(ltp, target) {
+                if (!ltp || !target || target === 0) return 0;
+                return ((ltp - target) / target) * 100;
             }
 
             async loadData(showIndicator = false) {
@@ -1268,9 +1261,9 @@
                                         monthlyChangePct: monthlyChangePct,
                                         threeMonthlyChange: this.calculateChangeAmount(ltp, threeMonthlyChangePct),
                                         threeMonthlyChangePct: threeMonthlyChangePct,
-                                        // CORRECTED 52W distances
-                                        distanceFrom52WHigh: this.calculate52WHighDistance(ltp, week52High),
-                                        distanceFrom52WLow: this.calculate52WLowDistance(ltp, week52Low)
+                                        // Calculate 52W distances
+                                        distanceFrom52WHigh: this.calculate52WDistance(ltp, week52High),
+                                        distanceFrom52WLow: this.calculate52WDistance(ltp, week52Low)
                                     };
                                 }).filter(stock => stock && stock.ticker && stock.ltp > 0 && stock.week52High > 0 && stock.week52Low > 0);
 
@@ -1315,7 +1308,7 @@
             }
 
             processAllData() {
-                // Section 1: Daily gainers/losers
+                // Section 1: Daily gainers/losers (UNCHANGED)
                 this.gainers = this.dailyStocks
                     .filter(stock => stock.dailyChange > 0)
                     .sort((a, b) => parseFloat(b.dailyChangePct.replace('%', '')) - parseFloat(a.dailyChangePct.replace('%', '')));
@@ -1324,7 +1317,7 @@
                     .filter(stock => stock.dailyChange < 0)
                     .sort((a, b) => parseFloat(a.dailyChangePct.replace('%', '')) - parseFloat(b.dailyChangePct.replace('%', '')));
 
-                // Section 2: Weekly/Monthly/3-Monthly data (same as before)
+                // Section 2: Weekly/Monthly/3-Monthly data (UNCHANGED)
                 this.weeklyGainers = this.allStocksData
                     .filter(stock => stock.weeklyChange > 0)
                     .sort((a, b) => parseFloat(b.weeklyChangePct.replace('%', '')) - parseFloat(a.weeklyChangePct.replace('%', '')))
@@ -1355,28 +1348,28 @@
                     .sort((a, b) => parseFloat(a.threeMonthlyChangePct.replace('%', '')) - parseFloat(b.threeMonthlyChangePct.replace('%', '')))
                     .map(stock => ({ ...stock, change: stock.threeMonthlyChange, changePct: stock.threeMonthlyChangePct }));
 
-                // Section 3: CORRECTED 52W High/Low data based on Excel analysis
+                // Section 3: 52W High/Low data - CORRECTED SORTING BY DISTANCE
                 
-                // 52W High: Show stocks BELOW their 52W high (negative distance), sorted by smallest gap (closest to high)
+                // For 52W HIGH: Sort by smallest distance first (6.11%, 6.87%, 7.32%, 8.33%...)
                 this.week52HighStocks = this.allStocksData
-                    .filter(stock => stock.week52High > 0 && stock.distanceFrom52WHigh < 0) // Only stocks below their 52W high
-                    .sort((a, b) => b.distanceFrom52WHigh - a.distanceFrom52WHigh) // Closest to high first (least negative)
+                    .filter(stock => stock.week52High > 0 && stock.distanceFrom52WHigh < 0) // Only stocks below 52W high
+                    .sort((a, b) => Math.abs(a.distanceFrom52WHigh) - Math.abs(b.distanceFrom52WHigh)) // Smallest distance first
                     .map(stock => ({
                         ...stock,
                         change: stock.dailyChange,
                         changePct: stock.dailyChangePct,
-                        distanceText: `${Math.abs(stock.distanceFrom52WHigh).toFixed(2)}%`
+                        distanceText: `${Math.abs(stock.distanceFrom52WHigh).toFixed(1)}% away`
                     }));
 
-                // 52W Low: Show stocks ABOVE their 52W low (positive distance), sorted by smallest gap (closest to low)
+                // For 52W LOW: Sort by smallest distance first (closest to low)
                 this.week52LowStocks = this.allStocksData
-                    .filter(stock => stock.week52Low > 0 && stock.distanceFrom52WLow > 0) // Only stocks above their 52W low
-                    .sort((a, b) => a.distanceFrom52WLow - b.distanceFrom52WLow) // Closest to low first (smallest positive)
+                    .filter(stock => stock.week52Low > 0 && stock.distanceFrom52WLow > 0) // Only stocks above 52W low
+                    .sort((a, b) => Math.abs(a.distanceFrom52WLow) - Math.abs(b.distanceFrom52WLow)) // Smallest distance first
                     .map(stock => ({
                         ...stock,
                         change: stock.dailyChange,
                         changePct: stock.dailyChangePct,
-                        distanceText: `${stock.distanceFrom52WLow.toFixed(2)}%`
+                        distanceText: `${Math.abs(stock.distanceFrom52WLow).toFixed(1)}% away`
                     }));
             }
 
@@ -1582,7 +1575,7 @@
                     percentDisplay = percentDisplay.replace('-', '');
                 }
 
-                // Create 52W details badge for section 3 - Between ticker and stock name
+                // Create 52W details badge for section 3 - BETWEEN ticker and stock name
                 let stockInfoHTML = `<div class="stock-ticker">${stock.ticker}</div>`;
                 
                 if (section === 3 && stock.distanceText) {
@@ -1671,7 +1664,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
-                window.stockDashboard = new CorrectedFinalStockDashboard();
+                window.stockDashboard = new CorrectSortingStockDashboard();
             }, 100);
         });
 
