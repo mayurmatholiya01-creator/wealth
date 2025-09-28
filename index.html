@@ -249,7 +249,6 @@
             left: 100%;
         }
 
-        /* Default active state */
         .pill-btn.active {
             background: var(--accent-gradient) !important;
             color: white !important;
@@ -261,7 +260,7 @@
             transform: translateY(-1px);
         }
 
-        /* Green variant for gainers/52W High buttons */
+        /* Green variant for 52W High button */
         .pill-btn.active.green {
             background: var(--green-gradient) !important;
             color: white !important;
@@ -272,7 +271,7 @@
             border: 1px solid rgba(34, 197, 94, 0.3);
         }
 
-        /* Red variant for losers/52W Low buttons */
+        /* Red variant for 52W Low button */
         .pill-btn.active.red {
             background: var(--red-gradient) !important;
             color: white !important;
@@ -543,7 +542,7 @@
             100% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.2); }
         }
 
-        /* 52W Details Badge - Between ticker and stock name */
+        /* 52W Details Badge */
         .week-52-details {
             font-size: 9px;
             font-weight: 500;
@@ -882,8 +881,8 @@
             <div class="section-header">
                 <h2 class="section-title" id="section-title-1">Top Gainers</h2>
                 <div class="toggle-pills">
-                    <button class="pill-btn active green" data-type="gainers" data-section="1">Gainers</button>
-                    <button class="pill-btn red" data-type="losers" data-section="1">Losers</button>
+                    <button class="pill-btn active" data-type="gainers" data-section="1">Gainers</button>
+                    <button class="pill-btn" data-type="losers" data-section="1">Losers</button>
                 </div>
             </div>
 
@@ -904,8 +903,8 @@
             <div class="section-header">
                 <h2 class="section-title" id="section-title-2">Top Weekly Gainers</h2>
                 <div class="toggle-pills">
-                    <button class="pill-btn active green" data-type="gainers" data-section="2">Gainers</button>
-                    <button class="pill-btn red" data-type="losers" data-section="2">Losers</button>
+                    <button class="pill-btn active" data-type="gainers" data-section="2">Gainers</button>
+                    <button class="pill-btn" data-type="losers" data-section="2">Losers</button>
                     <div class="dropdown">
                         <button class="dropdown-btn active" id="period-btn">
                             <span id="period-text">Weekly</span>
@@ -961,7 +960,7 @@
         document.documentElement.style.background = '#0a0a0a';
         document.body.style.background = '#0a0a0a';
 
-        class CorrectSortingStockDashboard {
+        class Complete52WStockDashboard {
             constructor() {
                 this.csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
                 
@@ -1152,8 +1151,8 @@
 
             getCachedData() {
                 try {
-                    const cached = localStorage.getItem('correctSortingStockData');
-                    const cacheTime = localStorage.getItem('correctSortingStockDataTime');
+                    const cached = localStorage.getItem('complete52WStockData');
+                    const cacheTime = localStorage.getItem('complete52WStockDataTime');
                     if (cached && cacheTime) {
                         const age = Date.now() - parseInt(cacheTime);
                         if (age < 180000) { // 3 minutes
@@ -1168,8 +1167,8 @@
 
             setCachedData(data) {
                 try {
-                    localStorage.setItem('correctSortingStockData', JSON.stringify(data));
-                    localStorage.setItem('correctSortingStockDataTime', Date.now().toString());
+                    localStorage.setItem('complete52WStockData', JSON.stringify(data));
+                    localStorage.setItem('complete52WStockDataTime', Date.now().toString());
                 } catch (e) {
                     console.log('Cache save error:', e);
                 }
@@ -1308,7 +1307,7 @@
             }
 
             processAllData() {
-                // Section 1: Daily gainers/losers (UNCHANGED)
+                // Section 1: Daily gainers/losers
                 this.gainers = this.dailyStocks
                     .filter(stock => stock.dailyChange > 0)
                     .sort((a, b) => parseFloat(b.dailyChangePct.replace('%', '')) - parseFloat(a.dailyChangePct.replace('%', '')));
@@ -1317,7 +1316,7 @@
                     .filter(stock => stock.dailyChange < 0)
                     .sort((a, b) => parseFloat(a.dailyChangePct.replace('%', '')) - parseFloat(b.dailyChangePct.replace('%', '')));
 
-                // Section 2: Weekly/Monthly/3-Monthly data (UNCHANGED)
+                // Section 2: Weekly/Monthly/3-Monthly data (same as before)
                 this.weeklyGainers = this.allStocksData
                     .filter(stock => stock.weeklyChange > 0)
                     .sort((a, b) => parseFloat(b.weeklyChangePct.replace('%', '')) - parseFloat(a.weeklyChangePct.replace('%', '')))
@@ -1348,12 +1347,11 @@
                     .sort((a, b) => parseFloat(a.threeMonthlyChangePct.replace('%', '')) - parseFloat(b.threeMonthlyChangePct.replace('%', '')))
                     .map(stock => ({ ...stock, change: stock.threeMonthlyChange, changePct: stock.threeMonthlyChangePct }));
 
-                // Section 3: 52W High/Low data - CORRECTED SORTING BY DISTANCE
-                
-                // For 52W HIGH: Sort by smallest distance first (6.11%, 6.87%, 7.32%, 8.33%...)
+                // Section 3: 52W High/Low data
+                // Sort by distance from 52W High (closest first - smallest negative distance)
                 this.week52HighStocks = this.allStocksData
-                    .filter(stock => stock.week52High > 0 && stock.distanceFrom52WHigh < 0) // Only stocks below 52W high
-                    .sort((a, b) => Math.abs(a.distanceFrom52WHigh) - Math.abs(b.distanceFrom52WHigh)) // Smallest distance first
+                    .filter(stock => stock.week52High > 0)
+                    .sort((a, b) => b.distanceFrom52WHigh - a.distanceFrom52WHigh) // Closest to high (least negative distance)
                     .map(stock => ({
                         ...stock,
                         change: stock.dailyChange,
@@ -1361,10 +1359,10 @@
                         distanceText: `${Math.abs(stock.distanceFrom52WHigh).toFixed(1)}% away`
                     }));
 
-                // For 52W LOW: Sort by smallest distance first (closest to low)
+                // Sort by distance from 52W Low (farthest first - largest positive distance)
                 this.week52LowStocks = this.allStocksData
-                    .filter(stock => stock.week52Low > 0 && stock.distanceFrom52WLow > 0) // Only stocks above 52W low
-                    .sort((a, b) => Math.abs(a.distanceFrom52WLow) - Math.abs(b.distanceFrom52WLow)) // Smallest distance first
+                    .filter(stock => stock.week52Low > 0)
+                    .sort((a, b) => a.distanceFrom52WLow - b.distanceFrom52WLow) // Closest to low (least positive distance)
                     .map(stock => ({
                         ...stock,
                         change: stock.dailyChange,
@@ -1379,15 +1377,7 @@
                     this.section1State.type = type;
 
                     this.section1Pills.forEach(btn => {
-                        const isActive = btn.dataset.type === type;
-                        btn.classList.toggle('active', isActive);
-                        
-                        // Toggle color classes for section 1
-                        if (btn.dataset.type === 'gainers') {
-                            btn.classList.toggle('green', isActive);
-                        } else if (btn.dataset.type === 'losers') {
-                            btn.classList.toggle('red', isActive);
-                        }
+                        btn.classList.toggle('active', btn.dataset.type === type);
                     });
 
                     this.section1Title.textContent = type === 'gainers' ? 'Top Gainers' : 'Top Losers';
@@ -1397,15 +1387,7 @@
                     this.section2State.type = type;
 
                     this.section2Pills.forEach(btn => {
-                        const isActive = btn.dataset.type === type;
-                        btn.classList.toggle('active', isActive);
-                        
-                        // Toggle color classes for section 2
-                        if (btn.dataset.type === 'gainers') {
-                            btn.classList.toggle('green', isActive);
-                        } else if (btn.dataset.type === 'losers') {
-                            btn.classList.toggle('red', isActive);
-                        }
+                        btn.classList.toggle('active', btn.dataset.type === type);
                     });
 
                     this.updateSection2Title();
@@ -1418,7 +1400,7 @@
                         const isActive = btn.dataset.type === type;
                         btn.classList.toggle('active', isActive);
                         
-                        // Toggle color classes for section 3
+                        // Toggle color classes
                         if (btn.dataset.type === 'high') {
                             btn.classList.toggle('green', isActive);
                         } else if (btn.dataset.type === 'low') {
@@ -1575,20 +1557,19 @@
                     percentDisplay = percentDisplay.replace('-', '');
                 }
 
-                // Create 52W details badge for section 3 - BETWEEN ticker and stock name
-                let stockInfoHTML = `<div class="stock-ticker">${stock.ticker}</div>`;
-                
+                // Create 52W details badge for section 3
+                let week52Badge = '';
                 if (section === 3 && stock.distanceText) {
                     const badgeClass = this.section3State.type === 'high' ? 'high' : 'low';
-                    stockInfoHTML += `<div class="week-52-details ${badgeClass}">${stock.distanceText}</div>`;
+                    week52Badge = `<div class="week-52-details ${badgeClass}">${stock.distanceText}</div>`;
                 }
-                
-                stockInfoHTML += `<div class="stock-name">${stock.name}</div>`;
 
                 card.innerHTML = `
                     <div class="stock-content">
                         <div class="stock-info">
-                            ${stockInfoHTML}
+                            <div class="stock-ticker">${stock.ticker}</div>
+                            ${week52Badge}
+                            <div class="stock-name">${stock.name}</div>
                         </div>
                         <div class="stock-metrics">
                             <div class="stock-price">₹${stock.ltp.toLocaleString('en-IN', {
@@ -1664,7 +1645,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
-                window.stockDashboard = new CorrectSortingStockDashboard();
+                window.stockDashboard = new Complete52WStockDashboard();
             }, 100);
         });
 
