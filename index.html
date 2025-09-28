@@ -518,12 +518,21 @@
         .stock-content {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             position: relative;
             z-index: 3;
+            gap: 12px;
         }
 
         .stock-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stock-left {
             flex: 1;
             min-width: 0;
         }
@@ -532,7 +541,7 @@
             font-size: 15px;
             font-weight: 700;
             color: var(--text-primary) !important;
-            margin-bottom: 2px;
+            margin-bottom: 6px;
             letter-spacing: 0.1px;
             animation: tickerGlow 2s ease-in-out infinite alternate;
         }
@@ -542,18 +551,19 @@
             100% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.2); }
         }
 
-        /* 52W Details Badge */
+        /* 52W Details Badge - Between Ticker and LTP */
         .week-52-details {
             font-size: 9px;
             font-weight: 500;
             padding: 2px 6px;
             border-radius: 8px;
-            margin: 3px 0;
             display: inline-block;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid;
             animation: badgeGlow 2s ease-in-out infinite alternate;
+            flex-shrink: 0;
+            margin-top: 1px;
         }
 
         .week-52-details.high {
@@ -578,7 +588,7 @@
             color: var(--text-secondary) !important;
             font-weight: 400;
             line-height: 1.2;
-            max-width: 200px;
+            max-width: 180px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -591,6 +601,7 @@
             align-items: flex-end;
             gap: 2px;
             min-width: 90px;
+            flex-shrink: 0;
         }
 
         .stock-price {
@@ -835,7 +846,7 @@
             
             .stock-name {
                 font-size: 10px;
-                max-width: 160px;
+                max-width: 140px;
             }
             
             .stock-price {
@@ -850,6 +861,10 @@
             .week-52-details {
                 font-size: 8px;
                 padding: 1px 4px;
+            }
+
+            .stock-content {
+                gap: 8px;
             }
         }
 
@@ -960,7 +975,7 @@
         document.documentElement.style.background = '#0a0a0a';
         document.body.style.background = '#0a0a0a';
 
-        class Complete52WStockDashboard {
+        class Corrected52WStockDashboard {
             constructor() {
                 this.csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
                 
@@ -1151,8 +1166,8 @@
 
             getCachedData() {
                 try {
-                    const cached = localStorage.getItem('complete52WStockData');
-                    const cacheTime = localStorage.getItem('complete52WStockDataTime');
+                    const cached = localStorage.getItem('corrected52WStockData');
+                    const cacheTime = localStorage.getItem('corrected52WStockDataTime');
                     if (cached && cacheTime) {
                         const age = Date.now() - parseInt(cacheTime);
                         if (age < 180000) { // 3 minutes
@@ -1167,8 +1182,8 @@
 
             setCachedData(data) {
                 try {
-                    localStorage.setItem('complete52WStockData', JSON.stringify(data));
-                    localStorage.setItem('complete52WStockDataTime', Date.now().toString());
+                    localStorage.setItem('corrected52WStockData', JSON.stringify(data));
+                    localStorage.setItem('corrected52WStockDataTime', Date.now().toString());
                 } catch (e) {
                     console.log('Cache save error:', e);
                 }
@@ -1185,10 +1200,17 @@
                 return changeAmount;
             }
 
-            // Function to calculate distance from 52W High/Low
-            calculate52WDistance(ltp, target) {
-                if (!ltp || !target || target === 0) return 0;
-                return ((ltp - target) / target) * 100;
+            // Function to calculate distance from 52W High/Low EXACTLY as per your formula
+            calculate52WHighDistance(week52High, ltp) {
+                if (!week52High || !ltp || week52High === 0) return Infinity;
+                // Formula: (52WHigh - LTP) / 52WHigh  
+                return (week52High - ltp) / week52High;
+            }
+
+            calculate52WLowDistance(ltp, week52Low) {
+                if (!week52Low || !ltp || week52Low === 0) return Infinity;
+                // Formula: (LTP - 52WLow) / 52WLow
+                return (ltp - week52Low) / week52Low;
             }
 
             async loadData(showIndicator = false) {
@@ -1241,9 +1263,9 @@
                                     const monthlyChangePct = row[21] ? row[21].toString().trim() : '0%';
                                     const threeMonthlyChangePct = row[22] ? row[22].toString().trim() : '0%';
                                     
-                                    // 52W High/Low data (assuming columns 6 and 7 for 52W High and Low)
-                                    const week52High = row[6] ? parseFloat(row[6].toString().trim()) : 0;
-                                    const week52Low = row[7] ? parseFloat(row[7].toString().trim()) : 0;
+                                    // 52W High/Low data - CORRECT COLUMNS as per your formula
+                                    const week52High = row[7] ? parseFloat(row[7].toString().trim()) : 0; // Column H
+                                    const week52Low = row[8] ? parseFloat(row[8].toString().trim()) : 0;  // Column I
 
                                     return {
                                         ticker: row[0] ? row[0].toString().trim() : '',
@@ -1260,9 +1282,9 @@
                                         monthlyChangePct: monthlyChangePct,
                                         threeMonthlyChange: this.calculateChangeAmount(ltp, threeMonthlyChangePct),
                                         threeMonthlyChangePct: threeMonthlyChangePct,
-                                        // Calculate 52W distances
-                                        distanceFrom52WHigh: this.calculate52WDistance(ltp, week52High),
-                                        distanceFrom52WLow: this.calculate52WDistance(ltp, week52Low)
+                                        // Calculate 52W distances EXACTLY as per your formula
+                                        distanceFrom52WHigh: this.calculate52WHighDistance(week52High, ltp),
+                                        distanceFrom52WLow: this.calculate52WLowDistance(ltp, week52Low)
                                     };
                                 }).filter(stock => stock && stock.ticker && stock.ltp > 0 && stock.week52High > 0 && stock.week52Low > 0);
 
@@ -1347,27 +1369,27 @@
                     .sort((a, b) => parseFloat(a.threeMonthlyChangePct.replace('%', '')) - parseFloat(b.threeMonthlyChangePct.replace('%', '')))
                     .map(stock => ({ ...stock, change: stock.threeMonthlyChange, changePct: stock.threeMonthlyChangePct }));
 
-                // Section 3: 52W High/Low data
-                // Sort by distance from 52W High (closest first - smallest negative distance)
+                // Section 3: 52W High/Low data - CORRECT SORTING as per your formula
+                // 52W High: Sort by distance ASC (smallest distance first - closest to high)
                 this.week52HighStocks = this.allStocksData
-                    .filter(stock => stock.week52High > 0)
-                    .sort((a, b) => b.distanceFrom52WHigh - a.distanceFrom52WHigh) // Closest to high (least negative distance)
+                    .filter(stock => stock.week52High > 0 && stock.distanceFrom52WHigh >= 0) // Only positive distances (below high)
+                    .sort((a, b) => a.distanceFrom52WHigh - b.distanceFrom52WHigh) // ASC - closest first
                     .map(stock => ({
                         ...stock,
                         change: stock.dailyChange,
                         changePct: stock.dailyChangePct,
-                        distanceText: `${Math.abs(stock.distanceFrom52WHigh).toFixed(1)}% away`
+                        distanceText: `${(stock.distanceFrom52WHigh * 100).toFixed(1)}% away`
                     }));
 
-                // Sort by distance from 52W Low (farthest first - largest positive distance)
+                // 52W Low: Sort by distance ASC (smallest distance first - closest to low)
                 this.week52LowStocks = this.allStocksData
-                    .filter(stock => stock.week52Low > 0)
-                    .sort((a, b) => a.distanceFrom52WLow - b.distanceFrom52WLow) // Closest to low (least positive distance)
+                    .filter(stock => stock.week52Low > 0 && stock.distanceFrom52WLow >= 0) // Only positive distances (above low)
+                    .sort((a, b) => a.distanceFrom52WLow - b.distanceFrom52WLow) // ASC - closest first
                     .map(stock => ({
                         ...stock,
                         change: stock.dailyChange,
                         changePct: stock.dailyChangePct,
-                        distanceText: `${Math.abs(stock.distanceFrom52WLow).toFixed(1)}% away`
+                        distanceText: `${(stock.distanceFrom52WLow * 100).toFixed(1)}% away`
                     }));
             }
 
@@ -1557,7 +1579,7 @@
                     percentDisplay = percentDisplay.replace('-', '');
                 }
 
-                // Create 52W details badge for section 3
+                // Create 52W details badge for section 3 - BETWEEN TICKER AND LTP
                 let week52Badge = '';
                 if (section === 3 && stock.distanceText) {
                     const badgeClass = this.section3State.type === 'high' ? 'high' : 'low';
@@ -1567,9 +1589,11 @@
                 card.innerHTML = `
                     <div class="stock-content">
                         <div class="stock-info">
-                            <div class="stock-ticker">${stock.ticker}</div>
+                            <div class="stock-left">
+                                <div class="stock-ticker">${stock.ticker}</div>
+                                <div class="stock-name">${stock.name}</div>
+                            </div>
                             ${week52Badge}
-                            <div class="stock-name">${stock.name}</div>
                         </div>
                         <div class="stock-metrics">
                             <div class="stock-price">₹${stock.ltp.toLocaleString('en-IN', {
@@ -1645,7 +1669,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
-                window.stockDashboard = new Complete52WStockDashboard();
+                window.stockDashboard = new Corrected52WStockDashboard();
             }, 100);
         });
 
