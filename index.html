@@ -960,7 +960,7 @@
         document.documentElement.style.background = '#0a0a0a';
         document.body.style.background = '#0a0a0a';
 
-        class Complete52WStockDashboard {
+        class Fixed52WSortingDashboard {
             constructor() {
                 this.csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
                 
@@ -1151,8 +1151,8 @@
 
             getCachedData() {
                 try {
-                    const cached = localStorage.getItem('complete52WStockData');
-                    const cacheTime = localStorage.getItem('complete52WStockDataTime');
+                    const cached = localStorage.getItem('fixed52WSortingData');
+                    const cacheTime = localStorage.getItem('fixed52WSortingDataTime');
                     if (cached && cacheTime) {
                         const age = Date.now() - parseInt(cacheTime);
                         if (age < 180000) { // 3 minutes
@@ -1167,8 +1167,8 @@
 
             setCachedData(data) {
                 try {
-                    localStorage.setItem('complete52WStockData', JSON.stringify(data));
-                    localStorage.setItem('complete52WStockDataTime', Date.now().toString());
+                    localStorage.setItem('fixed52WSortingData', JSON.stringify(data));
+                    localStorage.setItem('fixed52WSortingDataTime', Date.now().toString());
                 } catch (e) {
                     console.log('Cache save error:', e);
                 }
@@ -1185,10 +1185,10 @@
                 return changeAmount;
             }
 
-            // Function to calculate distance from 52W High/Low
+            // Function to calculate distance from 52W High/Low (ALWAYS POSITIVE)
             calculate52WDistance(ltp, target) {
                 if (!ltp || !target || target === 0) return 0;
-                return ((ltp - target) / target) * 100;
+                return Math.abs(((ltp - target) / target) * 100);
             }
 
             async loadData(showIndicator = false) {
@@ -1260,7 +1260,7 @@
                                         monthlyChangePct: monthlyChangePct,
                                         threeMonthlyChange: this.calculateChangeAmount(ltp, threeMonthlyChangePct),
                                         threeMonthlyChangePct: threeMonthlyChangePct,
-                                        // Calculate 52W distances
+                                        // Calculate 52W distances (ALWAYS POSITIVE for sorting)
                                         distanceFrom52WHigh: this.calculate52WDistance(ltp, week52High),
                                         distanceFrom52WLow: this.calculate52WDistance(ltp, week52Low)
                                     };
@@ -1347,27 +1347,27 @@
                     .sort((a, b) => parseFloat(a.threeMonthlyChangePct.replace('%', '')) - parseFloat(b.threeMonthlyChangePct.replace('%', '')))
                     .map(stock => ({ ...stock, change: stock.threeMonthlyChange, changePct: stock.threeMonthlyChangePct }));
 
-                // Section 3: 52W High/Low data
-                // Sort by distance from 52W High (closest first - smallest negative distance)
+                // Section 3: 52W High/Low data - FIXED SORTING BY DISTANCE
+                // Sort by distance from 52W High (ASCENDING - closest first)
                 this.week52HighStocks = this.allStocksData
                     .filter(stock => stock.week52High > 0)
-                    .sort((a, b) => b.distanceFrom52WHigh - a.distanceFrom52WHigh) // Closest to high (least negative distance)
+                    .sort((a, b) => a.distanceFrom52WHigh - b.distanceFrom52WHigh) // ASCENDING - smallest distance first
                     .map(stock => ({
                         ...stock,
                         change: stock.dailyChange,
                         changePct: stock.dailyChangePct,
-                        distanceText: `${Math.abs(stock.distanceFrom52WHigh).toFixed(1)}% away`
+                        distanceText: `${stock.distanceFrom52WHigh.toFixed(2)}% away`
                     }));
 
-                // Sort by distance from 52W Low (farthest first - largest positive distance)
+                // Sort by distance from 52W Low (ASCENDING - closest first)
                 this.week52LowStocks = this.allStocksData
                     .filter(stock => stock.week52Low > 0)
-                    .sort((a, b) => a.distanceFrom52WLow - b.distanceFrom52WLow) // Closest to low (least positive distance)
+                    .sort((a, b) => a.distanceFrom52WLow - b.distanceFrom52WLow) // ASCENDING - smallest distance first
                     .map(stock => ({
                         ...stock,
                         change: stock.dailyChange,
                         changePct: stock.dailyChangePct,
-                        distanceText: `${Math.abs(stock.distanceFrom52WLow).toFixed(1)}% away`
+                        distanceText: `${stock.distanceFrom52WLow.toFixed(2)}% away`
                     }));
             }
 
@@ -1645,7 +1645,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
-                window.stockDashboard = new Complete52WStockDashboard();
+                window.stockDashboard = new Fixed52WSortingDashboard();
             }, 100);
         });
 
