@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0a0a0a">
-    <title>Stock Dashboard</title>
+    <title>Live Stock Dashboard</title>
     <style>
         :root {
             color-scheme: dark;
@@ -27,6 +27,7 @@
             --section-purple: rgba(139, 92, 246, 0.15);
             --green-gradient: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
             --red-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            --live-indicator: linear-gradient(135deg, #10b981 0%, #059669 100%);
         }
 
         * {
@@ -106,6 +107,49 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        /* Live Status Bar */
+        .live-status {
+            background: linear-gradient(135deg, 
+                rgba(16, 185, 129, 0.15) 0%, 
+                rgba(5, 150, 105, 0.1) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 8px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #10b981;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: livePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(1.5); }
+        }
+
+        .last-update {
+            font-size: 11px;
+            color: var(--text-secondary);
         }
 
         /* Enhanced Main Section with Section Purple Background */
@@ -866,6 +910,15 @@
             .stock-content {
                 gap: 8px;
             }
+
+            .live-status {
+                padding: 6px 12px;
+                margin-bottom: 12px;
+            }
+
+            .live-indicator {
+                font-size: 11px;
+            }
         }
 
         /* High performance rendering */
@@ -891,6 +944,15 @@
 </head>
 <body>
     <div class="container">
+        <!-- Live Status Bar -->
+        <div class="live-status">
+            <div class="live-indicator">
+                <div class="live-dot"></div>
+                <span id="live-status-text">Loading tickers from sheet...</span>
+            </div>
+            <div class="last-update" id="last-update">--:--</div>
+        </div>
+
         <!-- First Section: Top Gainers/Losers -->
         <div class="stocks-section fade-in">
             <div class="section-header">
@@ -905,7 +967,7 @@
                 <div class="scroll-gradient-top"></div>
                 <div class="loading" id="loading-1">
                     <div class="loading-spinner"></div>
-                    <div class="loading-text">Loading stocks...</div>
+                    <div class="loading-text">Loading live data...</div>
                 </div>
                 <div class="scroll-gradient-bottom"></div>
             </div>
@@ -938,7 +1000,7 @@
                 <div class="scroll-gradient-top"></div>
                 <div class="loading" id="loading-2">
                     <div class="loading-spinner"></div>
-                    <div class="loading-text">Loading weekly data...</div>
+                    <div class="loading-text">Loading period data...</div>
                 </div>
                 <div class="scroll-gradient-bottom"></div>
             </div>
@@ -975,41 +1037,49 @@
         document.documentElement.style.background = '#0a0a0a';
         document.body.style.background = '#0a0a0a';
 
-        class Corrected52WStockDashboard {
+        class HybridStockDashboard {
             constructor() {
+                // Google Sheet URL for tickers only
                 this.csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm1ArLE54YU7jUSm-2TH5x8dsaYTgMqPmLH6jruV00s4WNAGrML1ozXSPsM_71BPZTMKJijsgsEeEk/pub?gid=1581897548&single=true&output=csv';
                 
-                // Section 1: Daily data
-                this.dailyStocks = [];
-                this.gainers = [];
-                this.losers = [];
+                // Yahoo Finance API base URLs
+                this.yahooBaseUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/';
+                this.yahooQuoteUrl = 'https://query2.finance.yahoo.com/v10/finance/quoteSummary/';
                 
-                // Section 2: Period data
-                this.allStocksData = [];
-                this.weeklyGainers = [];
-                this.weeklyLosers = [];
-                this.monthlyGainers = [];
-                this.monthlyLosers = [];
-                this.threeMonthlyGainers = [];
-                this.threeMonthlyLosers = [];
-                
-                // Section 3: 52W data
-                this.week52HighStocks = [];
-                this.week52LowStocks = [];
+                // Data storage
+                this.tickerList = [];
+                this.liveStockData = new Map();
+                this.processedData = {
+                    gainers: [],
+                    losers: [],
+                    weeklyGainers: [],
+                    weeklyLosers: [],
+                    monthlyGainers: [],
+                    monthlyLosers: [],
+                    threeMonthlyGainers: [],
+                    threeMonthlyLosers: [],
+                    week52HighStocks: [],
+                    week52LowStocks: []
+                };
                 
                 this.section1State = { type: 'gainers' };
                 this.section2State = { type: 'gainers', period: 'weekly' };
                 this.section3State = { type: 'high' };
                 this.isLoading = false;
                 this.lastUpdateTime = null;
+                this.updateInterval = null;
 
                 this.initializeElements();
                 this.attachEventListeners();
                 this.setupOptimizations();
-                this.loadData();
+                this.loadTickersAndStartLiveData();
             }
 
             initializeElements() {
+                // Live status elements
+                this.liveStatusText = document.getElementById('live-status-text');
+                this.lastUpdateElement = document.getElementById('last-update');
+
                 // Section 1 elements
                 this.section1Pills = document.querySelectorAll('[data-section="1"]');
                 this.section1Container = document.getElementById('stocks-container-1');
@@ -1113,13 +1183,13 @@
                     });
                 });
 
-                // Auto refresh
+                // Auto refresh when page becomes visible
                 document.addEventListener('visibilitychange', () => {
                     if (!document.hidden) {
                         const timeSinceUpdate = this.lastUpdateTime ? 
                             Date.now() - this.lastUpdateTime.getTime() : Infinity;
-                        if (timeSinceUpdate > 120000) {
-                            this.loadData(true);
+                        if (timeSinceUpdate > 60000) { // 1 minute
+                            this.fetchLiveDataForAllTickers(true);
                         }
                     }
                 });
@@ -1164,73 +1234,21 @@
                 }
             }
 
-            getCachedData() {
-                try {
-                    const cached = localStorage.getItem('corrected52WStockData');
-                    const cacheTime = localStorage.getItem('corrected52WStockDataTime');
-                    if (cached && cacheTime) {
-                        const age = Date.now() - parseInt(cacheTime);
-                        if (age < 180000) { // 3 minutes
-                            return JSON.parse(cached);
-                        }
-                    }
-                } catch (e) {
-                    console.log('Cache error:', e);
-                }
-                return null;
-            }
-
-            setCachedData(data) {
-                try {
-                    localStorage.setItem('corrected52WStockData', JSON.stringify(data));
-                    localStorage.setItem('corrected52WStockDataTime', Date.now().toString());
-                } catch (e) {
-                    console.log('Cache save error:', e);
+            updateLiveStatus(message, isLive = false) {
+                this.liveStatusText.textContent = message;
+                if (isLive) {
+                    const now = new Date();
+                    this.lastUpdateElement.textContent = now.toLocaleTimeString('en-IN', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
                 }
             }
 
-            // Function to calculate change amount from LTP and change percentage
-            calculateChangeAmount(ltp, changePct) {
-                if (!changePct || changePct === '0%') return 0;
-                
-                const pctValue = parseFloat(changePct.replace('%', ''));
-                if (isNaN(pctValue)) return 0;
-                
-                const changeAmount = (ltp * pctValue) / (100 + pctValue);
-                return changeAmount;
-            }
-
-            // Function to calculate distance from 52W High/Low EXACTLY as per your formula
-            calculate52WHighDistance(week52High, ltp) {
-                if (!week52High || !ltp || week52High === 0) return Infinity;
-                // Formula: (52WHigh - LTP) / 52WHigh  
-                return (week52High - ltp) / week52High;
-            }
-
-            calculate52WLowDistance(ltp, week52Low) {
-                if (!week52Low || !ltp || week52Low === 0) return Infinity;
-                // Formula: (LTP - 52WLow) / 52WLow
-                return (ltp - week52Low) / week52Low;
-            }
-
-            async loadData(showIndicator = false) {
-                if (this.isLoading) return;
-
-                // Load cached data first
-                const cached = this.getCachedData();
-                if (cached && this.dailyStocks.length === 0) {
-                    this.dailyStocks = cached;
-                    this.allStocksData = cached;
-                    this.processAllData();
-                    this.renderSection1();
-                    this.renderSection2();
-                    this.renderSection3();
-                    this.lastUpdateTime = new Date();
-                }
-
-                this.isLoading = true;
-
+            async loadTickersAndStartLiveData() {
                 try {
+                    this.updateLiveStatus('Loading watchlist from Google Sheet...');
+                    
                     const controller = new AbortController();
                     const timeoutId = setTimeout(() => controller.abort(), 15000);
 
@@ -1241,7 +1259,7 @@
                     
                     clearTimeout(timeoutId);
                     
-                    if (!response.ok) throw new Error('Network error');
+                    if (!response.ok) throw new Error('Failed to fetch CSV');
                     
                     const csvText = await response.text();
                     
@@ -1251,146 +1269,322 @@
                         complete: (results) => {
                             try {
                                 const rows = results.data;
-                                if (rows.length < 3) throw new Error('No data');
+                                if (rows.length < 3) throw new Error('No data in sheet');
 
-                                const dataRows = rows.slice(2);
-                                const newData = dataRows.map(row => {
-                                    if (!row[0] || !row[0].toString().trim()) return null;
-                                    
-                                    const ltp = row[9] ? parseFloat(row[9].toString().trim()) : 0;
-                                    const dailyChangePct = row[11] ? row[11].toString().trim() : '0%';
-                                    const weeklyChangePct = row[20] ? row[20].toString().trim() : '0%';
-                                    const monthlyChangePct = row[21] ? row[21].toString().trim() : '0%';
-                                    const threeMonthlyChangePct = row[22] ? row[22].toString().trim() : '0%';
-                                    
-                                    // 52W High/Low data - CORRECT COLUMNS as per your formula
-                                    const week52High = row[7] ? parseFloat(row[7].toString().trim()) : 0; // Column H
-                                    const week52Low = row[8] ? parseFloat(row[8].toString().trim()) : 0;  // Column I
+                                // Extract tickers from column A (index 0)
+                                const dataRows = rows.slice(2); // Skip header rows
+                                this.tickerList = dataRows
+                                    .map(row => row[0] ? row[0].toString().trim() : null)
+                                    .filter(ticker => ticker && ticker.length > 0);
 
-                                    return {
-                                        ticker: row[0] ? row[0].toString().trim() : '',
-                                        name: row[2] ? row[2].toString().trim() : '',
-                                        ltp: ltp,
-                                        week52High: week52High,
-                                        week52Low: week52Low,
-                                        // Calculate actual change amounts from percentages and LTP
-                                        dailyChange: this.calculateChangeAmount(ltp, dailyChangePct),
-                                        dailyChangePct: dailyChangePct,
-                                        weeklyChange: this.calculateChangeAmount(ltp, weeklyChangePct),
-                                        weeklyChangePct: weeklyChangePct,
-                                        monthlyChange: this.calculateChangeAmount(ltp, monthlyChangePct),
-                                        monthlyChangePct: monthlyChangePct,
-                                        threeMonthlyChange: this.calculateChangeAmount(ltp, threeMonthlyChangePct),
-                                        threeMonthlyChangePct: threeMonthlyChangePct,
-                                        // Calculate 52W distances EXACTLY as per your formula
-                                        distanceFrom52WHigh: this.calculate52WHighDistance(week52High, ltp),
-                                        distanceFrom52WLow: this.calculate52WLowDistance(ltp, week52Low)
-                                    };
-                                }).filter(stock => stock && stock.ticker && stock.ltp > 0 && stock.week52High > 0 && stock.week52Low > 0);
+                                console.log(`Loaded ${this.tickerList.length} tickers from Google Sheet:`, this.tickerList);
 
-                                if (JSON.stringify(newData) !== JSON.stringify(this.dailyStocks)) {
-                                    this.dailyStocks = newData;
-                                    this.allStocksData = newData;
-                                    this.setCachedData(this.dailyStocks);
-                                    this.processAllData();
-                                    this.renderSection1();
-                                    this.renderSection2();
-                                    this.renderSection3();
-                                    if (showIndicator) {
-                                        this.showUpdateIndicator(1);
-                                        this.showUpdateIndicator(2);
-                                        this.showUpdateIndicator(3);
-                                    }
+                                if (this.tickerList.length === 0) {
+                                    throw new Error('No valid tickers found in sheet');
                                 }
 
-                                this.lastUpdateTime = new Date();
-                                this.isLoading = false;
+                                this.updateLiveStatus(`Fetching live data for ${this.tickerList.length} stocks...`);
+                                this.fetchLiveDataForAllTickers();
+                                
+                                // Start periodic updates every 30 seconds
+                                this.startPeriodicUpdates();
 
                             } catch (error) {
-                                console.error('Processing error:', error);
-                                if (this.dailyStocks.length === 0) {
-                                    this.showError('Error loading data', 1);
-                                    this.showError('Error loading data', 2);
-                                    this.showError('Error loading data', 3);
-                                }
-                                this.isLoading = false;
+                                console.error('CSV processing error:', error);
+                                this.updateLiveStatus('Error processing watchlist');
+                                this.showError('Failed to process Google Sheet data', 1);
+                                this.showError('Failed to process Google Sheet data', 2);
+                                this.showError('Failed to process Google Sheet data', 3);
                             }
                         }
                     });
+
                 } catch (error) {
-                    console.error('Network error:', error);
-                    if (this.dailyStocks.length === 0) {
-                        this.showError('Network error', 1);
-                        this.showError('Network error', 2);
-                        this.showError('Network error', 3);
+                    console.error('Failed to load tickers:', error);
+                    this.updateLiveStatus('Failed to load watchlist');
+                    this.showError('Failed to connect to Google Sheet', 1);
+                    this.showError('Failed to connect to Google Sheet', 2);
+                    this.showError('Failed to connect to Google Sheet', 3);
+                }
+            }
+
+            async fetchLiveDataForAllTickers(showIndicator = false) {
+                if (this.isLoading || this.tickerList.length === 0) return;
+
+                this.isLoading = true;
+                this.updateLiveStatus(`Updating ${this.tickerList.length} stocks...`);
+
+                try {
+                    // Process tickers in batches to avoid rate limiting
+                    const batchSize = 5;
+                    const batches = [];
+                    
+                    for (let i = 0; i < this.tickerList.length; i += batchSize) {
+                        batches.push(this.tickerList.slice(i, i + batchSize));
                     }
+
+                    let processedCount = 0;
+
+                    for (const batch of batches) {
+                        const promises = batch.map(ticker => this.fetchYahooFinanceData(ticker));
+                        const results = await Promise.allSettled(promises);
+                        
+                        results.forEach((result, index) => {
+                            const ticker = batch[index];
+                            if (result.status === 'fulfilled' && result.value) {
+                                this.liveStockData.set(ticker, result.value);
+                                processedCount++;
+                            } else {
+                                console.warn(`Failed to fetch data for ${ticker}:`, result.reason);
+                            }
+                        });
+
+                        // Small delay between batches to be respectful to Yahoo Finance
+                        if (batches.indexOf(batch) < batches.length - 1) {
+                            await new Promise(resolve => setTimeout(resolve, 200));
+                        }
+                    }
+
+                    console.log(`Successfully fetched data for ${processedCount}/${this.tickerList.length} stocks`);
+
+                    if (processedCount > 0) {
+                        this.processAllLiveData();
+                        this.renderAllSections();
+                        this.updateLiveStatus(`Live data: ${processedCount} stocks`, true);
+                        
+                        if (showIndicator) {
+                            this.showUpdateIndicator(1);
+                            this.showUpdateIndicator(2);
+                            this.showUpdateIndicator(3);
+                        }
+                    } else {
+                        this.updateLiveStatus('Failed to fetch live data');
+                        this.showError('No live data available', 1);
+                        this.showError('No live data available', 2);
+                        this.showError('No live data available', 3);
+                    }
+
+                    this.lastUpdateTime = new Date();
+
+                } catch (error) {
+                    console.error('Live data fetch error:', error);
+                    this.updateLiveStatus('Error fetching live data');
+                } finally {
                     this.isLoading = false;
                 }
             }
 
-            processAllData() {
+            async fetchYahooFinanceData(ticker) {
+                try {
+                    // Add .NS suffix for NSE stocks if not already present
+                    const yahooSymbol = ticker.includes('.') ? ticker : `${ticker}.NS`;
+                    
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+                    const response = await fetch(`${this.yahooBaseUrl}${yahooSymbol}`, {
+                        signal: controller.signal,
+                        headers: {
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                        }
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    const data = await response.json();
+                    
+                    if (!data.chart || !data.chart.result || data.chart.result.length === 0) {
+                        throw new Error('No chart data');
+                    }
+
+                    const result = data.chart.result[0];
+                    const meta = result.meta;
+                    const timestamps = result.timestamp;
+                    const quotes = result.indicators.quote[0];
+
+                    if (!meta || !quotes) {
+                        throw new Error('Invalid data structure');
+                    }
+
+                    // Calculate historical data for weekly, monthly, 3-monthly
+                    const historicalData = this.calculateHistoricalChanges(timestamps, quotes);
+
+                    return {
+                        ticker: ticker,
+                        symbol: yahooSymbol,
+                        name: meta.longName || meta.shortName || ticker,
+                        ltp: meta.regularMarketPrice || meta.previousClose || 0,
+                        previousClose: meta.previousClose || 0,
+                        change: (meta.regularMarketPrice || 0) - (meta.previousClose || 0),
+                        changePct: meta.regularMarketChangePercent || 0,
+                        week52High: meta.fiftyTwoWeekHigh || 0,
+                        week52Low: meta.fiftyTwoWeekLow || 0,
+                        volume: meta.regularMarketVolume || 0,
+                        marketCap: meta.marketCap || 0,
+                        ...historicalData,
+                        lastUpdated: new Date().getTime()
+                    };
+
+                } catch (error) {
+                    console.warn(`Failed to fetch Yahoo data for ${ticker}:`, error.message);
+                    return null;
+                }
+            }
+
+            calculateHistoricalChanges(timestamps, quotes) {
+                if (!timestamps || !quotes.close || timestamps.length === 0) {
+                    return {
+                        weeklyChange: 0,
+                        weeklyChangePct: 0,
+                        monthlyChange: 0,
+                        monthlyChangePct: 0,
+                        threeMonthlyChange: 0,
+                        threeMonthlyChangePct: 0
+                    };
+                }
+
+                const currentPrice = quotes.close[quotes.close.length - 1] || 0;
+                const now = Date.now() / 1000;
+                
+                // Find prices for different periods
+                const weekAgo = now - (7 * 24 * 60 * 60);
+                const monthAgo = now - (30 * 24 * 60 * 60);
+                const threeMonthsAgo = now - (90 * 24 * 60 * 60);
+
+                const findClosestPrice = (targetTime) => {
+                    let closestIndex = 0;
+                    let closestDiff = Math.abs(timestamps[0] - targetTime);
+                    
+                    for (let i = 1; i < timestamps.length; i++) {
+                        const diff = Math.abs(timestamps[i] - targetTime);
+                        if (diff < closestDiff) {
+                            closestDiff = diff;
+                            closestIndex = i;
+                        }
+                    }
+                    
+                    return quotes.close[closestIndex] || currentPrice;
+                };
+
+                const weekPrice = findClosestPrice(weekAgo);
+                const monthPrice = findClosestPrice(monthAgo);
+                const threeMonthPrice = findClosestPrice(threeMonthsAgo);
+
+                const calculateChange = (oldPrice, newPrice) => {
+                    if (!oldPrice || oldPrice === 0) return { change: 0, changePct: 0 };
+                    const change = newPrice - oldPrice;
+                    const changePct = (change / oldPrice) * 100;
+                    return { change, changePct };
+                };
+
+                const weekly = calculateChange(weekPrice, currentPrice);
+                const monthly = calculateChange(monthPrice, currentPrice);
+                const threeMonthly = calculateChange(threeMonthPrice, currentPrice);
+
+                return {
+                    weeklyChange: weekly.change,
+                    weeklyChangePct: weekly.changePct,
+                    monthlyChange: monthly.change,
+                    monthlyChangePct: monthly.changePct,
+                    threeMonthlyChange: threeMonthly.change,
+                    threeMonthlyChangePct: threeMonthly.changePct
+                };
+            }
+
+            processAllLiveData() {
+                const stocks = Array.from(this.liveStockData.values());
+
                 // Section 1: Daily gainers/losers
-                this.gainers = this.dailyStocks
-                    .filter(stock => stock.dailyChange > 0)
-                    .sort((a, b) => parseFloat(b.dailyChangePct.replace('%', '')) - parseFloat(a.dailyChangePct.replace('%', '')));
+                this.processedData.gainers = stocks
+                    .filter(stock => stock.change > 0)
+                    .sort((a, b) => b.changePct - a.changePct);
 
-                this.losers = this.dailyStocks
-                    .filter(stock => stock.dailyChange < 0)
-                    .sort((a, b) => parseFloat(a.dailyChangePct.replace('%', '')) - parseFloat(b.dailyChangePct.replace('%', '')));
+                this.processedData.losers = stocks
+                    .filter(stock => stock.change < 0)
+                    .sort((a, b) => a.changePct - b.changePct);
 
-                // Section 2: Weekly/Monthly/3-Monthly data (same as before)
-                this.weeklyGainers = this.allStocksData
+                // Section 2: Period-based data
+                this.processedData.weeklyGainers = stocks
                     .filter(stock => stock.weeklyChange > 0)
-                    .sort((a, b) => parseFloat(b.weeklyChangePct.replace('%', '')) - parseFloat(a.weeklyChangePct.replace('%', '')))
+                    .sort((a, b) => b.weeklyChangePct - a.weeklyChangePct)
                     .map(stock => ({ ...stock, change: stock.weeklyChange, changePct: stock.weeklyChangePct }));
 
-                this.weeklyLosers = this.allStocksData
+                this.processedData.weeklyLosers = stocks
                     .filter(stock => stock.weeklyChange < 0)
-                    .sort((a, b) => parseFloat(a.weeklyChangePct.replace('%', '')) - parseFloat(b.weeklyChangePct.replace('%', '')))
+                    .sort((a, b) => a.weeklyChangePct - b.weeklyChangePct)
                     .map(stock => ({ ...stock, change: stock.weeklyChange, changePct: stock.weeklyChangePct }));
 
-                this.monthlyGainers = this.allStocksData
+                this.processedData.monthlyGainers = stocks
                     .filter(stock => stock.monthlyChange > 0)
-                    .sort((a, b) => parseFloat(b.monthlyChangePct.replace('%', '')) - parseFloat(a.monthlyChangePct.replace('%', '')))
+                    .sort((a, b) => b.monthlyChangePct - a.monthlyChangePct)
                     .map(stock => ({ ...stock, change: stock.monthlyChange, changePct: stock.monthlyChangePct }));
 
-                this.monthlyLosers = this.allStocksData
+                this.processedData.monthlyLosers = stocks
                     .filter(stock => stock.monthlyChange < 0)
-                    .sort((a, b) => parseFloat(a.monthlyChangePct.replace('%', '')) - parseFloat(b.monthlyChangePct.replace('%', '')))
+                    .sort((a, b) => a.monthlyChangePct - b.monthlyChangePct)
                     .map(stock => ({ ...stock, change: stock.monthlyChange, changePct: stock.monthlyChangePct }));
 
-                this.threeMonthlyGainers = this.allStocksData
+                this.processedData.threeMonthlyGainers = stocks
                     .filter(stock => stock.threeMonthlyChange > 0)
-                    .sort((a, b) => parseFloat(b.threeMonthlyChangePct.replace('%', '')) - parseFloat(a.threeMonthlyChangePct.replace('%', '')))
+                    .sort((a, b) => b.threeMonthlyChangePct - a.threeMonthlyChangePct)
                     .map(stock => ({ ...stock, change: stock.threeMonthlyChange, changePct: stock.threeMonthlyChangePct }));
 
-                this.threeMonthlyLosers = this.allStocksData
+                this.processedData.threeMonthlyLosers = stocks
                     .filter(stock => stock.threeMonthlyChange < 0)
-                    .sort((a, b) => parseFloat(a.threeMonthlyChangePct.replace('%', '')) - parseFloat(b.threeMonthlyChangePct.replace('%', '')))
+                    .sort((a, b) => a.threeMonthlyChangePct - b.threeMonthlyChangePct)
                     .map(stock => ({ ...stock, change: stock.threeMonthlyChange, changePct: stock.threeMonthlyChangePct }));
 
-                // Section 3: 52W High/Low data - CORRECT SORTING as per your formula
-                // 52W High: Sort by distance ASC (smallest distance first - closest to high)
-                this.week52HighStocks = this.allStocksData
-                    .filter(stock => stock.week52High > 0 && stock.distanceFrom52WHigh >= 0) // Only positive distances (below high)
-                    .sort((a, b) => a.distanceFrom52WHigh - b.distanceFrom52WHigh) // ASC - closest first
-                    .map(stock => ({
-                        ...stock,
-                        change: stock.dailyChange,
-                        changePct: stock.dailyChangePct,
-                        distanceText: `${(stock.distanceFrom52WHigh * 100).toFixed(1)}% away`
-                    }));
+                // Section 3: 52W High/Low data
+                this.processedData.week52HighStocks = stocks
+                    .filter(stock => stock.week52High > 0)
+                    .map(stock => {
+                        const distanceFromHigh = ((stock.week52High - stock.ltp) / stock.week52High) * 100;
+                        return {
+                            ...stock,
+                            change: stock.change,
+                            changePct: stock.changePct,
+                            distanceFromHigh: distanceFromHigh,
+                            distanceText: `${Math.abs(distanceFromHigh).toFixed(1)}% away`
+                        };
+                    })
+                    .filter(stock => stock.distanceFromHigh >= 0) // Only stocks below 52W high
+                    .sort((a, b) => a.distanceFromHigh - b.distanceFromHigh); // Closest first
 
-                // 52W Low: Sort by distance ASC (smallest distance first - closest to low)
-                this.week52LowStocks = this.allStocksData
-                    .filter(stock => stock.week52Low > 0 && stock.distanceFrom52WLow >= 0) // Only positive distances (above low)
-                    .sort((a, b) => a.distanceFrom52WLow - b.distanceFrom52WLow) // ASC - closest first
-                    .map(stock => ({
-                        ...stock,
-                        change: stock.dailyChange,
-                        changePct: stock.dailyChangePct,
-                        distanceText: `${(stock.distanceFrom52WLow * 100).toFixed(1)}% away`
-                    }));
+                this.processedData.week52LowStocks = stocks
+                    .filter(stock => stock.week52Low > 0)
+                    .map(stock => {
+                        const distanceFromLow = ((stock.ltp - stock.week52Low) / stock.week52Low) * 100;
+                        return {
+                            ...stock,
+                            change: stock.change,
+                            changePct: stock.changePct,
+                            distanceFromLow: distanceFromLow,
+                            distanceText: `${Math.abs(distanceFromLow).toFixed(1)}% away`
+                        };
+                    })
+                    .filter(stock => stock.distanceFromLow >= 0) // Only stocks above 52W low
+                    .sort((a, b) => a.distanceFromLow - b.distanceFromLow); // Closest first
+            }
+
+            startPeriodicUpdates() {
+                if (this.updateInterval) {
+                    clearInterval(this.updateInterval);
+                }
+
+                // Update every 30 seconds
+                this.updateInterval = setInterval(() => {
+                    if (!document.hidden) {
+                        this.fetchLiveDataForAllTickers(true);
+                    }
+                }, 30000);
+            }
+
+            renderAllSections() {
+                this.renderSection1();
+                this.renderSection2();
+                this.renderSection3();
             }
 
             switchType(type, section) {
@@ -1472,20 +1666,15 @@
             renderSection1() {
                 this.section1Loading.style.display = 'none';
                 
-                const currentStocks = this.section1State.type === 'gainers' ? this.gainers : this.losers;
+                const currentStocks = this.section1State.type === 'gainers' ? 
+                    this.processedData.gainers : this.processedData.losers;
                 
-                if (!currentStocks.length) {
+                if (!currentStocks || currentStocks.length === 0) {
                     this.showError(`No ${this.section1State.type} found`, 1);
                     return;
                 }
 
-                const stocksForDisplay = currentStocks.map(stock => ({
-                    ...stock,
-                    change: stock.dailyChange,
-                    changePct: stock.dailyChangePct
-                }));
-
-                this.renderStocksList(stocksForDisplay, this.section1Container, 1);
+                this.renderStocksList(currentStocks, this.section1Container, 1);
             }
 
             renderSection2() {
@@ -1494,19 +1683,23 @@
                 let currentData;
                 switch (this.section2State.period) {
                     case 'weekly':
-                        currentData = this.section2State.type === 'gainers' ? this.weeklyGainers : this.weeklyLosers;
+                        currentData = this.section2State.type === 'gainers' ? 
+                            this.processedData.weeklyGainers : this.processedData.weeklyLosers;
                         break;
                     case 'monthly':
-                        currentData = this.section2State.type === 'gainers' ? this.monthlyGainers : this.monthlyLosers;
+                        currentData = this.section2State.type === 'gainers' ? 
+                            this.processedData.monthlyGainers : this.processedData.monthlyLosers;
                         break;
                     case '3monthly':
-                        currentData = this.section2State.type === 'gainers' ? this.threeMonthlyGainers : this.threeMonthlyLosers;
+                        currentData = this.section2State.type === 'gainers' ? 
+                            this.processedData.threeMonthlyGainers : this.processedData.threeMonthlyLosers;
                         break;
                     default:
-                        currentData = this.section2State.type === 'gainers' ? this.weeklyGainers : this.weeklyLosers;
+                        currentData = this.section2State.type === 'gainers' ? 
+                            this.processedData.weeklyGainers : this.processedData.weeklyLosers;
                 }
 
-                if (!currentData.length) {
+                if (!currentData || currentData.length === 0) {
                     this.showError(`No ${this.section2State.period} ${this.section2State.type} found`, 2);
                     return;
                 }
@@ -1517,9 +1710,10 @@
             renderSection3() {
                 this.section3Loading.style.display = 'none';
                 
-                const currentData = this.section3State.type === 'high' ? this.week52HighStocks : this.week52LowStocks;
+                const currentData = this.section3State.type === 'high' ? 
+                    this.processedData.week52HighStocks : this.processedData.week52LowStocks;
                 
-                if (!currentData.length) {
+                if (!currentData || currentData.length === 0) {
                     this.showError(`No 52W ${this.section3State.type} data found`, 3);
                     return;
                 }
@@ -1574,10 +1768,7 @@
                 card.style.transform = 'translateY(10px) translateX(-10px)';
                 card.style.transition = 'opacity 0.5s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
                 
-                let percentDisplay = stock.changePct;
-                if (percentDisplay && percentDisplay.includes('%')) {
-                    percentDisplay = percentDisplay.replace('-', '');
-                }
+                const changePct = Math.abs(stock.changePct).toFixed(2);
 
                 // Create 52W details badge for section 3 - BETWEEN TICKER AND LTP
                 let week52Badge = '';
@@ -1602,7 +1793,7 @@
                             })}</div>
                             <div class="stock-change ${changeClass}">
                                 <span class="${arrowClass}"></span>
-                                ${Math.abs(stock.change).toFixed(2)} (${percentDisplay})
+                                ${Math.abs(stock.change).toFixed(2)} (${changePct}%)
                             </div>
                         </div>
                     </div>
@@ -1637,7 +1828,7 @@
                 if ('vibrate' in navigator) {
                     navigator.vibrate(10);
                 }
-                console.log('Stock tapped:', stock.ticker);
+                console.log('Stock tapped:', stock.ticker, stock);
             }
 
             showError(message, section) {
@@ -1669,20 +1860,16 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
-                window.stockDashboard = new Corrected52WStockDashboard();
+                window.stockDashboard = new HybridStockDashboard();
             }, 100);
         });
 
-        // Auto refresh
-        setInterval(() => {
-            if (window.stockDashboard && !document.hidden) {
-                const timeSinceUpdate = window.stockDashboard.lastUpdateTime ? 
-                    Date.now() - window.stockDashboard.lastUpdateTime.getTime() : Infinity;
-                if (timeSinceUpdate > 180000) { // 3 minutes
-                    window.stockDashboard.loadData(true);
-                }
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (window.stockDashboard && window.stockDashboard.updateInterval) {
+                clearInterval(window.stockDashboard.updateInterval);
             }
-        }, 60000);
+        });
     </script>
 </body>
 </html>
